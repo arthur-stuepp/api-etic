@@ -13,7 +13,7 @@ class SchoolRepository extends MysqlRepository implements ISchoolRepository
     {
         parent::__construct();
         $this->table = 'schools';
-        $this->class = 'School';
+        $this->class = School::class;
     }
 
     public function create(School $school)

@@ -9,9 +9,6 @@ use App\Domain\School\ISchoolService;
 
 abstract class SchoolAction extends Action
 {
-    /**
-     * @var ISchoolService
-     */
     protected ISchoolService $service;
 
     public function __construct(ISchoolService $service)

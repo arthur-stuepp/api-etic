@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Domain\School;
-
 
 use App\Domain\ApplicationService;
 use App\Domain\ServicePayload;
 
 class SchoolService extends ApplicationService implements ISchoolService
 {
-   
+
     private SchoolValidation $validation;
-  
+
     private ISchoolRepository $repository;
 
     public function __construct(SchoolValidation $validation, ISchoolRepository $repository)
@@ -49,7 +49,7 @@ class SchoolService extends ApplicationService implements ISchoolService
         if ($this->repository->getById($id)) {
             return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['school' => $this->repository->getById($id)]);
         }
-        return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['school' => 'Usuário não encontrado']);
+        return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['school' => 'Escola não encontrado']);
     }
 
     public function delete(int $id): ServicePayload
@@ -61,7 +61,7 @@ class SchoolService extends ApplicationService implements ISchoolService
                 return $this->ServicePayload(ServicePayload::STATUS_NOT_DELETED, ['school' => 'Registro não pode ser deletado']);
             }
         } else {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['school' => 'Registro não encontrado']);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['school' => 'Escola não encontrada']);
         }
     }
 }

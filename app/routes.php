@@ -6,6 +6,8 @@ use App\Application\Actions\Event\EventCreateAction;
 use App\Application\Actions\Event\EventDeleteAction;
 use App\Application\Actions\Event\EventReadAction;
 use App\Application\Actions\School\SchoolCreateAction;
+use App\Application\Actions\School\SchoolDeleteAction;
+use App\Application\Actions\School\SchoolReadAction;
 use App\Application\Actions\User\UserDeleteAction;
 use App\Application\Actions\User\UserReadAction;
 use Slim\App;
@@ -18,11 +20,6 @@ return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
-    });
-
-
-    $app->group('/schools', function (Group $group) {
-        $group->post('', SchoolCreateAction::class);
     });
 
 
@@ -39,6 +36,14 @@ return function (App $app) {
         $group->group('/{id}', function (Group $user) {
             $user->get('', EventReadAction::class);
             $user->delete('', EventDeleteAction::class);
+
+        });
+    });
+    $app->group('/schools', function (Group $group) {
+        $group->post('', SchoolCreateAction::class);
+        $group->group('/{id}', function (Group $school) {
+            $school->get('', SchoolReadAction::class);
+            $school->delete('', SchoolDeleteAction::class);
 
         });
     });
