@@ -7,6 +7,7 @@ namespace App\Domain\Event;
 use App\Domain\Service\ServiceListParams;
 use App\Domain\ServicePayload;
 use App\Domain\ApplicationService;
+use function DI\value;
 
 
 class EventService extends ApplicationService implements IEventService
@@ -25,6 +26,7 @@ class EventService extends ApplicationService implements IEventService
     public function create(array $data): ServicePayload
     {
         $event = new Event($data);
+
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
         }

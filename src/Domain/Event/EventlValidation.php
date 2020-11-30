@@ -21,6 +21,12 @@ class EventlValidation
         if (!isset($event->capacity)) {
             $this->messages['capacity'] = 'Capacidade não pode ser vazio';
         }
+        if (!isset($event->startTime)) {
+            $this->messages['startTime'] = 'Horario de inicio invalido';
+        }
+        if (!isset($event->endTime)) {
+            $this->messages['endTime'] = 'Horario de fim invalido';
+        }
 
         return $this->validate();
     }

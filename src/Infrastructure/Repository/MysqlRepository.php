@@ -7,6 +7,7 @@ namespace App\Infrastructure\Repository;
 use FaaPz\PDO\Clause\Conditional;
 use FaaPz\PDO\Database;
 use PDO;
+use phpDocumentor\Reflection\Types\Object_;
 
 abstract class MysqlRepository
 {
@@ -38,7 +39,8 @@ abstract class MysqlRepository
         return $arr;
     }
 
-    protected function insert(array $data){
+    protected function insert(array $data)
+    {
         $insertStatement = $this->pdo->insert($this->camel_to_snake($data))
             ->into($this->table);
         $insertStatement->execute();

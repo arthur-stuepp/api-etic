@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use DateTime;
+use Exception;
 use JsonSerializable;
 use ReflectionProperty;
 
@@ -23,6 +25,7 @@ abstract class Entity implements JsonSerializable
             }
         }
     }
+
     protected function convertProperty($key, $value)
     {
         $rp = new ReflectionProperty($this, $key);
@@ -33,12 +36,19 @@ abstract class Entity implements JsonSerializable
                 break;
             case 'int':
                 $this->$key = (int)$value;
-                break;   
+                break;
+            case 'DateTime':
+                try {
+                   $this->$key= new DateTime($value);
+
+                } catch (Exception $e) {
+                }
         }
     }
 
 
-    public function jsonSerialize(){
+    public function jsonSerialize()
+    {
         return get_object_vars($this);
     }
 }

@@ -18,7 +18,9 @@ class EventRepository extends MysqlRepository implements IEventRepository
 
     public function create(Event $event)
     {
-        return parent::insert($event->jsonSerialize());
+        $json = $event->jsonSerialize();
+
+        return parent::insert($json);
     }
 
     /**

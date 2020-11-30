@@ -18,9 +18,5 @@ class UserEvent extends Entity
 
     public int $event;
 
-    public string $starttime;
-
-    public string $endtime;
-
 
 }
