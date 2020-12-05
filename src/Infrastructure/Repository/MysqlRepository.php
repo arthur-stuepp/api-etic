@@ -7,7 +7,6 @@ namespace App\Infrastructure\Repository;
 use FaaPz\PDO\Clause\Conditional;
 use FaaPz\PDO\Database;
 use PDO;
-use phpDocumentor\Reflection\Types\Object_;
 
 abstract class MysqlRepository
 {
@@ -43,6 +42,7 @@ abstract class MysqlRepository
     {
         $insertStatement = $this->pdo->insert($this->camel_to_snake($data))
             ->into($this->table);
+
         $insertStatement->execute();
 
         return $this->pdo->lastInsertId();
@@ -60,7 +60,6 @@ abstract class MysqlRepository
 
         }
         return $arr;
-//        return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));
     }
 
     protected function getByField($field, $value)
@@ -86,7 +85,6 @@ abstract class MysqlRepository
 
 
         return (bool)$affectedRows = $deleteStatement->execute()->rowCount();
-
     }
 
 

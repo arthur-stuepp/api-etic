@@ -10,6 +10,8 @@ use App\Application\Actions\School\SchoolDeleteAction;
 use App\Application\Actions\School\SchoolReadAction;
 use App\Application\Actions\User\UserDeleteAction;
 use App\Application\Actions\User\UserReadAction;
+use App\Application\Actions\UserEvent\UserEventCreateAction;
+use App\Application\Actions\UserEvent\UserEventDeleteAction;
 use Slim\App;
 use App\Application\Actions\User\UserCreateAction;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -25,9 +27,13 @@ return function (App $app) {
 
     $app->group('/users', function (Group $group) {
         $group->post('', UserCreateAction::class);
-        $group->group('/{id}', function (Group $user) {
+        $group->group('/{user}', function (Group $user) {
             $user->get('', UserReadAction::class);
             $user->delete('', UserDeleteAction::class);
+            $user->group('/events', function (Group $events) {
+                $events->post('/{event}', UserEventCreateAction::class);
+                $events->delete('/{event}', UserEventDeleteAction::class);
+            });
 
         });
     });

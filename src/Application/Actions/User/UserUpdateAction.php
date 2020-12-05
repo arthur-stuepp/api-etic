@@ -12,7 +12,7 @@ class UserUpdateAction extends UserAction
     protected function action(): Response
     {
         $data = $this->getFormData();
-        $id = $this->args['id'];
+        $id = $this->args['user'];
 
         $payload = $this->service->update($id, $data);
 
