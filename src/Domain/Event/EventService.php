@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
+use App\Domain\ApplicationService;
 use App\Domain\Service\ServiceListParams;
 use App\Domain\ServicePayload;
-use App\Domain\ApplicationService;
-use function DI\value;
 
 
 class EventService extends ApplicationService implements IEventService
 {
-    private EventlValidation $validation;
+    private EventValidation $validation;
 
     private IEventRepository $repository;
 
 
-    public function __construct(EventlValidation $validation, IEventRepository $repository)
+    public function __construct(EventValidation $validation, IEventRepository $repository)
     {
         $this->validation = $validation;
         $this->repository = $repository;

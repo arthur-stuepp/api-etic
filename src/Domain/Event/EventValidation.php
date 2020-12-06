@@ -4,7 +4,7 @@
 namespace App\Domain\Event;
 
 
-class EventlValidation
+class EventValidation
 {
     protected array $messages = [];
 

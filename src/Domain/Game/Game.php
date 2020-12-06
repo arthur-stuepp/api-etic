@@ -17,7 +17,7 @@ class Game extends Entity
 
     public ?string $team;
 
-    public int $cheking;
+    public bool $cheking;
 
     public int $capacity;
 
