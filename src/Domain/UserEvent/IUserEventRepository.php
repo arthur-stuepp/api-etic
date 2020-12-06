@@ -13,4 +13,6 @@ interface IUserEventRepository
     public function  list();
 
     public function countEventusers(int $event);
+
+    public function getUserEvent(UserEvent $userEvent);
 }

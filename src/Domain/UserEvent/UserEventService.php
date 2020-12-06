@@ -28,10 +28,13 @@ class UserEventService extends ApplicationService implements IUserEventService
     public function add(int $user, int $event)
     {
         $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
-        $message = $this->checkUserEvent($user, $event);
+        $message = $this->checkUserEvent($userEvent);
 
         if ($message != null) {
-          return   $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
+        }
+        if ($this->repository->getUserEvent($userEvent)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['userEvent' => 'Usuario já estava inscrito nesse evento']);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['ids' => $this->repository->add($userEvent)]);
@@ -41,10 +44,13 @@ class UserEventService extends ApplicationService implements IUserEventService
     public function remove(int $user, int $event)
     {
         $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
-        $message = $this->checkUserEvent($user, $event);
+        $message = $this->checkUserEvent($userEvent);
 
         if ($message != null) {
             $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
+        }
+        if (!$this->repository->getUserEvent($userEvent)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['userEvent' => 'Usuario não estava inscrito nesse evento']);
         }
         if ($this->repository->remove($userEvent)) {
             return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['userEvent' => 'Removido com Sucesso']);
@@ -54,15 +60,16 @@ class UserEventService extends ApplicationService implements IUserEventService
     }
 
 
-    protected function checkUserEvent(int $user, int $event)
+    protected function checkUserEvent(UserEvent $userEvent)
     {
         $message = null;
-        if (!$this->userRepository->getById($user)) {
+        if (!$this->userRepository->getById($userEvent->user)) {
             $message['user'] = 'Usuário não encontrado';
         }
-        if (!$this->eventRepository->getById($event)) {
+        if (!$this->eventRepository->getById($userEvent->event)) {
             $message['event'] = 'Evento não encontrado';
         }
+
         return $message;
     }
 

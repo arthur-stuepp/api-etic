@@ -10,6 +10,10 @@ interface IEventRepository
 
     public function delete(int $id);
 
+    /**
+     * @param int $id
+     * @return false|Event
+     */
     public function getById(int $id);
 
 }
