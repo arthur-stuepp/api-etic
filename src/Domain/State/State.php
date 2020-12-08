@@ -13,6 +13,9 @@ class State extends Entity
         parent::__construct($data);
 
     }
+
+    public int $id;
+
     public string $code;
 
     public string $name;

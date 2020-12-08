@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Domain\City\ICityRepository;
 use App\Domain\Event\IEventRepository;
 use App\Domain\School\ISchoolRepository;
+use App\Domain\State\IStateRepository;
 use App\Domain\User\IUserRepository;
 use App\Domain\UserEvent\IUserEventRepository;
 use App\Infrastructure\Repository\CityRepository;
 use App\Infrastructure\Repository\EventRepository;
 use App\Infrastructure\Repository\SchoolRepository;
+use App\Infrastructure\Repository\StateRepository;
 use App\Infrastructure\Repository\UserEventRepository;
 use App\Infrastructure\Repository\UserRepository;
 use DI\ContainerBuilder;
@@ -24,5 +26,6 @@ return function (ContainerBuilder $containerBuilder) {
         IUserRepository::class => autowire(UserRepository::class),
         IUserEventRepository::class => autowire(UserEventRepository::class),
         ICityRepository::class => autowire(CityRepository::class),
+        IStateRepository::class => autowire(StateRepository::class),
     ]);
 };

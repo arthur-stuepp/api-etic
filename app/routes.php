@@ -9,6 +9,7 @@ use App\Application\Actions\Event\EventReadAction;
 use App\Application\Actions\School\SchoolCreateAction;
 use App\Application\Actions\School\SchoolDeleteAction;
 use App\Application\Actions\School\SchoolReadAction;
+use App\Application\Actions\State\StateReadAction;
 use App\Application\Actions\User\UserCreateAction;
 use App\Application\Actions\User\UserDeleteAction;
 use App\Application\Actions\User\UserReadAction;
@@ -56,4 +57,5 @@ return function (App $app) {
     });
 
     $app->get('/cities/{id}', CityReadAction::class);
+    $app->get('/states/{id}', StateReadAction::class);
 };

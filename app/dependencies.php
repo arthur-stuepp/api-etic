@@ -9,6 +9,8 @@ use App\Domain\Event\EventService;
 use App\Domain\Event\IEventService;
 use App\Domain\School\ISchoolService;
 use App\Domain\School\SchoolService;
+use App\Domain\State\IStateService;
+use App\Domain\State\StateService;
 use App\Domain\User\IUserService;
 use App\Domain\User\UserService;
 use App\Domain\UserEvent\IUserEventService;
@@ -24,5 +26,6 @@ return function (ContainerBuilder $containerBuilder) {
         IEventService::class => autowire(EventService::class),
         IUserEventService::class => autowire(UserEventService::class),
         ICityService::class => autowire(CityService::class),
+        IStateService::class => autowire(StateService::class),
     ]);
 };
