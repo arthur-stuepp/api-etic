@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\City;
 
 use App\Domain\Entity;
 
-declare(strict_types=1);
 
 class City extends Entity
 {

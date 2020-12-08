@@ -1,13 +1,14 @@
 <?php
 
+
 namespace App\Domain\City;
 
 
 use App\Domain\ServiceListParams;
 
-interface ICityRepository
+interface ICityService
 {
-    public function getById(int $id);
+    public function read(int $id);
 
     public function list(ServiceListParams $params);
 }
