@@ -8,31 +8,27 @@ use JsonSerializable;
 
 class ActionPayload implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private $statusCode;
+
+    private int $statusCode;
 
     /**
      * @var array|object|null
      */
     private $data;
 
-    /**
-     * @var ActionError|null
-     */
-    private $error;
+    private ?ActionError $error;
 
     /**
-     * @param int                   $statusCode
-     * @param array|object|null     $data
-     * @param ActionError|null      $error
+     * @param int $statusCode
+     * @param array|object|null $data
+     * @param ActionError|null $error
      */
     public function __construct(
         int $statusCode = 200,
         $data = null,
         ?ActionError $error = null
-    ) {
+    )
+    {
         $this->statusCode = $statusCode;
         $this->data = $data;
         $this->error = $error;
@@ -67,10 +63,15 @@ class ActionPayload implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        $payload = [];
+        $payload = null;
 
         if ($this->data !== null) {
-            $payload[$this->data];
+            if (is_array($this->data) or is_string($this->data)) {
+                $payload = $this->data;
+            } else {
+                $payload = $this->data;
+            }
+
         } elseif ($this->error !== null) {
             $payload['error'] = $this->error;
         }

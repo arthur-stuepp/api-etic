@@ -5,12 +5,12 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
+use App\Domain\ApplicationService;
 use App\Domain\City\ICityRepository;
 use App\Domain\School\ISchoolRepository;
-use App\Domain\Service\ServiceListParams;
-use Firebase\JWT\JWT;
+use App\Domain\ServiceListParams;
 use App\Domain\ServicePayload;
-use App\Domain\ApplicationService;
+use Firebase\JWT\JWT;
 
 
 class UserService extends ApplicationService implements IUserService
@@ -82,7 +82,7 @@ class UserService extends ApplicationService implements IUserService
     public function read(int $id): ServicePayload
     {
         if ($this->repository->getById($id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['user' => $this->repository->getById($id)]);
+            return $this->ServicePayload(ServicePayload::STATUS_FOUND, $this->repository->getById($id));
         }
         return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => 'Usuário não encontrado']);
     }

@@ -3,9 +3,16 @@
 namespace App\Domain;
 
 
-abstract class ApplicationService {
+abstract class ApplicationService
+{
 
-    protected function ServicePayload(string $status, array $result = []): ServicePayload {
+    /**
+     * @param string $status
+     * @param array|string|Entity $result
+     * @return ServicePayload
+     */
+    protected function ServicePayload(int $status, $result = []): ServicePayload
+    {
         return new ServicePayload($status, $result);
     }
 

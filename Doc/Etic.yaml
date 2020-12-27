@@ -1,0 +1,36 @@
+openapi: 3.0.3
+info:
+  title: Etic
+  description: Etic
+  version: 1.0.0
+tags:
+  - name: Usuarios
+    description: Funcionalidade dos usuários
+servers:
+  - url: 'http://localhost/etic'
+paths:
+  /users:
+    get:
+      summary: Lista todos os usuários
+      tags:
+        - Usuarios
+      responses:
+        '200':
+          description: ok
+  /users/{id}:
+    get:
+      summary: Retporna um usuário
+      tags:
+        - Usuarios
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: ok
+
+
+
