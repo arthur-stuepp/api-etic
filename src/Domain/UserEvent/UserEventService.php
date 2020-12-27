@@ -25,7 +25,7 @@ class UserEventService extends ApplicationService implements IUserEventService
         $this->userRepository = $userRepository;
     }
 
-    public function add(int $user, int $event)
+    public function add(int $user, int $event): ServicePayload
     {
         $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
         $message = $this->checkUserEvent($userEvent);
@@ -36,12 +36,12 @@ class UserEventService extends ApplicationService implements IUserEventService
         if ($this->repository->getUserEvent($userEvent)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['userEvent' => 'Usuario já estava inscrito nesse evento']);
         }
-
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['ids' => $this->repository->add($userEvent)]);
+        $this->repository->add($userEvent);
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['userEvent' => 'adicionado com Sucesso']);
 
     }
 
-    public function remove(int $user, int $event)
+    public function remove(int $user, int $event): ServicePayload
     {
         $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
         $message = $this->checkUserEvent($userEvent);
@@ -60,7 +60,7 @@ class UserEventService extends ApplicationService implements IUserEventService
     }
 
 
-    protected function checkUserEvent(UserEvent $userEvent)
+    protected function checkUserEvent(UserEvent $userEvent): ?array
     {
         $message = null;
         if (!$this->userRepository->getById($userEvent->user)) {
@@ -71,6 +71,18 @@ class UserEventService extends ApplicationService implements IUserEventService
         }
 
         return $message;
+    }
+
+    public function list(?int $user, ?int $event): ServicePayload
+    {
+        if ($event != null) {
+
+            return $this->repository->getUsersByevent($event);
+        } else {
+
+            return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['evets' => $this->repository->getEventsByUser($user)]);
+        }
+
     }
 
 

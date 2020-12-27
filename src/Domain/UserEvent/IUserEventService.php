@@ -10,4 +10,6 @@ interface IUserEventService
 
     public function remove(int $user, int $event);
 
+    public function list(?int $user, ?int $event);
+
 }

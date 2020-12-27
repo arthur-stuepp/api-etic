@@ -15,6 +15,7 @@ use App\Application\Actions\User\UserDeleteAction;
 use App\Application\Actions\User\UserReadAction;
 use App\Application\Actions\UserEvent\UserEventCreateAction;
 use App\Application\Actions\UserEvent\UserEventDeleteAction;
+use App\Application\Actions\UserEvent\UserEventListAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -33,6 +34,7 @@ return function (App $app) {
             $user->get('', UserReadAction::class);
             $user->delete('', UserDeleteAction::class);
             $user->group('/events', function (Group $events) {
+                $events->get('', UserEventListAction::class);
                 $events->post('/{event}', UserEventCreateAction::class);
                 $events->delete('/{event}', UserEventDeleteAction::class);
             });

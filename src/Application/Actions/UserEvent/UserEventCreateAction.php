@@ -10,14 +10,13 @@ class UserEventCreateAction extends UserEventAction
 {
     protected function action(): Response
     {
-        {
-            $idUser = (int)$this->args['user'];
-            $idEvent = (int)$this->args['event'];
+        $idUser = (int)$this->args['user'];
+        $idEvent = (int)$this->args['event'];
 
-            $payload = $this->service->add($idUser, $idEvent);
+        $payload = $this->service->add($idUser, $idEvent);
 
-            return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
-        }
+        return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
+
     }
 
 }

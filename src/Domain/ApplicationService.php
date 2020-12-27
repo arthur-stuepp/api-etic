@@ -7,7 +7,7 @@ abstract class ApplicationService
 {
 
     /**
-     * @param string $status
+     * @param int $status
      * @param array|string|Entity $result
      * @return ServicePayload
      */

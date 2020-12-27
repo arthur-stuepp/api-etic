@@ -17,14 +17,14 @@ class UserEventRepository extends MysqlRepository implements IUserEventRepositor
         $this->table = 'usersevents';
     }
 
-    public function add(UserEvent $userEvent)
+    public function add(UserEvent $userEvent): string
     {
         parent::insert($userEvent->jsonSerialize());
 
         return $userEvent->user . $userEvent->event;
     }
 
-    public function remove(UserEvent $userEvent)
+    public function remove(UserEvent $userEvent): bool
     {
         $sql = 'DELETE FROM usersevents WHERE user =:user and event=:event';
         $stmt = $this->pdo->prepare($sql);
@@ -35,6 +35,30 @@ class UserEventRepository extends MysqlRepository implements IUserEventRepositor
 
         return (bool)$stmt->rowCount();
 
+
+    }
+
+    public function getUsersByevent(int $event)
+    {
+        $sql = 'SELECT (usersevents.user)FROM `usersevents` WHERE event=:event';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':event', $event, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+
+    }
+
+    public function getEventsByUser(int $user): array
+    {
+        $sql = 'SELECT usersevents.event FROM `usersevents` WHERE user=:user';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':user', $user, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     }
 
