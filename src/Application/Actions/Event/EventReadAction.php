@@ -10,7 +10,7 @@ class EventReadAction extends EventAction
 {
     protected function action(): Response
     {
-        $id = (int)$this->args['id'];
+        $id = (int)$this->args['event'];
 
         $payload = $this->service->read($id);
 

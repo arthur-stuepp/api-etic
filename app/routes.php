@@ -43,9 +43,10 @@ return function (App $app) {
     });
     $app->group('/events', function (Group $group) {
         $group->post('', EventCreateAction::class);
-        $group->group('/{id}', function (Group $user) {
+        $group->group('/{event}', function (Group $user) {
             $user->get('', EventReadAction::class);
             $user->delete('', EventDeleteAction::class);
+            $user->get('/users', UserEventListAction::class);
 
         });
     });

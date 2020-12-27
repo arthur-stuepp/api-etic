@@ -38,15 +38,16 @@ class UserEventRepository extends MysqlRepository implements IUserEventRepositor
 
     }
 
-    public function getUsersByevent(int $event)
+    public function getUsersByEvent(int $event): array
     {
-        $sql = 'SELECT (usersevents.user)FROM `usersevents` WHERE event=:event';
+
+        $sql = 'SELECT usersevents.user FROM `usersevents` WHERE event=:event';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':event', $event, PDO::PARAM_INT);
 
         $stmt->execute();
 
-        return $stmt->fetchColumn();
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     }
 

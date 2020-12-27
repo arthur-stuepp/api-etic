@@ -11,7 +11,7 @@ class EventUpdateAction extends EventAction
     protected function action(): Response
     {
         $data = $this->getFormData();
-        $id = $this->args['id'];
+        $id = $this->args['event'];
 
         $payload = $this->service->update($id, $data);
 

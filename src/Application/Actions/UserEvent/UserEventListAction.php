@@ -13,7 +13,6 @@ class UserEventListAction extends UserEventAction
 
         $idUser = (int)$this->args['user'] ??= null;
         $idEvent = (int)$this->args['event'] ??= null;
-
         $payload = $this->service->list($idUser, $idEvent);
 
         return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
