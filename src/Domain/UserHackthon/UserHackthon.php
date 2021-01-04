@@ -18,7 +18,7 @@ class UserHackthon extends Entity
 
     public ?string $team;
 
-    public int $cheking;
+    public int $cheking = 0;
 
     public int $capacity;
 

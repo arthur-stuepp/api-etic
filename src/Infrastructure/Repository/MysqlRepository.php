@@ -25,7 +25,7 @@ abstract class MysqlRepository
         $this->pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
     }
 
-    protected function camel_to_snake(array $arr)
+    protected function camel_to_snake(array $arr): array
     {
         foreach ($arr as $key => $value) {
             $newKey = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
@@ -49,7 +49,7 @@ abstract class MysqlRepository
     }
 
 
-    protected function snakeToCamel(array $arr)
+    protected function snakeToCamel(array $arr): array
     {
         foreach ($arr as $key => $value) {
             $newKey = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
@@ -77,7 +77,7 @@ abstract class MysqlRepository
         }
     }
 
-    protected function delete(int $id)
+    protected function delete(int $id): bool
     {
         $deleteStatement = $this->pdo->delete()
             ->from($this->table)

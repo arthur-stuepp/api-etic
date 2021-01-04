@@ -76,7 +76,6 @@ class UserEventService extends ApplicationService implements IUserEventService
     public function list(?int $user, ?int $event): ServicePayload
     {
         if ($event != null) {
-
             return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['users' => $this->repository->getUsersByEvent($event)]);
         } else {
             return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['events' => $this->repository->getEventsByUser($user)]);
