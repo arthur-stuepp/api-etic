@@ -63,11 +63,6 @@ class UserEventRepository extends MysqlRepository implements IUserEventRepositor
 
     }
 
-    public function list()
-    {
-        // TODO: Implement list() method.
-    }
-
 
     public function countEventusers(int $event)
     {

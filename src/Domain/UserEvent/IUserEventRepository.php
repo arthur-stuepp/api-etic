@@ -10,9 +10,11 @@ interface IUserEventRepository
 
     public function remove(UserEvent $userEvent);
 
-    public function  list();
-
     public function countEventusers(int $event);
+
+    public function getUsersByEvent(int $event);
+
+    public function getEventsByUser(int $user);
 
     public function getUserEvent(UserEvent $userEvent);
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\City;
 
 use App\Domain\Entity;
+use App\Domain\State\State;
 
 
 class City extends Entity
@@ -16,5 +17,5 @@ class City extends Entity
 
     public string $name;
 
-    public int $state;
+    public State $state;
 }

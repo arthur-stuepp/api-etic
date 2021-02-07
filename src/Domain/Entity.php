@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\State\State;
 use DateTime;
 use Exception;
 use JsonSerializable;
 use ReflectionProperty;
+
 
 abstract class Entity implements JsonSerializable
 {
@@ -19,6 +21,8 @@ abstract class Entity implements JsonSerializable
 
     public function setData(array $properties)
     {
+
+
         foreach ($properties as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->convertProperty($key, $value);
@@ -30,25 +34,43 @@ abstract class Entity implements JsonSerializable
     {
         $rp = new ReflectionProperty($this, $key);
         $type = $rp->getType()->getName();
+
         switch ($type) {
             case 'string':
                 $this->$key = (string)$value;
-                break;
+                return;
+
             case 'int':
                 $this->$key = (int)$value;
-                break;
+                return;
             case 'DateTime':
                 try {
-                   $this->$key= new DateTime($value);
-
+                    $this->$key = new DateTime($value);
+                    return;
                 } catch (Exception $e) {
+                    return;
                 }
+        }
+        $name = 'App\\Domain\\' . $key . '\\' . $key;
+        if (class_exists($name)) {
+
+            $this->$key = new $name(['id' => $value]);
         }
     }
 
 
     public function jsonSerialize()
     {
-        return get_object_vars($this);
+        $vars = get_object_vars($this);
+
+        foreach ($vars as $var => $value) {
+            if (is_object($value))
+                if ((count((array)$value)) == 1) {
+                    if (isset($value->id)) {
+                        $vars[$var] = $value->id;
+                    }
+                }
+        }
+        return $vars;
     }
 }

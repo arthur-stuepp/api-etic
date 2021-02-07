@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace App\Domain\City;
 
-use App\Domain\ApplicationService;
-use App\Domain\ServiceListParams;
 use App\Domain\ServicePayload;
+use App\Domain\ServiceListParams;
+use App\Domain\ApplicationService;
 
 
 class CityService extends ApplicationService implements ICityService
@@ -25,7 +25,7 @@ class CityService extends ApplicationService implements ICityService
     public function read(int $id): ServicePayload
     {
         if ($this->repository->getById($id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['city' => $this->repository->getById($id)]);
+            return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $this->repository->getById($id));
         }
         return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['city' => 'Cidade não encontrada']);
     }

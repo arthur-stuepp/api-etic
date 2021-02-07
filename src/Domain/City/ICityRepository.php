@@ -5,7 +5,7 @@ namespace App\Domain\City;
 
 use App\Domain\ServiceListParams;
 
-interface ICityRepository
+interface ICityRepository 
 {
     public function getById(int $id);
 
