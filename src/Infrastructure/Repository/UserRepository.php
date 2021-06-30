@@ -4,53 +4,38 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\User\IUserRepository;
 use App\Domain\User\User;
+use App\Domain\ServiceListParams;
+use App\Domain\User\IUserRepository;
 
 class UserRepository extends MysqlRepository implements IUserRepository
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->table = 'users';
-        $this->class = User::class;
-    }
-
-    public function create(User $user)
-    {
-        return parent::insert($user->jsonSerialize());
-    }
 
     /**
-     * @param string $email
      * @return false|User
      */
     public function getByEmail(string $email)
     {
-        return $this->getByField('email', $email);
+        $params = new ServiceListParams(User::class, []);
+        $params->setFilters('email', $email)->setLimit(1);
+        
+        return $this->list($params)[0] ?? false;
     }
 
-    /**
-     * @param int $id
-     * @return false|User
-     */
-    public function getById(int $id)
-    {
-        return $this->getByField('id', $id);
-    }
 
     /**
-     * @param string $taxId
      * @return false|User
      */
     public function getByTaxId(string $taxId)
     {
-        return $this->getByField('tax_id', $taxId);
+        $params = new ServiceListParams(User::class, []);
+        $params->setFilters('taxId', $taxId)->setLimit(1);
+
+        return $this->list($params)[0] ?? false;
     }
 
-    public function delete(int $id):bool
+    protected function getClass(): string
     {
-        return parent::delete($id);
+        return User::class;
     }
-
 }

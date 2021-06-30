@@ -10,10 +10,6 @@ class CityReadAction extends CityAction
 {
     protected function action(): Response
     {
-        $id = (int)$this->args['id'];
-
-        $payload = $this->service->read($id);
-
-        return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
+        return $this->respondWithPayload($this->service->read((int)$this->args['id']));
     }
 }

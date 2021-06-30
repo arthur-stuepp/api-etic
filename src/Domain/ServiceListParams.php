@@ -9,13 +9,11 @@ class ServiceListParams
 
     private array $fields = [];
     private array  $filters = [];
-    private string $orderBy = '';
-    private string $groupBy = '';
     private int $page = 1;
-    private int $offset = 15;
+    private int $limit = 15;
     private string $class;
 
-    public function __construct(string $class, array $data)
+    public function __construct(string $class, array $data=[])
     {
         $this->class = $class;
         foreach ($data as $key => $val) {
@@ -34,7 +32,7 @@ class ServiceListParams
         return $this->fields;
     }
 
-    public function setFields($fields): void
+    public function setFields($fields):self
     {
         $fields = explode(',', $fields);
         foreach ($fields as $field) {
@@ -42,6 +40,7 @@ class ServiceListParams
                 $this->fields[] = $field;
             }
         }
+        return $this;
     }
 
 
@@ -50,31 +49,14 @@ class ServiceListParams
         return $this->filters;
     }
 
-    public function setFilters(string $field, string $filter): void
+    public function setFilters(string $field, string $filter): self
     {
+      
         if (property_exists($this->class, $field)) {
             $this->filters[$field] = $filter;
         }
-    }
-
-    public function getOrderBy()
-    {
-        return $this->orderBy;
-    }
-
-    public function setOrderBy(string $orderBy): void
-    {
-        $this->orderBy = $orderBy;
-    }
-
-    public function getGroupBy()
-    {
-        return $this->groupBy;
-    }
-
-    public function setGroupBy(string $groupBy): void
-    {
-        $this->groupBy = $groupBy;
+    
+        return $this;
     }
 
     public function getPage(): int
@@ -82,23 +64,33 @@ class ServiceListParams
         return $this->page;
     }
 
-    public function setPage($page): void
+    public function setPage($page): self
     {
         if (is_numeric($page)) {
             $this->page = (int)$page;
         }
+
+        return $this;
     }
 
-    public function getOffset(): int
+    public function getLimit(): int
     {
-        return $this->offset;
+        return $this->limit;
     }
 
-    public function setOffset($offset): void
+    public function setLimit($limit): self
     {
-        if (is_numeric($offset)) {
-            $this->offset = (int)$offset;
+        if (is_numeric($limit)) {
+            $this->limit = (int)$limit;
         }
+
+        return $this;
     }
 
+
+
+    public function getClass():string
+    {
+        return $this->class;
+    }
 }

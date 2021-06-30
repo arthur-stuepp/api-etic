@@ -27,8 +27,7 @@ class ActionPayload implements JsonSerializable
         int $statusCode = 200,
         $data = null,
         ?ActionError $error = null
-    )
-    {
+    ) {
         $this->statusCode = $statusCode;
         $this->data = $data;
         $this->error = $error;
@@ -63,19 +62,6 @@ class ActionPayload implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        $payload = null;
-
-        if ($this->data !== null) {
-            if (is_array($this->data) or is_string($this->data)) {
-                $payload = $this->data;
-            } else {
-                $payload = $this->data;
-            }
-
-        } elseif ($this->error !== null) {
-            $payload['error'] = $this->error;
-        }
-
-        return $payload;
+       return $this->data;
     }
 }

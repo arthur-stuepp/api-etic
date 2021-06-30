@@ -10,16 +10,13 @@ use PDO;
 
 class UserEventRepository extends MysqlRepository implements IUserEventRepository
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->class = UserEvent::class;
-        $this->table = 'usersevents';
-    }
 
+    public function getClass(): string{
+        return UserEvent::class;
+    }
     public function add(UserEvent $userEvent): string
     {
-        parent::insert($userEvent->jsonSerialize());
+        $this->create($userEvent);
 
         return $userEvent->user . $userEvent->event;
     }

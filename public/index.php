@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use App\Application\Handlers\HttpErrorHandler;
@@ -17,13 +18,13 @@ $containerBuilder = new ContainerBuilder();
 if (false) { // Should be set to true in production
 	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
-require  __DIR__.'/../app/config.php';
+require  __DIR__ . '/../app/config.php';
 // Set up settings
 $settings = require __DIR__ . '/../app/settings.php';
 $settings($containerBuilder);
 
 // Set up dependencies
-$dependencies = require __DIR__ . '/../app/dependencies.php';
+$dependencies = require __DIR__ . '/../app/services.php';
 $dependencies($containerBuilder);
 
 // Set up repositories
@@ -41,8 +42,6 @@ $callableResolver = $app->getCallableResolver();
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';
 $middleware($app);
-
-
 
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';

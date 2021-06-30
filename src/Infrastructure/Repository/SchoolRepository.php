@@ -9,30 +9,8 @@ use App\Domain\School\School;
 
 class SchoolRepository extends MysqlRepository implements ISchoolRepository
 {
-    public function __construct()
+    public function getClass(): string
     {
-        parent::__construct();
-        $this->table = 'schools';
-        $this->class = School::class;
-    }
-
-    public function create(School $school)
-    {
-        return parent::insert($school->jsonSerialize());
-    }
-
-    public function getByName(string $name)
-    {
-        return parent::getByField('name', $name);
-    }
-
-    public function getById(int $id)
-    {
-        return parent::getByField('id', $id);
-    }
-
-    public function delete(int $id)
-    {
-        return parent::delete($id);
+        return School::class;
     }
 }

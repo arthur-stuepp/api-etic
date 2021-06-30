@@ -15,6 +15,8 @@ class City extends Entity
         parent::__construct($data);
     }
 
+    public int $id;
+
     public string $name;
 
     public State $state;

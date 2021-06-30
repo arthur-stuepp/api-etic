@@ -4,88 +4,90 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use FaaPz\PDO\Clause\Conditional;
-use FaaPz\PDO\Database;
-use PDO;
+use App\Domain\Entity;
+use App\Infrastructure\DB\DB;
+use App\Domain\ServiceListParams;
 
 abstract class MysqlRepository
 {
     protected string $class;
-    protected PDO $pdo;
     protected string $table;
+    private DB $db;
+    private string $lastError;
 
-    protected function __construct()
+    public function __construct(DB $db)
     {
-        $this->pdo = new Database(MYSQL_DSN, MYSQL_USER, MYSQL_PWD);
-        $this->pdo->setAttribute(
-            PDO::ATTR_ERRMODE,
-            PDO::ERRMODE_EXCEPTION
-        );
-        $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-        $this->pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+        $this->db = $db;
     }
 
-    protected function camel_to_snake(array $arr): array
-    {
-        foreach ($arr as $key => $value) {
-            $newKey = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
-            if ($newKey != $key) {
-                $arr[$newKey] = $value;
-                unset($arr[$key]);
-            }
 
+    /*
+     *@return int|false
+     */
+    public function create(Entity $entity)
+    {
+        return $this->processAndReturn($this->db->insert($this->getTable(), $entity->jsonSerialize()));
+    }
+    /*
+     *@return int|false
+     */
+    public function update(Entity $entity)
+    {
+
+        return $this->processAndReturn($this->db->insert($this->getTable(), $entity->jsonSerialize()));
+    }
+
+
+    /*
+    *@return  Entity|false
+    */
+    public function getById(int $id)
+    {
+        $params = new ServiceListParams($this->getClass());
+        $params->setFilters('id', (string)$id)->setLimit(1);
+     
+        return $this->list($params);
+    }
+
+
+    public function delete(int $id): bool
+    {
+
+        return $this->processAndReturn($this->db->delete($this->getTable(), $id));
+    }
+
+    abstract protected function getClass(): string;
+
+    public function getTable()
+    {
+        $class = explode('\\', $this->getClass());
+    
+        return  end($class);
+    }
+
+    public function list(ServiceListParams $params): array
+    {
+        $rows = $this->db->list($this->getTable(), $params->getFields(), $params->getFilters(), $params->getPage(), $params->getLimit());
+        
+        for ($i = 0; $i < count($rows['result']) - 1; $i++) {
+            $class = $this->getClass();
+            $entity = new $class($rows['result'][$i]);
+            $rows['result'][$i] = $entity;
         }
-        return $arr;
+        return $rows;
     }
 
-    protected function insert(array $data)
+    private function processAndReturn($return)
     {
-        $insertStatement = $this->pdo->insert($this->camel_to_snake($data))
-            ->into($this->table);
-
-        $insertStatement->execute();
-
-        return $this->pdo->lastInsertId();
-    }
-
-
-    protected function snakeToCamel(array $arr): array
-    {
-        foreach ($arr as $key => $value) {
-            $newKey = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
-            if ($newKey != $key) {
-                $arr[$newKey] = $value;
-                unset($arr[$key]);
-            }
-
+        $this->lastError = '';
+        if ($return === false) {
+            $this->lastError = $this->db->getLastError();
         }
-        return $arr;
-    }
 
-    protected function getByField($field, $value)
+        return $return;
+    }
+    public function getLastError()
     {
-        $selectStatement = $this->pdo->select()
-            ->from($this->table)
-            ->where(new Conditional($field, '=', $value));
-
-        $stmt = $selectStatement->execute();
-        $data = $stmt->fetch();
-        if ($data) {
-            return new $this->class($data);
-        } else {
-            return false;
-        }
+        return $this->lastError;
     }
-
-    protected function delete(int $id): bool
-    {
-        $deleteStatement = $this->pdo->delete()
-            ->from($this->table)
-            ->where(new Conditional('id', "=", $id));
-
-
-        return (bool)$affectedRows = $deleteStatement->execute()->rowCount();
-    }
-
-
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Domain\ServicePayload;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpBadRequestException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -93,6 +94,16 @@ abstract class Action
 
         return $this->respond($payload);
     }
+
+
+    protected function respondWithPayload(ServicePayload $payload): Response
+    {
+        $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
+
+        return $this->respond($payload);
+    }
+
+
 
     /**
      * @param ActionPayload $payload

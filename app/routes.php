@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\City\CityListAction;
 use App\Application\Actions\City\CityReadAction;
 use App\Application\Actions\Event\EventCreateAction;
 use App\Application\Actions\Event\EventDeleteAction;
@@ -60,5 +61,6 @@ return function (App $app) {
     });
 
     $app->get('/cities/{id}', CityReadAction::class);
+    $app->get('/cities', CityListAction::class);
     $app->get('/states/{id}', StateReadAction::class);
 };

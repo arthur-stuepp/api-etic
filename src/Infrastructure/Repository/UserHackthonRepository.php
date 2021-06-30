@@ -1,34 +1,34 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-
-use App\Domain\UserHackthon\IUserHackthonRepository;
+use App\Domain\User\User;
+use App\Domain\ServiceListParams;
 use App\Domain\UserHackthon\UserHackthon;
+use App\Domain\UserHackthon\IUserHackthonRepository;
 
 class UserHackthonRepository extends MysqlRepository implements IUserHackthonRepository
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->table = 'UserHackton';
-        $this->class = UserHackthon::class;
-    }
 
-
-    public function create(UserHackthon $userHackthon)
-    {
-        // TODO: Implement create() method.
-    }
-
+    /**
+     * @return false|UserHackthon
+     */
     public function getByUser(int $user)
     {
-        // TODO: Implement getByUser() method.
+        $params = new ServiceListParams(UserHackthon::class, []);
+        $params->setFilters('user',(string)$user);
+        $params->setLimit(1);
+        return $this->list($params)[0] ?? false;
     }
 
-    public function deleteUserHackthon(int $user)
+    protected function getClass(): string
     {
-
+        return UserHackthon::class;
     }
+    public function deleteUserHackthon(int $user){
+        
+    }
+
 }

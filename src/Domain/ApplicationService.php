@@ -1,19 +1,14 @@
 <?php
 
-namespace App\Domain;
+declare(strict_types=1);
 
+namespace App\Domain;
 
 abstract class ApplicationService
 {
 
-    /**
-     * @param int $status
-     * @param array|string|Entity $result
-     * @return ServicePayload
-     */
     protected function ServicePayload(int $status, $result = []): ServicePayload
     {
         return new ServicePayload($status, $result);
     }
-
 }
