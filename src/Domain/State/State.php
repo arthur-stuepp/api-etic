@@ -8,11 +8,6 @@ use App\Domain\Entity;
 
 class State extends Entity
 {
-    public function __construct(array $data)
-    {
-        parent::__construct($data);
-
-    }
 
     public int $id;
 

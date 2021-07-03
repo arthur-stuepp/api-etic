@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
+use Firebase\JWT\JWT;
+use App\Domain\ServicePayload;
+use App\Domain\ServiceListParams;
 use App\Domain\ApplicationService;
 use App\Domain\City\ICityRepository;
+use App\Domain\Traits\TraitListService;
+use App\Domain\Traits\TraitReadService;
 use App\Domain\School\ISchoolRepository;
-use App\Domain\ServiceListParams;
-use App\Domain\ServicePayload;
-use Firebase\JWT\JWT;
+use App\Domain\Traits\TraitDeleteService;
 
 
 class UserService extends ApplicationService implements IUserService
 {
     private UserValidation $validation;
-
     private IUserRepository $repository;
-
     private ISchoolRepository $schoolRepository;
-
     private ICityRepository $cityRepository;
+
+    use TraitDeleteService;
+    use TraitReadService;
+    use TraitListService;
 
     public function __construct(UserValidation $validation, IUserRepository $repository, ISchoolRepository $schoolRepository, ICityRepository $cityRepository)
     {
@@ -48,7 +52,7 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->cityRepository->getById($user->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['city' => 'Cidade não encontrada']);
         }
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->create($user)]);
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->save($user)]);
     }
 
 
@@ -78,31 +82,6 @@ class UserService extends ApplicationService implements IUserService
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $user->id]);
     }
 
-    public function read(int $id): ServicePayload
-    {
-        if ($this->repository->getById($id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND, $this->repository->getById($id));
-        }
-        return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => 'Usuário não encontrado']);
-    }
-
-    public function delete(int $id): ServicePayload
-    {
-        if ($this->repository->getById($id)) {
-            if ($this->repository->delete($id)) {
-                return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['user' => 'Deletado com sucesso']);
-            } else {
-                return $this->ServicePayload(ServicePayload::STATUS_NOT_DELETED, ['user' => 'Registro não pode ser deletado']);
-            }
-        } else {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => 'Registro não encontrado']);
-        }
-    }
-
-    public function list(ServiceListParams $params): ServicePayload
-    {
-        return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['users' => 'users']);
-    }
 
     public function auth($data)
     {

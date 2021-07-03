@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use Exception;
 use App\Domain\ServicePayload;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpBadRequestException;
@@ -42,10 +43,9 @@ abstract class Action
         $this->request = $request;
         $this->response = $response;
         $this->args = $args;
-
-        
-            return $this->action();
-     
+   
+         return  $this->action();
+  
     }
 
     /**

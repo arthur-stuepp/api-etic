@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domain\School;
 
-use App\Domain\ApplicationService;
 use App\Domain\ServicePayload;
+use App\Domain\ApplicationService;
+use App\Domain\Traits\TraitListService;
+use App\Domain\Traits\TraitReadService;
+use App\Domain\Traits\TraitDeleteService;
 
 class SchoolService extends ApplicationService implements ISchoolService
 {
+    use TraitDeleteService;
+    use TraitReadService;
+    use TraitListService;
 
     private SchoolValidation $validation;
-
     private ISchoolRepository $repository;
 
     public function __construct(SchoolValidation $validation, ISchoolRepository $repository)
@@ -26,11 +31,11 @@ class SchoolService extends ApplicationService implements ISchoolService
         if (!$this->validation->isValid($school)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
         }
-        if ($this->repository->getByname($school->name)) {
+        if ($this->repository->getByName($school->name)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['name' => 'Já existe uma escola com esse nome']);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->create($school)]);
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->save($school)]);
     }
 
 
@@ -44,24 +49,5 @@ class SchoolService extends ApplicationService implements ISchoolService
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $school->id]);
     }
 
-    public function read(int $id): ServicePayload
-    {
-        if ($this->repository->getById($id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['school' => $this->repository->getById($id)]);
-        }
-        return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['school' => 'Escola não encontrado']);
-    }
 
-    public function delete(int $id): ServicePayload
-    {
-        if ($this->repository->getById($id)) {
-            if ($this->repository->delete($id)) {
-                return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['school' => 'Deletado com sucesso']);
-            } else {
-                return $this->ServicePayload(ServicePayload::STATUS_NOT_DELETED, ['school' => 'Registro não pode ser deletado']);
-            }
-        } else {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['school' => 'Escola não encontrada']);
-        }
-    }
 }

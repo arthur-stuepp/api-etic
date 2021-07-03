@@ -3,24 +3,25 @@
 
 namespace App\Domain\Event;
 
+use App\Domain\AbstractValidation;
 
-class EventValidation
+
+class EventValidation extends AbstractValidation
 {
-    protected array $messages = [];
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
 
     public function isValid(Event $event): bool
     {
         if (!isset($event->description)) {
-            $this->messages['description'] = 'Descrição não pode ser vazio';
+            $this->messages['description'] = self::NOT_SEND;
         }
         if (!isset($event->capacity)) {
-            $this->messages['capacity'] = 'Capacidade não pode ser vazio';
+            $this->messages['capacity'] = self::NOT_SEND;
+        } else {
+            if ($event->capacity <= 0) {
+                $this->messages['capacity'] = 'Propriedade precisa ser mais que 0';
+            }
         }
+    
         if (!isset($event->startTime)) {
             $this->messages['startTime'] = 'Horario de inicio invalido';
         }
@@ -30,11 +31,4 @@ class EventValidation
 
         return $this->validate();
     }
-
-    protected function validate(): bool
-    {
-        return count($this->messages) == 0;
-    }
-
-
 }

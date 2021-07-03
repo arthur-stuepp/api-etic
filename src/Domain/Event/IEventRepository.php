@@ -2,14 +2,14 @@
 
 namespace App\Domain\Event;
 
-interface IEventRepository
+use App\Domain\IRepository;
+
+interface IEventRepository extends IRepository
 {
-    public function create(Event $event);
+    public function save(Event $event):bool;
 
-    public function update(Event $event);
-
-    public function delete(int $id);
-
-    public function getById(int $id):false|Event;
-
+    /*
+    *@return Event|false
+    */
+    public function getById(int $id);
 }

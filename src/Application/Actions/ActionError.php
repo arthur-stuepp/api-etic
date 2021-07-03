@@ -23,6 +23,9 @@ class ActionError implements JsonSerializable
      */
     private $type;
 
+    private array $fulLDescription;
+
+
     /**
      * @var string
      */
@@ -56,6 +59,12 @@ class ActionError implements JsonSerializable
         return $this;
     }
 
+    public function setFullDescription(array $description): self
+    {
+        $this->line = $description;
+        return $this;
+    }
+
     /**
      * @return string
      */
@@ -79,8 +88,9 @@ class ActionError implements JsonSerializable
      */
     public function jsonSerialize()
     {
+       
         $payload = [
-            // 'type' => $this->type,
+            'description'=>$this->line,
             'message' => $this->description,
         ];
 

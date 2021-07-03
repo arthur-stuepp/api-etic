@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity;
+use App\Domain\IRepository;
 use App\Infrastructure\DB\DB;
 use App\Domain\ServiceListParams;
 
-abstract class MysqlRepository
+abstract class MysqlRepository implements IRepository
 {
     protected string $class;
     protected string $table;
     private DB $db;
     private string $lastError;
+    private int $lastSaveId;
 
     public function __construct(DB $db)
     {
@@ -21,22 +23,22 @@ abstract class MysqlRepository
     }
 
 
-    /*
-     *@return int|false
-     */
-    public function create(Entity $entity)
+    public function save(Entity $entity): bool
     {
-        return $this->processAndReturn($this->db->insert($this->getTable(), $entity->jsonSerialize()));
+        if (isset($entity->id) && $entity->id > 0) {
+            if ($this->db->insert($this->getTable(), $entity->jsonSerialize())) {
+                $this->lastSaveId = $this->db->getLastInsertId();
+                return true;
+            }
+        } else {
+            if ($this->db->insert($this->getTable(), $entity->jsonSerialize())) {
+                $this->lastSaveId = $this->db->getLastInsertId();
+                return true;
+            }
+        }
+        $this->lastError = $this->db->getLastError();
+        return false;
     }
-    /*
-     *@return int|false
-     */
-    public function update(Entity $entity)
-    {
-
-        return $this->processAndReturn($this->db->insert($this->getTable(), $entity->jsonSerialize()));
-    }
-
 
     /*
     *@return  Entity|false
@@ -45,15 +47,18 @@ abstract class MysqlRepository
     {
         $params = new ServiceListParams($this->getClass());
         $params->setFilters('id', (string)$id)->setLimit(1);
-     
-        return $this->list($params);
+
+        return $this->list($params)['result'][0] ?? false;
     }
 
 
     public function delete(int $id): bool
     {
-
-        return $this->processAndReturn($this->db->delete($this->getTable(), $id));
+        if(!($this->db->delete($this->getTable(), $id))){
+            $this->lastError=$this->db->getLastError();
+            return false;
+        }
+      return true;
     }
 
     abstract protected function getClass(): string;
@@ -61,33 +66,31 @@ abstract class MysqlRepository
     public function getTable()
     {
         $class = explode('\\', $this->getClass());
-    
+
         return  end($class);
     }
 
     public function list(ServiceListParams $params): array
     {
         $rows = $this->db->list($this->getTable(), $params->getFields(), $params->getFilters(), $params->getPage(), $params->getLimit());
-        
-        for ($i = 0; $i < count($rows['result']) - 1; $i++) {
+
+        for ($i = 0; $i <= count($rows['result']) - 1; $i++) {
             $class = $this->getClass();
             $entity = new $class($rows['result'][$i]);
             $rows['result'][$i] = $entity;
         }
+
         return $rows;
     }
 
-    private function processAndReturn($return)
-    {
-        $this->lastError = '';
-        if ($return === false) {
-            $this->lastError = $this->db->getLastError();
-        }
-
-        return $return;
-    }
-    public function getLastError()
+    public function getLastError():string
     {
         return $this->lastError;
+    }
+
+ 
+    public function getLastSaveId():int
+    {
+        return $this->lastSaveId;
     }
 }

@@ -2,25 +2,27 @@
 
 declare(strict_types=1);
 
+use Slim\App;
 use App\Application\Actions\City\CityListAction;
 use App\Application\Actions\City\CityReadAction;
-use App\Application\Actions\Event\EventCreateAction;
-use App\Application\Actions\Event\EventDeleteAction;
+use App\Application\Actions\User\UserReadAction;
+use App\Application\Actions\Event\EventListAction;
 use App\Application\Actions\Event\EventReadAction;
-use App\Application\Actions\School\SchoolCreateAction;
-use App\Application\Actions\School\SchoolDeleteAction;
-use App\Application\Actions\School\SchoolReadAction;
+use App\Application\Actions\State\StateListAction;
 use App\Application\Actions\State\StateReadAction;
 use App\Application\Actions\User\UserCreateAction;
 use App\Application\Actions\User\UserDeleteAction;
-use App\Application\Actions\User\UserReadAction;
+use Psr\Http\Message\ResponseInterface as Response;
+use App\Application\Actions\Event\EventCreateAction;
+use App\Application\Actions\Event\EventDeleteAction;
+use App\Application\Actions\School\SchoolReadAction;
+use App\Application\Actions\School\SchoolCreateAction;
+use App\Application\Actions\School\SchoolDeleteAction;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Application\Actions\UserEvent\UserEventListAction;
+use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use App\Application\Actions\UserEvent\UserEventCreateAction;
 use App\Application\Actions\UserEvent\UserEventDeleteAction;
-use App\Application\Actions\UserEvent\UserEventListAction;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -39,16 +41,16 @@ return function (App $app) {
                 $events->post('/{event}', UserEventCreateAction::class);
                 $events->delete('/{event}', UserEventDeleteAction::class);
             });
-
         });
     });
     $app->group('/events', function (Group $group) {
+
+        $group->get('', EventListAction::class);
         $group->post('', EventCreateAction::class);
         $group->group('/{event}', function (Group $user) {
             $user->get('', EventReadAction::class);
             $user->delete('', EventDeleteAction::class);
             $user->get('/users', UserEventListAction::class);
-
         });
     });
     $app->group('/schools', function (Group $group) {
@@ -56,11 +58,11 @@ return function (App $app) {
         $group->group('/{id}', function (Group $school) {
             $school->get('', SchoolReadAction::class);
             $school->delete('', SchoolDeleteAction::class);
-
         });
     });
 
     $app->get('/cities/{id}', CityReadAction::class);
     $app->get('/cities', CityListAction::class);
     $app->get('/states/{id}', StateReadAction::class);
+    $app->get('/states', StateListAction::class);
 };

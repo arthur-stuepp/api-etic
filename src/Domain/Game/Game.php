@@ -8,11 +8,9 @@ use App\Domain\Entity;
 
 class Game extends Entity
 {
-    public function __construct(array $data)
-    {
-        parent::__construct($data);
-    }
 
+    public int $id;
+    
     public int $user;
 
     public ?string $team;

@@ -3,16 +3,15 @@
 namespace App\Domain\User;
 
 use App\Domain\User\User;
+use App\Domain\IRepository;
 
-interface IUserRepository
+interface IUserRepository extends IRepository
 {
-    public function create(User $user);
+    public function save(User $user);
 
     public function getByEmail(string $email);
 
     public function getById(int $id);
-
-    public function delete(int $id);
-
+    
     public function getByTaxId(string $taxId);
 }

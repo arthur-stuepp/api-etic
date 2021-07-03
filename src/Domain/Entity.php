@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\State\State;
-use DateTime;
 use Exception;
 use JsonSerializable;
 use ReflectionProperty;
-
+use App\Domain\Model\DateTimeModel;
 
 abstract class Entity implements JsonSerializable
 {
 
-    protected function __construct(array $properties)
+    public function __construct(array $properties)
     {
         $this->setData($properties);
     }
@@ -45,9 +43,10 @@ abstract class Entity implements JsonSerializable
                 return;
             case 'DateTime':
                 try {
-                    $this->$key = new DateTime($value);
+                    $this->$key = new DateTimeModel($value);
                     return;
                 } catch (Exception $e) {
+
                     return;
                 }
         }

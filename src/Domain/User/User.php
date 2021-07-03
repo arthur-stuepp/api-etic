@@ -8,10 +8,6 @@ use App\Domain\Entity;
 
 class User extends Entity
 {
-    public function __construct(array $data)
-    {
-        parent::__construct($data);
-    }
 
     public int $id;
 

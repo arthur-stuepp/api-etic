@@ -11,9 +11,11 @@ trait TraitReadService
 
     public function read(int $id): ServicePayload
     {
-        if ($this->repository->getById($id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $this->repository->getById($id));
+        $entity = $this->repository->getById($id);
+        if (!$entity) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Registro não encontrado']);
         }
-        return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Registro não encontrado']);
+
+        return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $entity);
     }
 }

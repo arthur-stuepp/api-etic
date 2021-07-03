@@ -2,11 +2,13 @@
 
 namespace App\Domain\School;
 
-interface ISchoolRepository
+use App\Domain\IRepository;
+
+interface ISchoolRepository extends IRepository
 {
-    public function create(School $school);
+    public function save(School $school);
 
-    public function getById(int $id);
+    public function getById(int $id): School|false;
 
-    public function delete(int $id);
+    public function getByName(string $name): School|false;
 }

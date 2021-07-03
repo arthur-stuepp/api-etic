@@ -9,11 +9,6 @@ use DateTime;
 
 class Event extends Entity
 {
-    public function __construct(array $data)
-    {
-        parent::__construct($data);
-    }
-
     public int $id;
 
     public string $description;
@@ -23,18 +18,4 @@ class Event extends Entity
     public DateTime $startTime;
 
     public DateTime $endTime;
-
-    public function jsonSerialize()
-    {
-        $json = parent::jsonSerialize();
-        if (isset($json['startTime'])) {
-            $json['startTime'] = $this->startTime->format('d-m-y h:m:s');
-        }
-        if (isset($json['startTime'])) {
-            $json['endTime'] = $this->endTime->format('d-m-y h:m:s');
-        }
-
-
-        return $json;
-    }
 }

@@ -25,28 +25,28 @@ class DB
             echo 'ERROR: ' . $e->getMessage();
         }
     }
-    /*
-    *@return int:false
-    */
-    public function insert(string $table, array $data)
+
+    public function insert(string $table, array $data): bool
     {
         $data = $this->camel_to_snake($data);
         try {
             $fields  = implode(',', array_keys($data));
-            $values = implode(',:', array_keys($data));
-            $stmt = $this->db->prepare('INSERT INTO ' . $table . '(' . $fields . ')  VALUES (' . $values . ')');
-            foreach ($data as $key => $value) {
-                $stmt->bindParam(':' . $key, $value);
+            $values = implode(' , :', array_keys($data));
+            if (!empty($values)) {
+                $values = ' :' . $values;
             }
-            $stmt->execute();
-
-            return $this->db->lastInsertId();
+            $sql = 'INSERT INTO ' . $table . '(' . $fields . ')  VALUES (' . $values . ')';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($data);
+            $this->lastInsertId = $this->db->lastInsertId();
+            return true;
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
 
             return false;
         }
     }
+
 
     public function delete(string $table, $id, string $field = 'id'): bool
     {
@@ -65,7 +65,7 @@ class DB
 
     public function list(string $table, array $fields = [], array $filters = [], int $page = 1, int $limit = 50)
     {
-        
+
 
         try {
             $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table .  $this->getFilters($filters) . $this->getLimit($page, $limit);
@@ -79,10 +79,14 @@ class DB
             $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
             $stmt->execute();
             $calcRows->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            for ($i = 0; $i <= count($rows) - 1; $i++) {
+                $rows[$i] = $this->snakeToCamel($rows[$i]);
+            }
 
             return [
                 'total' => $calcRows->fetch()['FOUND_ROWS()'],
-                'result' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+                'result' => $rows
             ];
         } catch (Exception $e) {
 
@@ -144,11 +148,18 @@ class DB
     {
         foreach ($arr as $key => $value) {
             $newKey = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
+            echo $newKey;
             if ($newKey != $key) {
                 $arr[$newKey] = $value;
                 unset($arr[$key]);
             }
         }
         return $arr;
+    }
+
+
+    public function getLastInsertId(): int
+    {
+        return (int)$this->db->lastInsertId();
     }
 }

@@ -12,8 +12,6 @@ class EventReadAction extends EventAction
     {
         $id = (int)$this->args['event'];
 
-        $payload = $this->service->read($id);
-
-        return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
+        return $this->respondWithPayload($this->service->read($id));
     }
 }

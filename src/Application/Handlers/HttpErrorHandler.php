@@ -34,7 +34,7 @@ class HttpErrorHandler extends SlimErrorHandler
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getCode();
             $error->setDescription($exception->getMessage());
-
+             $error->setFullDescription(['line'=>$exception->getLine(),'file'=>$exception->getFile()]);
             if ($exception instanceof HttpNotFoundException) {
                 $error->setType(ActionError::RESOURCE_NOT_FOUND);
             } elseif ($exception instanceof HttpMethodNotAllowedException) {
@@ -56,6 +56,7 @@ class HttpErrorHandler extends SlimErrorHandler
             && $this->displayErrorDetails
         ) {
             $error->setDescription($exception->getMessage());
+            $error->setFullDescription(['line' => $exception->getLine(), 'file' => $exception->getFile()]);  
         }
 
         $payload = new ActionPayload($statusCode, null, $error);

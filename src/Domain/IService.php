@@ -8,13 +8,13 @@ use App\Domain\ServicePayload;
 
 interface IService
 {
-    public function Create(array $data):ServicePayload;
+    public function Create(array $data): ServicePayload;
 
-    public function update(int $id, array $data);
-    
-    public function Delete(int $id);
-    
-    // public function getById(int $id);
-    
-    // public function getAll();
+    public function update(int $id, array $data): ServicePayload;
+
+    public function Delete(int $id): ServicePayload;
+
+    public function read(int $id): ServicePayload;
+
+    public function list(ServiceListParams $params): ServicePayload;
 }
