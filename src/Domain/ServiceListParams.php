@@ -52,7 +52,7 @@ class ServiceListParams
     public function setFilters(string $field, string $filter): self
     {
       
-        if (property_exists($this->class, $field)) {
+        if (property_exists($this->class, $field)||$field==='search') {
             $this->filters[$field] = $filter;
         }
     

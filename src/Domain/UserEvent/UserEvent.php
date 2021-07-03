@@ -18,5 +18,10 @@ class UserEvent extends Entity
 
     public int $event;
 
+    public ?string $team;
+
+    public bool $cheking=false;
+
+    public bool $waitlist=false;
 
 }

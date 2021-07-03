@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\School;
 
 use App\Domain\ServicePayload;
+use App\Domain\ServiceListParams;
+use App\Domain\AbstractValidation;
 use App\Domain\ApplicationService;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
@@ -18,11 +20,13 @@ class SchoolService extends ApplicationService implements ISchoolService
 
     private SchoolValidation $validation;
     private ISchoolRepository $repository;
+    private ServiceListParams $params;
 
     public function __construct(SchoolValidation $validation, ISchoolRepository $repository)
     {
         $this->validation = $validation;
         $this->repository = $repository;
+        $this->params = new ServiceListParams(School::class, []);
     }
 
     public function create(array $data): ServicePayload
@@ -31,8 +35,9 @@ class SchoolService extends ApplicationService implements ISchoolService
         if (!$this->validation->isValid($school)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
         }
-        if ($this->repository->getByName($school->name)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['name' => 'Já existe uma escola com esse nome']);
+        $payload = $this->repository->list($this->params->setFilters('name', $school->name));
+        if ($payload['total'] > 0) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => AbstractValidation::DUPLICATE_ENTITY, 'fields' => ['name' => AbstractValidation::DUPLICATE_FIELD]]);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->save($school)]);
@@ -46,8 +51,10 @@ class SchoolService extends ApplicationService implements ISchoolService
         if (!$this->validation->isValid($school)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
         }
+        $payload = $this->repository->list($this->params->setFilters('name', $school->getName));
+        if (($payload['total'] > 0) && ($payload['result'][0]->id !== $school->id)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => AbstractValidation::DUPLICATE_ENTITY, 'fields' => ['name' => AbstractValidation::DUPLICATE_FIELD]]);
+        }
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $school->id]);
     }
-
-
 }

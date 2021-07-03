@@ -15,6 +15,7 @@ use App\Application\Actions\User\UserDeleteAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Event\EventCreateAction;
 use App\Application\Actions\Event\EventDeleteAction;
+use App\Application\Actions\School\SchoolListAction;
 use App\Application\Actions\School\SchoolReadAction;
 use App\Application\Actions\School\SchoolCreateAction;
 use App\Application\Actions\School\SchoolDeleteAction;
@@ -54,6 +55,7 @@ return function (App $app) {
         });
     });
     $app->group('/schools', function (Group $group) {
+        $group->get('', SchoolListAction::class);
         $group->post('', SchoolCreateAction::class);
         $group->group('/{id}', function (Group $school) {
             $school->get('', SchoolReadAction::class);

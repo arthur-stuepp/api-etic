@@ -3,15 +3,10 @@
 namespace App\Domain\User;
 
 use App\Domain\User\User;
+use App\Domain\AbstractValidation;
 
-class UserValidation
+class UserValidation extends AbstractValidation
 {
-    protected $messages = [];
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
 
     public function isValid(User $user): bool
     {
@@ -43,24 +38,21 @@ class UserValidation
             $this->messages['taxId'] = 'CPF não pode ser vazio.';
         }
         if (!isset($user->disability)) {
-            $this->messages['disability'] = 'Deficiencia não pode ser vazio.';
+            $user->disability = false;
         }
 
 
         return $this->validate();
     }
 
-    protected function validate(): bool
-    {
-        return count($this->messages) == 0;
-    }
 
     public function forAuth(User $user)
     {
         if (!$user->email) {
-            $this->messages['email'] = 'Email não pode ser vazio.';
-        } else if (!$user->password) {
-            $this->messages['password'] = 'Senha não pode ser vazio.';
+            $this->messages['email'] = self::NOT_SEND;
+        }
+        if (!$user->password) {
+            $this->messages['password'] =  self::NOT_SEND;
         }
         return $this->validate();
     }

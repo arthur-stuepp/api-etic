@@ -17,6 +17,7 @@ abstract class Entity implements JsonSerializable
         $this->setData($properties);
     }
 
+
     public function setData(array $properties)
     {
 
@@ -26,6 +27,11 @@ abstract class Entity implements JsonSerializable
                 $this->convertProperty($key, $value);
             }
         }
+    }
+
+    public function __toString()
+    {
+        return $this->id;
     }
 
     protected function convertProperty($key, $value)
@@ -52,8 +58,9 @@ abstract class Entity implements JsonSerializable
         }
         $name = 'App\\Domain\\' . $key . '\\' . $key;
         if (class_exists($name)) {
-
-            $this->$key = new $name(['id' => $value]);
+            if (is_int($value)) {
+                $this->$key = new $name(['id' => $value]);
+            }
         }
     }
 

@@ -40,7 +40,7 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->validation->isValid($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
         }
-        if (!$this->schoolRepository->getById($user->school)) {
+        if (!$this->schoolRepository->getById($user->school->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['school' => 'Escola não encontrada']);
         }
         if ($this->repository->getByEmail($user->email)) {

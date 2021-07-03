@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 use App\Domain\City\CityService;
 use App\Domain\City\ICityService;
 use App\Domain\Event\EventService;

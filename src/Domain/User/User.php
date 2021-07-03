@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
+use DateTime;
 use App\Domain\Entity;
+use App\Domain\City\City;
+use App\Domain\School\School;
 
 class User extends Entity
 {
@@ -15,17 +18,17 @@ class User extends Entity
 
     public string $address;
 
-    public int $city;
+    public City $city;
 
     public string $email;
 
-    public int $birthday;
+    public DateTime $birthday;
 
-    public string $company;
+    public ?string $company;
 
-    public int $school;
+    public School $school;
 
-    public int $disability;
+    public bool $disability;
 
     public string $password;
 

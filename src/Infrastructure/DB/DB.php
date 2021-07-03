@@ -22,7 +22,7 @@ class DB
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
         } catch (PDOException $e) {
-            echo 'ERROR: ' . $e->getMessage();
+           $this->lastError ='ERROR: ' . $e->getMessage();
         }
     }
 
@@ -51,8 +51,8 @@ class DB
     public function delete(string $table, $id, string $field = 'id'): bool
     {
         try {
-
-            $stmt = $this->db->prepare('DELETE FROM ' . $table . 'WHERE ' . $field . ':id');
+            $sql = 'DELETE FROM ' . $table . ' WHERE ' . $field . '= :id';
+            $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
             return true;
@@ -66,13 +66,20 @@ class DB
     public function list(string $table, array $fields = [], array $filters = [], int $page = 1, int $limit = 50)
     {
 
+        if (isset($filters['name']) && isset($filters['search'])) {
+            unset($filters['name']);
+        }
 
         try {
             $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table .  $this->getFilters($filters) . $this->getLimit($page, $limit);
             $stmt = $this->db->prepare($sql);
             if ($filters !== []) {
                 foreach ($filters as $key => $value) {
-                    $stmt->bindParam(':' . $key, $value);
+                    if ($key === 'search') {
+                        $stmt->bindValue(':name', '%' . $value . '%');
+                    } else {
+                        $stmt->bindParam(':' . $key, $value);
+                    }
                 }
             }
 
@@ -89,7 +96,6 @@ class DB
                 'result' => $rows
             ];
         } catch (Exception $e) {
-
             $this->lastError = $e->getMessage();
 
             return ['result' => []];
@@ -105,11 +111,16 @@ class DB
     }
     private function getFilters(array $filters): string
     {
+
         $filterSql = '';
         if ($filters !== []) {
             $filterSql = ' WHERE ';
             foreach ($filters as $key => $value) {
-                $filterSql .= $key . ' = :' . $key . ' AND ';
+                if ($key === 'search') {
+                    $filterSql .= 'name like :name AND ';
+                } else {
+                    $filterSql .= $key . ' = :' . $key . ' AND ';
+                }
             }
             $filterSql = substr($filterSql, 0, -4);
         }
@@ -121,7 +132,7 @@ class DB
         $fieldSql = '*';
         if ($fields !== []) {
 
-            $fieldSql = implode(',:', array_values($fields));
+            $fieldSql = implode(',', array_values($fields));
         }
         return $fieldSql;
     }
@@ -148,7 +159,6 @@ class DB
     {
         foreach ($arr as $key => $value) {
             $newKey = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
-            echo $newKey;
             if ($newKey != $key) {
                 $arr[$newKey] = $value;
                 unset($arr[$key]);

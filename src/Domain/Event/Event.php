@@ -9,7 +9,17 @@ use DateTime;
 
 class Event extends Entity
 {
+
+
+    public const TYPE_EVENT = 1;
+    public const TYPE_GAME = 2;
+    public const TYPE_HACKATHON = 3;
+   
     public int $id;
+
+    public int $type;
+
+    public string $name;
 
     public string $description;
 

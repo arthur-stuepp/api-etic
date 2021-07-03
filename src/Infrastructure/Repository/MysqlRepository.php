@@ -45,35 +45,35 @@ abstract class MysqlRepository implements IRepository
     */
     public function getById(int $id)
     {
+       
         $params = new ServiceListParams($this->getClass());
         $params->setFilters('id', (string)$id)->setLimit(1);
-
+    
         return $this->list($params)['result'][0] ?? false;
     }
 
 
     public function delete(int $id): bool
     {
-        if(!($this->db->delete($this->getTable(), $id))){
-            $this->lastError=$this->db->getLastError();
+        if (!($this->db->delete($this->getTable(), $id))) {
+            $this->lastError = $this->db->getLastError();
             return false;
         }
-      return true;
+        return true;
     }
 
     abstract protected function getClass(): string;
 
     public function getTable()
     {
+    
         $class = explode('\\', $this->getClass());
-
         return  end($class);
     }
 
     public function list(ServiceListParams $params): array
     {
         $rows = $this->db->list($this->getTable(), $params->getFields(), $params->getFilters(), $params->getPage(), $params->getLimit());
-
         for ($i = 0; $i <= count($rows['result']) - 1; $i++) {
             $class = $this->getClass();
             $entity = new $class($rows['result'][$i]);
@@ -83,13 +83,13 @@ abstract class MysqlRepository implements IRepository
         return $rows;
     }
 
-    public function getLastError():string
+    public function getLastError(): string
     {
         return $this->lastError;
     }
 
- 
-    public function getLastSaveId():int
+
+    public function getLastSaveId(): int
     {
         return $this->lastSaveId;
     }
