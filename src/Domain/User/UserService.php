@@ -41,7 +41,6 @@ class UserService extends ApplicationService implements IUserService
     public function create(array $data): ServicePayload
     {
         $user = new User($data);
-
         return $this->processAndSave($user);
     }
 
@@ -70,10 +69,10 @@ class UserService extends ApplicationService implements IUserService
         if ($this->validation->isDuplicateEntity($user, $this->repository->list(ParamsFactory::User()->setFilters('email', $user->email)))) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['email' => Validation::FIELD_DUPLICATE]]);
         }
-        if ($this->validation->isDuplicateEntity($user, $this->repository->list(ParamsFactory::User()->setFilters('taxId', $user->taxId)))) {
+        if ($this->validation->isDuplicateEntity($user, $this->repository->list(ParamsFactory::User()->setFilters('taxId', Validation::extractNumbers($user->taxId))))) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID,  ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['taxId' => Validation::FIELD_DUPLICATE]]);
-        };
-        if (!$this->cityRepository->getById($user->id)) {
+        }
+        if (!$this->cityRepository->getById($user->city->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['city' => Validation::ENTITY_NOT_FOUND]);
         }
 

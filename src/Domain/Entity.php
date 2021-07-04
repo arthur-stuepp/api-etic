@@ -47,6 +47,9 @@ abstract class Entity implements JsonSerializable
             case 'int':
                 $this->$key = (int)$value;
                 return;
+            case 'bool':
+                $this->$key = (bool)$value;
+                return;
             case 'DateTime':
                 try {
                     $this->$key = new DateTimeModel($value);

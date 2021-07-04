@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Factory;
 
+use App\Domain\User\User;
 use App\Domain\ServiceListParams;
 
 
@@ -16,6 +17,6 @@ class ParamsFactory
 
     public static function User(): ServiceListParams
     {
-        return new ServiceListParams(USER::class);
+        return new ServiceListParams(User::class);
     }
 }

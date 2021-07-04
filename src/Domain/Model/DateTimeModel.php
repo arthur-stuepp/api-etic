@@ -18,6 +18,6 @@ class DateTimeModel extends DateTime implements JsonSerializable
 
     public function __toString()
     {
-        return  $this->format('d-m-y h:m:s');
+        return  $this->format('Y-m-d h:m:s');
     }
 }

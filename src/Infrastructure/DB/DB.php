@@ -36,12 +36,22 @@ class DB
                 $values = ' :' . $values;
             }
             $sql = 'INSERT INTO ' . $table . '(' . $fields . ')  VALUES (' . $values . ')';
+            $sqlDebug = $sql;
             $stmt = $this->db->prepare($sql);
-            $stmt->execute($data);
+            foreach ($data as $key => $value) {
+                if ($value === false) {
+                    $value = 0;
+                }
+                $sqlDebug = str_replace(':' . $key, $value, $sqlDebug);
+                $stmt->bindValue(':' . $key, $value);
+            }
+            $stmt->execute();
             $this->lastInsertId = $this->db->lastInsertId();
+
             return true;
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
+
 
             return false;
         }
@@ -69,35 +79,40 @@ class DB
         if (isset($filters['name']) && isset($filters['search'])) {
             unset($filters['name']);
         }
-
+        $filters = $this->camel_to_snake($filters);
         try {
             $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table .  $this->getFilters($filters) . $this->getLimit($page, $limit);
             $stmt = $this->db->prepare($sql);
+            $sqlDebug = $sql;
             if ($filters !== []) {
                 foreach ($filters as $key => $value) {
                     if ($key === 'search') {
                         $stmt->bindValue(':name', '%' . $value . '%');
+                        $sqlDebug = str_replace(':name', $value, $sqlDebug);
                     } else {
-                        $stmt->bindParam(':' . $key, $value);
+                  
+                        $stmt->bindValue(':' . $key, $value);
+                        $sqlDebug = str_replace(':' . $key, $value, $sqlDebug);
                     }
                 }
             }
-
+              
             $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
             $stmt->execute();
             $calcRows->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             for ($i = 0; $i <= count($rows) - 1; $i++) {
                 $rows[$i] = $this->snakeToCamel($rows[$i]);
             }
-                    
+
             return [
                 'total' => $calcRows->fetch()['FOUND_ROWS()'],
                 'result' => $rows
             ];
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
-
+          
             return ['total' => 0, 'result' => []];
         }
     }
@@ -111,6 +126,7 @@ class DB
     }
     private function getFilters(array $filters): string
     {
+     
 
         $filterSql = '';
         if ($filters !== []) {
@@ -129,6 +145,7 @@ class DB
 
     private function getFields(array $fields): string
     {
+        $fields = $this->camel_to_snake($fields);
         $fieldSql = '*';
         if ($fields !== []) {
 
