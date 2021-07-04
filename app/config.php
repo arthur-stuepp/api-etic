@@ -1,7 +1,9 @@
 <?php
 
-CONST MYSQL_DSN= 'mysql:host=127.0.0.1;dbname=etic;';
-CONST MYSQL_USER='root';
-CONST MYSQL_PWD= '';
+const MYSQL_DSN = 'mysql:host=127.0.0.1;dbname=etic;';
+const MYSQL_USER = 'root';
+const MYSQL_PWD = '';
 
-CONST DEBUG=true;
+const DEBUG = true;
+
+const KEY = 'ETIC';

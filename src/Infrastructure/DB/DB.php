@@ -22,7 +22,7 @@ class DB
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
         } catch (PDOException $e) {
-           $this->lastError ='ERROR: ' . $e->getMessage();
+            $this->lastError = 'ERROR: ' . $e->getMessage();
         }
     }
 
@@ -90,7 +90,7 @@ class DB
             for ($i = 0; $i <= count($rows) - 1; $i++) {
                 $rows[$i] = $this->snakeToCamel($rows[$i]);
             }
-
+                    
             return [
                 'total' => $calcRows->fetch()['FOUND_ROWS()'],
                 'result' => $rows
@@ -98,7 +98,7 @@ class DB
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
 
-            return ['result' => []];
+            return ['total' => 0, 'result' => []];
         }
     }
 

@@ -10,6 +10,7 @@ use App\Domain\ServiceListParams;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
 use App\Domain\Traits\TraitDeleteService;
+use App\Domain\Validation;
 
 class EventService extends ApplicationService implements IEventService
 {
@@ -36,8 +37,8 @@ class EventService extends ApplicationService implements IEventService
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validation->getMessages()]);
         }
-        if (($this->repository->list($this->params->setFilters('description', $event->description))['total'] > 0)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => ['description' => 'Campo duplicado']]);
+        if ($this->validation->isDuplicateEntity($event, $this->repository->list($this->params->setFilters('description', $event->description)))) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['description' => Validation::FIELD_DUPLICATE]);
         }
         if (!$this->repository->save($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getLastError()]);
@@ -59,9 +60,8 @@ class EventService extends ApplicationService implements IEventService
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validation->getMessages()]);
         }
-        $payload = $this->repository->list($this->params->setFilters('description', $event->description));
-        if (($payload['total'] > 0) && $payload['result'][0]->id !== $event->id) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => ['description' => 'Campo duplicado']]);
+        if ($this->validation->isDuplicateEntity($event, $this->repository->list($this->params->setFilters('description', $event->description)))) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['description' => Validation::FIELD_DUPLICATE]);
         }
 
 

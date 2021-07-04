@@ -6,7 +6,7 @@ namespace App\Domain\School;
 
 use App\Domain\ServicePayload;
 use App\Domain\ServiceListParams;
-use App\Domain\AbstractValidation;
+use App\Domain\Validation;
 use App\Domain\ApplicationService;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
@@ -37,7 +37,7 @@ class SchoolService extends ApplicationService implements ISchoolService
         }
         $payload = $this->repository->list($this->params->setFilters('name', $school->name));
         if ($payload['total'] > 0) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => AbstractValidation::DUPLICATE_ENTITY, 'fields' => ['name' => AbstractValidation::DUPLICATE_FIELD]]);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->save($school)]);
@@ -53,7 +53,7 @@ class SchoolService extends ApplicationService implements ISchoolService
         }
         $payload = $this->repository->list($this->params->setFilters('name', $school->getName));
         if (($payload['total'] > 0) && ($payload['result'][0]->id !== $school->id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => AbstractValidation::DUPLICATE_ENTITY, 'fields' => ['name' => AbstractValidation::DUPLICATE_FIELD]]);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $school->id]);
     }

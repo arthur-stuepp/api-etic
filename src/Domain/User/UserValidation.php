@@ -1,41 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\User;
 
 use App\Domain\User\User;
-use App\Domain\AbstractValidation;
+use App\Domain\Validation;
 
-class UserValidation extends AbstractValidation
+class UserValidation extends Validation
 {
 
     public function isValid(User $user): bool
     {
         if (!isset($user->name)) {
-            $this->messages['name'] = 'Nome não pode ser vazio.';
+            $this->messages['name'] = self::FIELD_NOT_SEND;
         }
         if (!isset($user->password)) {
-            $this->messages['password'] = 'Senha não pode ser vazio.';
+            $this->messages['password'] = self::FIELD_NOT_SEND;
         }
         if (!isset($user->address)) {
-            $this->messages['address'] = 'Endereço não pode ser vazio.';
+            $this->messages['address'] = self::FIELD_NOT_SEND;
         }
         if (!isset($user->city)) {
-            $this->messages['city'] = 'Cidade não pode ser vazio.';
+            $this->messages['city'] = self::FIELD_NOT_SEND;
         }
         if (!isset($user->email)) {
-            $this->messages['email'] = 'Email não pode ser vazio.';
+            $this->messages['email'] = self::FIELD_NOT_SEND;
         }
         if (!isset($user->birthday)) {
-            $this->messages['birthday'] = 'Data de nascimento não pode ser vazio.';
+            $this->messages['birthday'] = self::FIELD_NOT_SEND;
         }
         if (!isset($user->company)) {
-            $this->messages['company'] = 'Empresa não pode ser vazio.';
+            $this->messages['company'] =  self::FIELD_NOT_SEND;
         }
         if (!isset($user->school)) {
-            $this->messages['school'] = 'Escola não pode ser vazio.';
+            $this->messages['school'] =  self::FIELD_NOT_SEND;
         }
         if (!isset($user->taxId)) {
-            $this->messages['taxId'] = 'CPF não pode ser vazio.';
+            $this->messages['taxId'] = self::FIELD_NOT_SEND;
+        } else {
+            if (!$this->validateTaxId($user->taxId)) {
+                return $this->messages['taxId'] = self::FIELD_INVALID;
+            }
+            $user->taxId = self::extractNumbers($user->taxId);
         }
         if (!isset($user->disability)) {
             $user->disability = false;
@@ -49,10 +56,10 @@ class UserValidation extends AbstractValidation
     public function forAuth(User $user)
     {
         if (!$user->email) {
-            $this->messages['email'] = self::NOT_SEND;
+            $this->messages['email'] = self::FIELD_NOT_SEND;
         }
         if (!$user->password) {
-            $this->messages['password'] =  self::NOT_SEND;
+            $this->messages['password'] =  self::FIELD_NOT_SEND;
         }
         return $this->validate();
     }

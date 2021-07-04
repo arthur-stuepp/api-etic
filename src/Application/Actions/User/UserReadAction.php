@@ -13,7 +13,7 @@ class UserReadAction extends UserAction
         $id = (int)$this->args['user'];
 
         $payload = $this->service->read($id);
-
+        
         return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
     }
 }
