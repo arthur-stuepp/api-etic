@@ -61,7 +61,7 @@ class UserService extends ApplicationService implements IUserService
     private function processAndSave(User $user): ServicePayload
     {
         if (!$this->validation->isValid($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID,['message'=>Validation::ENTITY_INVALID,'fields'=> $this->validation->getMessages()]);
         }
         if (!$this->schoolRepository->getById($user->school->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['school' => Validation::ENTITY_NOT_FOUND]);

@@ -23,7 +23,7 @@ abstract class MysqlRepository implements IRepository
     }
 
 
-    public function save(Entity $entity): bool
+    protected function saveEntity(Entity $entity): bool
     {
         if (isset($entity->id) && $entity->id > 0) {
             if ($this->db->insert($this->getTable(), $entity->jsonSerialize())) {
@@ -45,10 +45,10 @@ abstract class MysqlRepository implements IRepository
     */
     public function getById(int $id)
     {
-       
+
         $params = new ServiceListParams($this->getClass());
         $params->setFilters('id', (string)$id)->setLimit(1);
-    
+
         return $this->list($params)['result'][0] ?? false;
     }
 
@@ -66,9 +66,9 @@ abstract class MysqlRepository implements IRepository
 
     public function getTable()
     {
-    
+
         $class = explode('\\', $this->getClass());
-        return  end($class);
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', end($class)));
     }
 
     public function list(ServiceListParams $params): array

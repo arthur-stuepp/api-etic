@@ -1,47 +1,74 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Domain\UserEvent;
 
-
-use App\Domain\ApplicationService;
-use App\Domain\Event\IEventRepository;
+use App\Domain\User\User;
+use App\Domain\Validation;
+use App\Domain\Event\Event;
 use App\Domain\ServicePayload;
-use App\Domain\User\IUserRepository;
+use App\Domain\ApplicationService;
+use App\Domain\Factory\ParamsFactory;
 
 class UserEventService extends ApplicationService implements IUserEventService
 {
 
     private IUserEventRepository $repository;
 
-    private IEventRepository $eventRepository;
-
-    private IUserRepository $userRepository;
-
-    public function __construct(IUserEventRepository $repository, IEventRepository $eventRepository, IUserRepository $userRepository)
+    public function __construct(IUserEventRepository $repository)
     {
         $this->repository = $repository;
-        $this->eventRepository = $eventRepository;
-        $this->userRepository = $userRepository;
     }
 
-    public function add(int $user, int $event): ServicePayload
+    public function create(int $user, int $event, array $data): ServicePayload
     {
-        $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
+        $userEvent = new UserEvent($data);
+        $userEvent->user = new User(['id' => $user]);
+        $userEvent->event = new Event(['id' => $event]);
+        if (!isset($userEvent->cheking)) {
+            $userEvent->cheking = false;
+        }
+        $userEvent->waitlist = false;
         $message = $this->checkUserEvent($userEvent);
 
         if ($message != null) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
         }
-        if ($this->repository->getUserEvent($userEvent)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['userEvent' => 'Usuario já estava inscrito nesse evento']);
+        $payload = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$event));
+        if ($payload['total'] > 0) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Usuario já estava inscrito nesse evento']);
         }
-        $this->repository->add($userEvent);
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['userEvent' => 'adicionado com Sucesso']);
+        if (!$this->repository->save($userEvent)) {
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
+        }
 
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 
-    public function remove(int $user, int $event): ServicePayload
+    public function update(int $user, int $event, array $data): ServicePayload
+    {
+        $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
+        if (!isset($userEvent->cheking)) {
+            $userEvent->cheking = false;
+        }
+        $message = $this->checkUserEvent($userEvent);
+
+        if ($message != null) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
+        }
+        $payload = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$event));
+        if ($payload['total'] > 0) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Usuario já estava inscrito nesse evento']);
+        }
+        if (!$this->repository->save($userEvent)) {
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
+        }
+
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
+    }
+
+    public function delete(int $user, int $event): ServicePayload
     {
         $userEvent = new UserEvent(['event' => $event, 'user' => $user]);
         $message = $this->checkUserEvent($userEvent);
@@ -49,11 +76,12 @@ class UserEventService extends ApplicationService implements IUserEventService
         if ($message != null) {
             $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
         }
-        if (!$this->repository->getUserEvent($userEvent)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['userEvent' => 'Usuario não estava inscrito nesse evento']);
+        $payload = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$event));
+        if ($payload['total'] === 0) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Usuario já estava inscrito nesse evento']);
         }
         if ($this->repository->remove($userEvent)) {
-            return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['userEvent' => 'Removido com Sucesso']);
+            return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['message' => 'Removido com Sucesso']);
         } else {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_DELETED, ['userEvent' => 'Erro ao remover']);
         }
@@ -63,10 +91,10 @@ class UserEventService extends ApplicationService implements IUserEventService
     protected function checkUserEvent(UserEvent $userEvent): ?array
     {
         $message = null;
-        if (!$this->userRepository->getById($userEvent->user)) {
+        if (!$this->repository->getUserById($userEvent->user->id)) {
             $message['user'] = 'Usuário não encontrado';
         }
-        if (!$this->eventRepository->getById($userEvent->event)) {
+        if (!$this->repository->getEventById($userEvent->event->id)) {
             $message['event'] = 'Evento não encontrado';
         }
 
@@ -75,13 +103,13 @@ class UserEventService extends ApplicationService implements IUserEventService
 
     public function list(?int $user, ?int $event): ServicePayload
     {
+        $fields = 'team,cheking,waitlist';
         if ($event != null) {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['users' => $this->repository->getUsersByEvent($event)]);
+            $fields .= ',user';
+            return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $this->repository->list(ParamsFactory::UserEvent()->setFields($fields)->setFilters('event', (string)$event)));
         } else {
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['events' => $this->repository->getEventsByUser($user)]);
+            $fields .= ',event';
+            return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $this->repository->list(ParamsFactory::UserEvent()->setFields($fields)->setFilters('user', (string)$user)));
         }
-
     }
-
-
 }

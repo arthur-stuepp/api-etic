@@ -40,7 +40,7 @@ class UserValidation extends Validation
             $this->messages['taxId'] = self::FIELD_NOT_SEND;
         } else {
             if (!$this->validateTaxId($user->taxId)) {
-                return $this->messages['taxId'] = self::FIELD_INVALID;
+                 $this->messages['taxId'] = self::FIELD_INVALID;
             }
             $user->taxId = self::extractNumbers($user->taxId);
         }

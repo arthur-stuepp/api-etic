@@ -6,9 +6,11 @@ namespace App\Domain\UserEvent;
 
 interface IUserEventService
 {
-    public function add(int $user, int $event);
+    public function create(int $user, int $event,array $data);
 
-    public function remove(int $user, int $event);
+    public function update(int $user, int $event, array $data);
+
+    public function delete(int $user, int $event);
 
     public function list(?int $user, ?int $event);
 

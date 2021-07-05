@@ -9,7 +9,13 @@ use App\Domain\Event\IEventRepository;
 
 class EventRepository extends MysqlRepository implements IEventRepository
 {
-   protected function getClass(): string{
-       return Event::class;
-   }
+    protected function getClass(): string
+    {
+        return Event::class;
+    }
+
+    public function save(Event $event): bool
+    {
+        return $this->saveEntity($event);
+    }
 }

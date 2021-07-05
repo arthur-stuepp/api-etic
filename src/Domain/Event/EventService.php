@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
+use App\Domain\Validation;
 use App\Domain\ServicePayload;
 use App\Domain\ApplicationService;
-use App\Domain\ServiceListParams;
+use App\Domain\Factory\ParamsFactory;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
 use App\Domain\Traits\TraitDeleteService;
-use App\Domain\Validation;
 
 class EventService extends ApplicationService implements IEventService
 {
     private EventValidation $validation;
     private IEventRepository $repository;
-    private ServiceListParams $params;
 
     use TraitDeleteService;
     use TraitReadService;
@@ -27,7 +26,6 @@ class EventService extends ApplicationService implements IEventService
     {
         $this->validation = $validation;
         $this->repository = $repository;
-        $this->params = new ServiceListParams(Event::class);
     }
 
     public function create(array $data): ServicePayload
@@ -37,8 +35,8 @@ class EventService extends ApplicationService implements IEventService
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validation->getMessages()]);
         }
-        if ($this->validation->isDuplicateEntity($event, $this->repository->list($this->params->setFilters('description', $event->description)))) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['description' => Validation::FIELD_DUPLICATE]);
+        if ($this->validation->isDuplicateEntity($event, $this->repository->list(ParamsFactory::Event()->setFilters('name', $event->name)))) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
         if (!$this->repository->save($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getLastError()]);

@@ -1,29 +1,52 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-
-use App\Domain\UserEvent\IUserEventRepository;
-use App\Domain\UserEvent\UserEvent;
 use PDO;
+use App\Infrastructure\DB\DB;
+use App\Domain\ServiceListParams;
+use App\Domain\UserEvent\UserEvent;
+use App\Domain\User\IUserRepository;
+use App\Domain\Factory\ParamsFactory;
+use App\Domain\Event\IEventRepository;
+use App\Domain\UserEvent\IUserEventRepository;
 
 class UserEventRepository extends MysqlRepository implements IUserEventRepository
 {
+    private IUserRepository $userRepository;
+    private IEventRepository $eventRepository;
+    public function __construct(DB $db, IUserRepository $userRepository, IEventRepository $eventRepository)
+    {
+        parent::__construct($db);
+        $this->userRepository = $userRepository;
+        $this->eventRepository = $eventRepository;
+    }
 
-    public function getClass(): string{
+    public function getClass(): string
+    {
         return UserEvent::class;
     }
-    public function add(UserEvent $userEvent): string
-    {
-        $this->create($userEvent);
 
-        return $userEvent->user . $userEvent->event;
+    public function save(UserEvent $userEvent): bool
+    {
+        return $this->saveEntity($userEvent);
+    }
+
+
+    public function getUserById(int $id)
+    {
+        return $this->userRepository->getById($id);
+    }
+    public function getEventById(int $id)
+    {
+        return $this->eventRepository->getById($id);
     }
 
     public function remove(UserEvent $userEvent): bool
     {
-        $sql = 'DELETE FROM usersevents WHERE user =:user and event=:event';
+        $sql = 'DELETE FROM user_event WHERE user =:user and event=:event';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':user', $userEvent->user, PDO::PARAM_INT);
         $stmt->bindValue(':event', $userEvent->event, PDO::PARAM_INT);
@@ -31,63 +54,19 @@ class UserEventRepository extends MysqlRepository implements IUserEventRepositor
         $stmt->execute();
 
         return (bool)$stmt->rowCount();
-
-
     }
 
-    public function getUsersByEvent(int $event): array
+    public function list(ServiceListParams $params): array
     {
-
-        $sql = 'SELECT usersevents.user FROM `usersevents` WHERE event=:event';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':event', $event, PDO::PARAM_INT);
-
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-    }
-
-    public function getEventsByUser(int $user): array
-    {
-        $sql = 'SELECT usersevents.event FROM `usersevents` WHERE user=:user';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':user', $user, PDO::PARAM_INT);
-
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-    }
-
-
-    public function countEventusers(int $event)
-    {
-        $sql = 'SELECT COUNT(usersevents.user)FROM `usersevents` WHERE event=:event';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':event', $event, PDO::PARAM_INT);
-
-        $stmt->execute();
-
-        return $stmt->fetchColumn();
-
-    }
-
-    public function getUserEvent(UserEvent $userEvent)
-    {
-        $sql = 'SELECT * FROM usersevents WHERE user =:user and event=:event';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':user', $userEvent->user, PDO::PARAM_INT);
-        $stmt->bindValue(':event', $userEvent->event, PDO::PARAM_INT);
-
-        $stmt->execute();
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-
-        if ($data) {
-            return new $this->class($data);
-        } else {
-            return false;
+        $payload = parent::list($params);
+        foreach ($payload['result'] as $entity) {
+            if (in_array('user', $params->getFields())) {
+                $entity->user = $this->userRepository->list(ParamsFactory::UserId($entity->user->id))['result'][0];
+            }
+            if (in_array('event', $params->getFields())) {
+                $entity->event = $this->eventRepository->list(ParamsFactory::EventId($entity->event->id))['result'][0];
+            }
         }
+        return $payload;
     }
 }

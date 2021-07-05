@@ -1,11 +1,12 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace App\Domain\UserEvent;
 
 use App\Domain\Entity;
+use App\Domain\User\User;
+use App\Domain\Event\Event;
 
 class UserEvent extends Entity
 {
@@ -14,14 +15,14 @@ class UserEvent extends Entity
         parent::__construct($data);
     }
 
-    public int $user;
+    public User $user;
 
-    public int $event;
+    public Event $event;
 
     public ?string $team;
 
-    public bool $cheking=false;
+    public bool $cheking;
 
-    public bool $waitlist=false;
+    public bool $waitlist;
 
 }

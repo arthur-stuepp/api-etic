@@ -1,20 +1,28 @@
 <?php
 
-
 namespace App\Domain\UserEvent;
 
+use App\Domain\ServiceListParams;
 
 interface IUserEventRepository
 {
-    public function add(UserEvent $userEvent);
+    public function save(UserEvent $userEvent): bool;
 
-    public function remove(UserEvent $userEvent);
+    public function remove(UserEvent $userEvent): bool;
 
-    public function countEventusers(int $event);
+    public function list(ServiceListParams $params): array;
 
-    public function getUsersByEvent(int $event);
+    /*
+    *@return User|false
+    */
+    public function getUserById(int $user);
 
-    public function getEventsByUser(int $user);
+    /*
+    *@return Event|false
+    */
+    public function getEventById(int $user);
 
-    public function getUserEvent(UserEvent $userEvent);
+    public function getLastSaveId(): int;
+
+    public function getLastError(): string;
 }

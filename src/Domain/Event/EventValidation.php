@@ -26,9 +26,12 @@ class EventValidation extends Validation
                 $this->messages['capacity'] = 'valor do campo precisa ser maior que 0';
             }
         }
-        if (!in_array($event->type, [Event::TYPE_EVENT, Event::TYPE_GAME, Event::TYPE_GAME])) {
+        if (!isset($event->type)) {
+            $event->type = Event::TYPE_EVENT;
+        } else if (!in_array($event->type, [Event::TYPE_EVENT, Event::TYPE_GAME, Event::TYPE_GAME])) {
             $this->messages['type'] = self::FIELD_INVALID;
         }
+
 
         if (!isset($event->startTime)) {
             $this->messages['startTime'] = self::FIELD_INVALID;
