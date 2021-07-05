@@ -11,4 +11,9 @@ abstract class ApplicationService
     {
         return new ServicePayload($status, $result);
     }
+
+    protected function params(string $class): ServiceListParams
+    {
+        return new ServiceListParams($class);
+    }
 }

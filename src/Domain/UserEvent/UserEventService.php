@@ -101,15 +101,46 @@ class UserEventService extends ApplicationService implements IUserEventService
         return $message;
     }
 
-    public function list(?int $user, ?int $event): ServicePayload
+    public function getUsersEvent(int $event): ServicePayload
     {
-        $fields = 'team,cheking,waitlist';
-        if ($event != null) {
-            $fields .= ',user';
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $this->repository->list(ParamsFactory::UserEvent()->setFields($fields)->setFilters('event', (string)$event)));
-        } else {
-            $fields .= ',event';
-            return $this->ServicePayload(ServicePayload::STATUS_FOUND,  $this->repository->list(ParamsFactory::UserEvent()->setFields($fields)->setFilters('user', (string)$user)));
+        if (!$this->repository->getEventById($event)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => Validation::ENTITY_NOT_FOUND]);
         }
+        return $this->ServicePayload(
+            ServicePayload::STATUS_FOUND,
+            $this->repository->list(
+                $this->params(UserEvent::class)
+                    ->setFields('user,team,cheking,waitlist')
+                    ->setFilters('event', (string)$event)
+            )
+        );
+    }
+
+    public function getEventsUser(int $user): ServicePayload
+    {
+        if (!$this->repository->getUserById($user)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => Validation::ENTITY_NOT_FOUND]);
+        }
+        return $this->ServicePayload(
+            ServicePayload::STATUS_FOUND,
+            $this->repository->list(
+                $this->params(UserEvent::class)
+                    ->setFields('event,team,cheking,waitlist')
+                    ->setFilters('user', (string)$user)
+            )
+        );
+    }
+
+    public function read(int $user, int $event): ServicePayload
+    {
+        $payload = $this->repository->list(
+            $this->params(UserEvent::class)
+                ->setFilters('user', (string)$user)
+                ->setFilters('event', (string)$event)
+        );
+        if ($payload['total'] === 0) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => Validation::ENTITY_NOT_FOUND]);
+        }
+        return $this->ServicePayload(ServicePayload::STATUS_FOUND, $payload['result'][0]);
     }
 }
