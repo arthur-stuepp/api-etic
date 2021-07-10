@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Slim\App;
+use App\Application\Actions\Auth\LoginAction;
 use App\Application\Actions\City\CityListAction;
 use App\Application\Actions\City\CityReadAction;
 use App\Application\Actions\User\UserReadAction;
@@ -12,6 +13,7 @@ use App\Application\Actions\State\StateListAction;
 use App\Application\Actions\State\StateReadAction;
 use App\Application\Actions\User\UserCreateAction;
 use App\Application\Actions\User\UserDeleteAction;
+use App\Application\Middleware\Authentication\Auth;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Event\EventCreateAction;
 use App\Application\Actions\Event\EventDeleteAction;
@@ -30,10 +32,10 @@ return function (App $app) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
     });
-
-
+    $app->post('/auth', LoginAction::class);    
+    $app->post('/users', UserCreateAction::class);
     $app->group('/users', function (Group $group) {
-        $group->post('', UserCreateAction::class);
+
         $group->group('/{user}', function (Group $user) {
             $user->get('', UserReadAction::class);
             $user->delete('', UserDeleteAction::class);
@@ -43,7 +45,7 @@ return function (App $app) {
                 $events->delete('/{event}', UserEventDeleteAction::class);
             });
         });
-    });
+    })->add(Auth::class);
     $app->group('/events', function (Group $group) {
 
         $group->get('', EventListAction::class);

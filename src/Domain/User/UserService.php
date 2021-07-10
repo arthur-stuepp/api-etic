@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use Firebase\JWT\JWT;
 use App\Domain\Validation;
 use App\Domain\ServicePayload;
 use App\Domain\ServiceListParams;
@@ -75,48 +74,11 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->cityRepository->getById($user->city->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['city' => Validation::ENTITY_NOT_FOUND]);
         }
-
+        $user->password=password_hash($user->password,PASSWORD_BCRYPT); 
         if (!$this->repository->save($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
-    }
-
-    public function auth($data)
-    {
-
-        $user = new User($data);
-        if (!$this->validation->forAuth($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, $this->validation->getMessages());
-        }
-        //        $user = $this->partyRepository->list($data['login']);
-
-        if (!$user || empty($user->password)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Este login não está liberado para uso.']);
-        }
-        // else if (!password_verify($data['password'], $user->password)) {
-        //            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
-        //        }
-        $token = ' $this->tokenGenerate($user->id)';
-
-        return $this->ServicePayload(ServicePayload::STATUS_VALID, [
-            'token' => $token,
-            'tenant' => 'tenant',
-            'user' => $user,
-        ]);
-    }
-
-    protected function tokenGenerate(int $userId): string
-    {
-
-        $token = [
-            'iss' => 'https://' . $_SERVER['HTTP_HOST'],
-            'iat' => time(),
-            'exp' => strtotime('+1 day', time()),
-            'uid' => $userId,
-        ];
-
-        return JWT::encode($token, KEY, 'RS256');
     }
 }

@@ -15,6 +15,6 @@ class UserRepository extends MysqlRepository implements IUserRepository
     }
     public function save(User $user): bool
     {
-        return $this->save($user);
+        return $this->saveEntity($user);
     }
 }

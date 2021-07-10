@@ -11,8 +11,12 @@ use App\Domain\School\School;
 
 class User extends Entity
 {
+    public const TYPE_ADMIN = 1;
+    public const TYPE_USER = 2;
 
     public int $id;
+
+    public int $type;
 
     public string $name;
 
@@ -36,4 +40,13 @@ class User extends Entity
 
     public int $indication;
 
+    public function jsonSerialize(): array
+    {
+        $json = parent::jsonSerialize();
+        if (isset($json['password'])) {
+            unset($json['password']);
+
+            return $json;
+        }
+    }
 }

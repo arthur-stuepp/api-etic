@@ -40,7 +40,7 @@ class UserValidation extends Validation
             $this->messages['taxId'] = self::FIELD_NOT_SEND;
         } else {
             if (!$this->validateTaxId($user->taxId)) {
-                 $this->messages['taxId'] = self::FIELD_INVALID;
+                $this->messages['taxId'] = self::FIELD_INVALID;
             }
             $user->taxId = self::extractNumbers($user->taxId);
         }
@@ -49,18 +49,6 @@ class UserValidation extends Validation
         }
 
 
-        return $this->validate();
-    }
-
-
-    public function forAuth(User $user)
-    {
-        if (!$user->email) {
-            $this->messages['email'] = self::FIELD_NOT_SEND;
-        }
-        if (!$user->password) {
-            $this->messages['password'] =  self::FIELD_NOT_SEND;
-        }
         return $this->validate();
     }
 }
