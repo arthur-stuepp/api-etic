@@ -31,19 +31,19 @@ class UserEventService extends ApplicationService implements IUserEventService
         }
         $userEvent->waitlist = false;
         $message = $this->checkUserEvent($userEvent);
-
+        
         if ($message != null) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
         }
-        $payload = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$event));
+        $payload = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$user));
         if ($payload['total'] > 0) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Usuario já estava inscrito nesse evento']);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Usuario já esta inscrito nesse evento']);
         }
         if (!$this->repository->save($userEvent)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['user' => $user, 'event' => $event]);
     }
 
     public function update(int $user, int $event, array $data): ServicePayload

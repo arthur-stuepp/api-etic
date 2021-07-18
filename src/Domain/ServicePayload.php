@@ -11,9 +11,9 @@ class ServicePayload
     public const STATUS_UPDATED = 201;
     public const STATUS_DELETED = 202;
     public const STATUS_FORBIDDEN = 403;
-    protected const STATUS_NOT_CREATED = 422;
-    public const STATUS_NOT_DELETED = 422;
     public const STATUS_NOT_FOUND = 404;
+    public const STATUS_NOT_CREATED = 422;
+    public const STATUS_NOT_DELETED = 409;
     public const STATUS_NOT_UPDATED = 422;
     public const STATUS_NOT_VALID = 422;
     public const STATUS_ERROR = 500;

@@ -10,10 +10,6 @@ use App\Domain\Event\Event;
 
 class UserEvent extends Entity
 {
-    public function __construct(array $data)
-    {
-        parent::__construct($data);
-    }
 
     public User $user;
 

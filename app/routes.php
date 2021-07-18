@@ -32,7 +32,7 @@ return function (App $app) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
     });
-    $app->post('/auth', LoginAction::class);    
+    $app->post('/auth', LoginAction::class);
     $app->post('/users', UserCreateAction::class);
     $app->group('/users', function (Group $group) {
 
@@ -55,13 +55,13 @@ return function (App $app) {
             $user->delete('', EventDeleteAction::class);
             $user->get('/users', UserEventListAction::class);
         });
-    });
+    })->add(Auth::class);
     $app->group('/schools', function (Group $group) {
         $group->get('', SchoolListAction::class);
         $group->post('', SchoolCreateAction::class);
         $group->group('/{id}', function (Group $school) {
             $school->get('', SchoolReadAction::class);
-            $school->delete('', SchoolDeleteAction::class);
+            $school->delete('', SchoolDeleteAction::class)->add(Auth::class);
         });
     });
 
