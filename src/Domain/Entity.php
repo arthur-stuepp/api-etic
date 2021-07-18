@@ -21,7 +21,6 @@ abstract class Entity implements JsonSerializable
     public function setData(array $properties)
     {
 
-
         foreach ($properties as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->convertProperty($key, $value);
@@ -29,9 +28,9 @@ abstract class Entity implements JsonSerializable
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->id;
+        return (string) $this->id;
     }
 
     protected function convertProperty($key, $value)
@@ -45,7 +44,11 @@ abstract class Entity implements JsonSerializable
                 return;
 
             case 'int':
-                $this->$key = (int)$value;
+                if ($value === null && ($rp->getType()->allowsNull())) {
+                    $this->$key = null;
+                } else {
+                    $this->$key = (int)$value;
+                }
                 return;
             case 'bool':
                 $this->$key = (bool)$value;
@@ -68,7 +71,7 @@ abstract class Entity implements JsonSerializable
     }
 
 
-    public function jsonSerialize():array
+    public function jsonSerialize(): array
     {
         $vars = get_object_vars($this);
 

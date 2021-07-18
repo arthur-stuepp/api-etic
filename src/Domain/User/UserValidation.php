@@ -47,8 +47,12 @@ class UserValidation extends Validation
         }
         if (!isset($user->type)) {
             $user->type = User::TYPE_USER;
-        } elseif (($user->type === User::TYPE_ADMIN) && ((!defined('USER_TYPE') || (USER_TYPE === User::TYPE_USER)))) {
-            $this->messages['type'] = 'Valor invalido para usuario comum';
+        } else {
+            if (!in_array($user->type, [User::TYPE_ADMIN, User::TYPE_USER])) {
+                $this->messages['type'] = self::FIELD_INVALID;
+            } elseif (($user->type === User::TYPE_ADMIN) && ((!defined('USER_TYPE') || (USER_TYPE === User::TYPE_USER)))) {
+                $this->messages['type'] = 'Valor invalido para usuario comum';
+            }
         }
         if (!isset($user->disability)) {
             $user->disability = false;

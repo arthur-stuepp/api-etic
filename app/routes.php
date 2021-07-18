@@ -13,6 +13,7 @@ use App\Application\Actions\State\StateListAction;
 use App\Application\Actions\State\StateReadAction;
 use App\Application\Actions\User\UserCreateAction;
 use App\Application\Actions\User\UserDeleteAction;
+use App\Application\Actions\User\UserUpdateAction;
 use App\Application\Middleware\Authentication\Auth;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Event\EventCreateAction;
@@ -38,6 +39,7 @@ return function (App $app) {
 
         $group->group('/{user}', function (Group $user) {
             $user->get('', UserReadAction::class);
+            $user->put('', UserUpdateAction::class);
             $user->delete('', UserDeleteAction::class);
             $user->group('/events', function (Group $events) {
                 $events->get('', UserEventListAction::class);

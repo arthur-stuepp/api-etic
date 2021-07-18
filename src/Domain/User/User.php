@@ -38,7 +38,7 @@ class User extends Entity
 
     public string $taxId;
 
-    public int $indication;
+    public ?int $indication;
 
     public function jsonSerialize(): array
     {

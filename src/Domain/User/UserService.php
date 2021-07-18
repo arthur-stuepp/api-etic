@@ -81,7 +81,7 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->repository->save($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
         }
-
+        
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 }

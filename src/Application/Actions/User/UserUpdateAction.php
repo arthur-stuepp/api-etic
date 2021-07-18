@@ -11,11 +11,7 @@ class UserUpdateAction extends UserAction
 
     protected function action(): Response
     {
-        $data = $this->getFormData();
-        $id = $this->args['user'];
 
-        $payload = $this->service->update($id, $data);
-
-        return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
+        return $this->respondWithPayload($this->service->update((int)$this->args['user'], $this->getFormData()));
     }
 }

@@ -56,6 +56,49 @@ class DB
             return false;
         }
     }
+    public function update(int $id, string $table, array $data): bool
+    {
+        $data = $this->camel_to_snake($data);
+        unset($data['id']);
+
+        try {
+            $fields = '';
+            foreach ($data as $key => $value) {
+                $fields .= $key . ' = :' . $key . ', ';
+            }
+            $fields = rtrim($fields, ', ');
+            if (!empty($values)) {
+                $values = ' :' . $values;
+            }
+            $sql = 'UPDATE ' . $table .  ' SET ' . $fields . ' WHERE id = :id';
+            $sqlDebug = $sql;
+            $stmt = $this->db->prepare($sql);
+            $data['id'] = $id;
+            foreach ($data as $key => $value) {
+                if ($value === false) {
+                    $value = 0;
+                }
+
+                if (is_null($value)) {
+                    $stmt->bindValue(':' . $key, 'null', PDO::PARAM_NULL);
+                    $sqlDebug = str_replace(':' . $key, 'null', $sqlDebug);
+                } else {
+                    $sqlDebug = str_replace(':' . $key, '\'' . $value . '\'', $sqlDebug);
+                    $stmt->bindValue(':' . $key, $value);
+                }
+            }
+            $stmt->execute();
+            $this->lastInsertId = $id;
+
+            return true;
+        } catch (Exception $e) {
+            var_dump($sqlDebug);
+            die;
+            $this->lastError = $e->getMessage();
+
+            return false;
+        }
+    }
 
 
     public function delete(string $table, $id, string $field = 'id'): bool
@@ -90,13 +133,13 @@ class DB
                         $stmt->bindValue(':name', '%' . $value . '%');
                         $sqlDebug = str_replace(':name', $value, $sqlDebug);
                     } else {
-                  
+
                         $stmt->bindValue(':' . $key, $value);
                         $sqlDebug = str_replace(':' . $key, $value, $sqlDebug);
                     }
                 }
             }
-              
+
             $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
             $stmt->execute();
             $calcRows->execute();
@@ -112,7 +155,7 @@ class DB
             ];
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
-          
+
             return ['total' => 0, 'result' => []];
         }
     }
@@ -126,7 +169,7 @@ class DB
     }
     private function getFilters(array $filters): string
     {
-     
+
 
         $filterSql = '';
         if ($filters !== []) {
