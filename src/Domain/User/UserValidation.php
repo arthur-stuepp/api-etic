@@ -12,6 +12,7 @@ class UserValidation extends Validation
 
     public function isValid(User $user): bool
     {
+        $this->messages = [];
         if (!isset($user->name)) {
             $this->messages['name'] = self::FIELD_NOT_SEND;
         }
@@ -44,11 +45,34 @@ class UserValidation extends Validation
             }
             $user->taxId = self::extractNumbers($user->taxId);
         }
+        if (!isset($user->type)) {
+            $user->type = User::TYPE_USER;
+        } elseif (($user->type === User::TYPE_ADMIN) && ((!defined('USER_TYPE') || (USER_TYPE === User::TYPE_USER)))) {
+            $this->messages['type'] = 'Valor invalido para usuario comum';
+        }
         if (!isset($user->disability)) {
             $user->disability = false;
         }
 
 
         return $this->validate();
+    }
+    public function canRead(int $id): bool
+    {
+        $this->messages = [];
+        if ((USER_TYPE !== User::TYPE_ADMIN) && (USER_ID !== $id)) {
+            $this->messages['message'] = 'Você não tem permissao para acessar esse registro';
+        }
+        return $this->validate();
+    }
+
+    public function canList(): bool
+    {
+        return $this->onlyAdmin();
+    }
+
+    public function canDelete(): bool
+    {
+        return $this->onlyAdmin();
     }
 }

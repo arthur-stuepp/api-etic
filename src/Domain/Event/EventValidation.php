@@ -42,4 +42,9 @@ class EventValidation extends Validation
 
         return $this->validate();
     }
+
+    public function canDelete(): bool
+    {
+        return $this->onlyAdmin();
+    }
 }

@@ -18,18 +18,21 @@ class Auth extends AbstractMiddleware
      */
     public function process(Request $request, RequestHandler $handler): Response
     {
-
-        $headers =  $request->getHeaders();
-        if (!isset($headers['Authorization'])) {
-            return $this->response(['message' => 'Token não enviado'], 401);
-        }
-        try {
+        if ($request->getMethod() !== 'OPTIONS') {
+            $headers =  $request->getHeaders();
+            if (!isset($headers['Authorization'])) {
+                return $this->response(['message' => 'Token não enviado'], 401);
+            }
             $token = trim(str_replace('Bearer', '', $headers['Authorization'][0]));
-
-            JWT::decode($token, KEY, ['HS256']);
-        } catch (Exception $e) {
-            return $this->response(['message' => 'Token invalido'], 401);
+            try {
+                $token =  JWT::decode($token, KEY, ['HS256']);
+            } catch (Exception $e) {
+                return $this->response(['message' => 'Token invalido'], 401);
+            }
+            define('USER_ID', $token->user);
+            define('USER_TYPE', $token->type);
         }
+
 
         return $handler->handle($request);
     }

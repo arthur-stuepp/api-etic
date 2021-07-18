@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application\Handlers;
@@ -19,22 +20,19 @@ use Throwable;
 
 class HttpErrorHandler extends SlimErrorHandler
 {
-    /**
-     * @inheritdoc
-     */
+
     protected function respond(): Response
     {
         $exception = $this->exception;
         $statusCode = 500;
         $error = new ActionError(
             ActionError::SERVER_ERROR,
-            'An internal error has occurred while processing your request.'
+            'Ocorreu um erro interno ao processar sua solicitação.'
         );
 
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getCode();
-            $error->setDescription($exception->getMessage());
-             $error->setFullDescription(['line'=>$exception->getLine(),'file'=>$exception->getFile()]);
+            $error->setMessage($exception->getMessage());
             if ($exception instanceof HttpNotFoundException) {
                 $error->setType(ActionError::RESOURCE_NOT_FOUND);
             } elseif ($exception instanceof HttpMethodNotAllowedException) {
@@ -51,12 +49,9 @@ class HttpErrorHandler extends SlimErrorHandler
         }
 
         if (
-            !($exception instanceof HttpException)
-            && ($exception instanceof Exception || $exception instanceof Throwable)
-            && $this->displayErrorDetails
+            !($exception instanceof HttpException) && ($exception instanceof Exception || $exception instanceof Throwable) && $this->displayErrorDetails
         ) {
-            $error->setDescription($exception->getMessage());
-            $error->setFullDescription(['line' => $exception->getLine(), 'file' => $exception->getFile()]);  
+            $error->setMessage('Erro : ' . $exception->getMessage() . ' na linha ' . $exception->getLine() . ' no arquivo ' . $exception->getFile());
         }
 
         $payload = new ActionPayload($statusCode, null, $error);

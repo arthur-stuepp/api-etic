@@ -11,12 +11,18 @@ trait TraitDeleteService
 
     public function delete(int $id): ServicePayload
     {
-
+        if (isset($this->validation)) {
+            if (method_exists($this->validation, 'canDelete')) {
+                if (!$this->validation->canDelete()) {
+                    return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
+                }
+            }
+        }
         if ($this->repository->getById($id)) {
             if ($this->repository->delete($id)) {
                 return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['message' => 'Deletado com sucesso']);
             } else {
-                return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => 'Registro não pode ser deletado', 'description' => $this->repository->getLastError()]);
+                return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => 'Não foi possivel deletar esse registro', 'description' => $this->repository->getLastError()]);
             }
         } else {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Registro não encontrado']);

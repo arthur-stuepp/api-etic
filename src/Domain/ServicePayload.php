@@ -19,7 +19,7 @@ class ServicePayload
     public const STATUS_ERROR = 500;
 
     /**
-     * @var array|string|Entity
+     * @var array|string
      */
     private $result;
 
@@ -39,12 +39,15 @@ class ServicePayload
     public function setStatus(string $status): self
     {
         $this->status = $status;
-        
+
         return $this;
     }
 
     public function getResult()
     {
+        if (DEBUG === false && isset($this->result['description'])) {
+            unset($this->result['description']);
+        }
         return $this->result;
     }
 

@@ -18,82 +18,36 @@ class ActionError implements JsonSerializable
     public const VALIDATION_ERROR = 'VALIDATION_ERROR';
     public const VERIFICATION_ERROR = 'VERIFICATION_ERROR';
 
-    /**
-     * @var string
-     */
-    private $type;
+    private string $type;
+    private string  $message;
 
-    private array $fulLDescription;
-
-
-    /**
-     * @var string
-     */
-    private $description;
-
-    /**
-     * @param string        $type
-     * @param string|null   $description
-     */
-    public function __construct(string $type, ?string $description)
+    public function __construct(string $type, ?string $message)
     {
         $this->type = $type;
-        $this->description = $description;
+        $this->message = $message;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     * @return self
-     */
     public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
     }
 
-    public function setFullDescription(array $description): self
+    public function setMessage(?string $message = null): self
     {
-        $this->line = $description;
+        $this->message = $message;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
 
-    /**
-     * @param string|null $description
-     * @return self
-     */
-    public function setDescription(?string $description = null): self
+    public function jsonSerialize(): array
     {
-        $this->description = $description;
-        return $this;
-    }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
-    {
-       
-        $payload = [
-            'description'=>$this->line,
-            'message' => $this->description,
-        ];
-
-        return $payload;
+        return ['message' => $this->message];
     }
 }

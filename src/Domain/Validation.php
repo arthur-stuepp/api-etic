@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\User\User;
+
 abstract class Validation
 {
 
@@ -71,5 +73,13 @@ abstract class Validation
             }
         }
         return false;
+    }
+
+    public function onlyAdmin(): bool
+    {
+        if (!defined('USER_TYPE') || (USER_TYPE !== User::TYPE_ADMIN)) {
+            $this->messages['message'] = 'Você não tem permissão para executar essa ação';
+        }
+        return $this->validate();
     }
 }

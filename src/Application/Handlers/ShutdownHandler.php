@@ -42,20 +42,20 @@ class ShutdownHandler
     }
 
     public function __invoke()
-    {
+    {   
         $error = error_get_last();
         if ($error) {
             $errorFile = $error['file'];
             $errorLine = $error['line'];
             $errorMessage = $error['message'];
             $errorType = $error['type'];
-            $message = 'An error while processing your request. Please try again later.';
+            $message = 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.';
 
             if ($this->displayErrorDetails) {
                 switch ($errorType) {
                     case E_USER_ERROR:
-                        $message = "FATAL ERROR: {$errorMessage}. ";
-                        $message .= " on line {$errorLine} in file {$errorFile}.";
+                        $message = "ERRO FATAL: {$errorMessage}. ";
+                        $message .= " na linha {$errorLine} no arquivo {$errorFile}.";
                         break;
 
                     case E_USER_WARNING:
@@ -67,14 +67,14 @@ class ShutdownHandler
                         break;
 
                     default:
-                        $message = "ERROR: {$errorMessage}";
-                        $message .= " on line {$errorLine} in file {$errorFile}.";
+                        $message = "ERRO FATAL : {$errorMessage}";
+                        $message .= " na linha {$errorLine} no arquivo {$errorFile}.";
                         break;
                 }
             }
-
+                
             $exception = new HttpInternalServerErrorException($this->request, $message);
-            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, false, false);
+            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, true, true);
 
             $responseEmitter = new ResponseEmitter();
             $responseEmitter->emit($response);

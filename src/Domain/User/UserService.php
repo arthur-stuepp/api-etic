@@ -46,6 +46,9 @@ class UserService extends ApplicationService implements IUserService
 
     public function update(int $id, array $data): ServicePayload
     {
+        if (!$this->validation->canRead($id)) {
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
+        }
         $user = $this->repository->getById($id);
 
         if (!$user) {

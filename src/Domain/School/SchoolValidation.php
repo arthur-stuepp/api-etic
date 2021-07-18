@@ -9,12 +9,6 @@ use App\Domain\Validation;
 
 class SchoolValidation extends Validation
 {
-    protected array $messages = [];
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
 
     public function isValid(School $school): bool
     {
@@ -25,9 +19,8 @@ class SchoolValidation extends Validation
 
         return $this->validate();
     }
-
-    protected function validate(): bool
+    public function canDelete(): bool
     {
-        return count($this->messages) == 0;
+        return $this->onlyAdmin();
     }
 }
