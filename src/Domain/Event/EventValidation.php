@@ -11,7 +11,7 @@ class EventValidation extends Validation
 
     public function isValid(Event $event): bool
     {
-
+        $this->messages = [];
         if (!isset($event->name)) {
             $this->messages['name'] = self::FIELD_NOT_SEND;
         }
@@ -43,7 +43,12 @@ class EventValidation extends Validation
         return $this->validate();
     }
 
-    public function canDelete(): bool
+    public function hasPermissionToDelete(): bool
+    {
+        return $this->onlyAdmin();
+    }
+
+    public function hasPermissionToSave(): bool
     {
         return $this->onlyAdmin();
     }

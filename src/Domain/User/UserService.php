@@ -40,19 +40,30 @@ class UserService extends ApplicationService implements IUserService
     public function create(array $data): ServicePayload
     {
         $user = new User($data);
+
+        if (!isset($user->disability)) {
+            $user->disability = false;
+        }
+        if (isset($user->password)) {
+            $user->password = password_hash($user->password, PASSWORD_BCRYPT);
+        }
+
         return $this->processAndSave($user);
     }
 
 
     public function update(int $id, array $data): ServicePayload
     {
-        if (!$this->validation->canRead($id)) {
+        if (!$this->validation->hasPermissionToRead($id)) {
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
         }
         $user = $this->repository->getById($id);
 
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => Validation::ENTITY_NOT_FOUND]);
+        }
+        if (isset($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         }
         $user->setData($data);
 
@@ -63,7 +74,7 @@ class UserService extends ApplicationService implements IUserService
     private function processAndSave(User $user): ServicePayload
     {
         if (!$this->validation->isValid($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID,['message'=>Validation::ENTITY_INVALID,'fields'=> $this->validation->getMessages()]);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_INVALID, 'fields' => $this->validation->getMessages()]);
         }
         if (!$this->schoolRepository->getById($user->school->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['school' => Validation::ENTITY_NOT_FOUND]);
@@ -77,11 +88,10 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->cityRepository->getById($user->city->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['city' => Validation::ENTITY_NOT_FOUND]);
         }
-        $user->password=password_hash($user->password,PASSWORD_BCRYPT); 
         if (!$this->repository->save($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
         }
-        
+
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 }

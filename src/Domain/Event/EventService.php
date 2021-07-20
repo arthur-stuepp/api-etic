@@ -32,12 +32,18 @@ class EventService extends ApplicationService implements IEventService
     {
         $event = new Event($data);
 
+        if (!$this->validation->hasPermissionToSave()) {
+            return $this->validation->getMessages();
+        }
+
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validation->getMessages()]);
         }
+
         if ($this->validation->isDuplicateEntity($event, $this->repository->list(ParamsFactory::Event()->setFilters('name', $event->name)))) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
+
         if (!$this->repository->save($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getLastError()]);
         }
@@ -48,6 +54,10 @@ class EventService extends ApplicationService implements IEventService
 
     public function update(int $id, array $data): ServicePayload
     {
+        if (!$this->validation->hasPermissionToSave()) {
+            return $this->validation->getMessages();
+        }
+
         $event = $this->repository->getById($id);
 
         if (!$event) {

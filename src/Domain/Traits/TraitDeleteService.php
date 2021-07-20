@@ -12,8 +12,8 @@ trait TraitDeleteService
     public function delete(int $id): ServicePayload
     {
         if (isset($this->validation)) {
-            if (method_exists($this->validation, 'canDelete')) {
-                if (!$this->validation->canDelete()) {
+            if (method_exists($this->validation, 'hasPermissionToDelete')) {
+                if (!$this->validation->hasPermissionToDelete()) {
                     return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
                 }
             }

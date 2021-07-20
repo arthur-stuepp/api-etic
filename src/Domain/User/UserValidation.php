@@ -54,14 +54,12 @@ class UserValidation extends Validation
                 $this->messages['type'] = 'Valor invalido para usuario comum';
             }
         }
-        if (!isset($user->disability)) {
-            $user->disability = false;
-        }
+
 
 
         return $this->validate();
     }
-    public function canRead(int $id): bool
+    public function hasPermissionToRead(int $id): bool
     {
         $this->messages = [];
         if ((USER_TYPE !== User::TYPE_ADMIN) && (USER_ID !== $id)) {
@@ -70,12 +68,12 @@ class UserValidation extends Validation
         return $this->validate();
     }
 
-    public function canList(): bool
+    public function hasPermissionToList(): bool
     {
         return $this->onlyAdmin();
     }
 
-    public function canDelete(): bool
+    public function hasPermissionToDelete(): bool
     {
         return $this->onlyAdmin();
     }

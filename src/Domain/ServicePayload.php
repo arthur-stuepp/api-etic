@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain;
-
-
 class ServicePayload
 {
     public const STATUS_VALID = 200;

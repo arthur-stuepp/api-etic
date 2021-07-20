@@ -77,9 +77,12 @@ abstract class Validation
 
     public function onlyAdmin(): bool
     {
+        $this->messages = [];
+
         if (!defined('USER_TYPE') || (USER_TYPE !== User::TYPE_ADMIN)) {
             $this->messages['message'] = 'Você não tem permissão para executar essa ação';
         }
+
         return $this->validate();
     }
 }

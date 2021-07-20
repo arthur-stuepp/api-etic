@@ -19,7 +19,8 @@ class SchoolValidation extends Validation
 
         return $this->validate();
     }
-    public function canDelete(): bool
+    
+    public function hasPermissionToDelete(): bool
     {
         return $this->onlyAdmin();
     }
