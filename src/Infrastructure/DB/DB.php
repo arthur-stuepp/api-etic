@@ -21,7 +21,7 @@ class DB
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
-            $this->db->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8');
+            // $this->db->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8');
         } catch (PDOException $e) {
             $this->lastError = 'ERROR: ' . $e->getMessage();
         }
@@ -223,9 +223,6 @@ class DB
             if ($newKey != $key) {
                 $arr[$newKey] = $value;
                 unset($arr[$key]);
-            }
-            if (is_string($value)) {
-                // $arr[$key] = utf8_encode($arr[$key]);
             }
         }
         return $arr;
