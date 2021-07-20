@@ -75,7 +75,7 @@ abstract class Validation
         return false;
     }
 
-    public function onlyAdmin(): bool
+    protected function onlyAdmin(): bool
     {
         $this->messages = [];
 

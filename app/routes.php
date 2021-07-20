@@ -18,6 +18,7 @@ use App\Application\Middleware\Authentication\Auth;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Event\EventCreateAction;
 use App\Application\Actions\Event\EventDeleteAction;
+use App\Application\Actions\Event\EventUpdateAction;
 use App\Application\Actions\School\SchoolListAction;
 use App\Application\Actions\School\SchoolReadAction;
 use App\Application\Actions\School\SchoolCreateAction;
@@ -54,6 +55,7 @@ return function (App $app) {
         $group->post('', EventCreateAction::class);
         $group->group('/{event}', function (Group $user) {
             $user->get('', EventReadAction::class);
+            $user->put('', EventUpdateAction::class);
             $user->delete('', EventDeleteAction::class);
             $user->get('/users', UserEventListAction::class);
         });

@@ -39,8 +39,11 @@ class SchoolService extends ApplicationService implements ISchoolService
         if ($payload['total'] > 0) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
+        if (!$this->repository->save($school)) {
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
+        }
 
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->save($school)]);
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 
 
@@ -55,6 +58,10 @@ class SchoolService extends ApplicationService implements ISchoolService
         if (($payload['total'] > 0) && ($payload['result'][0]->id !== $school->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $school->id]);
+        if (!$this->repository->save($school)) {
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
+        }
+
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 }

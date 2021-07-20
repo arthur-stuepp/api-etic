@@ -17,9 +17,9 @@ class Event extends Entity
    
     public int $id;
 
-    public int $type;
-
     public string $name;
+
+    public int $type;
 
     public string $description;
 

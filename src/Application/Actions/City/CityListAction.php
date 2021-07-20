@@ -13,8 +13,7 @@ class CityListAction extends CityAction
     protected function action(): Response
     {
         $params = new ServiceListParams(City::class, $this->request->getQueryParams());
-        $payload = $this->service->list($params);
-
-        return $this->respondWithData($payload->getResult())->withStatus($payload->getStatus());
+        
+        return $this->respondWithPayload($this->service->list($params));
     }
 }

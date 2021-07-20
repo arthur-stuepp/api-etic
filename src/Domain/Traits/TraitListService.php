@@ -19,6 +19,7 @@ trait TraitListService
                 }
             }
         }
+    
         return $this->ServicePayload(ServicePayload::STATUS_FOUND, $this->repository->list($params));
     }
 }
