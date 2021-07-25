@@ -11,6 +11,8 @@ use App\Domain\Event\Event;
 class UserEvent extends Entity
 {
 
+    public int $id;
+
     public User $user;
 
     public Event $event;
@@ -20,5 +22,4 @@ class UserEvent extends Entity
     public bool $cheking;
 
     public bool $waitlist;
-
 }

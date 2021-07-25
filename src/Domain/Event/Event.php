@@ -23,7 +23,7 @@ class Event extends Entity
 
     public string $description;
 
-    public string $capacity;
+    public int $capacity;
 
     public DateTime $startTime;
 

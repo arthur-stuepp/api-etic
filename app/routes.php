@@ -6,6 +6,7 @@ use Slim\App;
 use App\Application\Actions\Auth\LoginAction;
 use App\Application\Actions\City\CityListAction;
 use App\Application\Actions\City\CityReadAction;
+use App\Application\Actions\User\UserListAction;
 use App\Application\Actions\User\UserReadAction;
 use App\Application\Actions\Event\EventListAction;
 use App\Application\Actions\Event\EventReadAction;
@@ -28,6 +29,7 @@ use App\Application\Actions\UserEvent\UserEventListAction;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use App\Application\Actions\UserEvent\UserEventCreateAction;
 use App\Application\Actions\UserEvent\UserEventDeleteAction;
+use App\Application\Actions\UserEvent\UserEventUpdateAction;
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -36,8 +38,9 @@ return function (App $app) {
     });
     $app->post('/auth', LoginAction::class);
     $app->post('/users', UserCreateAction::class);
-    $app->group('/users', function (Group $group) {
 
+    $app->group('/users', function (Group $group) {
+        $group->get('', UserListAction::class);
         $group->group('/{user}', function (Group $user) {
             $user->get('', UserReadAction::class);
             $user->put('', UserUpdateAction::class);
@@ -45,6 +48,7 @@ return function (App $app) {
             $user->group('/events', function (Group $events) {
                 $events->get('', UserEventListAction::class);
                 $events->post('/{event}', UserEventCreateAction::class);
+                $events->put('/{event}', UserEventUpdateAction::class);
                 $events->delete('/{event}', UserEventDeleteAction::class);
             });
         });

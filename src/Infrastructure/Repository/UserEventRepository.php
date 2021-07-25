@@ -39,21 +39,10 @@ class UserEventRepository extends MysqlRepository implements IUserEventRepositor
     {
         return $this->userRepository->getById($id);
     }
+
     public function getEventById(int $id)
     {
         return $this->eventRepository->getById($id);
-    }
-
-    public function remove(UserEvent $userEvent): bool
-    {
-        $sql = 'DELETE FROM user_event WHERE user =:user and event=:event';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':user', $userEvent->user, PDO::PARAM_INT);
-        $stmt->bindValue(':event', $userEvent->event, PDO::PARAM_INT);
-
-        $stmt->execute();
-
-        return (bool)$stmt->rowCount();
     }
 
     public function list(ServiceListParams $params): array

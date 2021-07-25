@@ -46,7 +46,8 @@ class User extends Entity
         if (isset($json['password'])) {
             unset($json['password']);
 
-            return $json;
+            
         }
+        return $json;
     }
 }

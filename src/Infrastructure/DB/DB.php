@@ -233,4 +233,6 @@ class DB
     {
         return (int)$this->db->lastInsertId();
     }
+
+    
 }

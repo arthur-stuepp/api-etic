@@ -2,13 +2,12 @@
 
 namespace App\Domain\UserEvent;
 
+use App\Domain\IRepository;
 use App\Domain\ServiceListParams;
 
-interface IUserEventRepository
+interface IUserEventRepository extends IRepository
 {
     public function save(UserEvent $userEvent): bool;
-
-    public function remove(UserEvent $userEvent): bool;
 
     public function list(ServiceListParams $params): array;
 

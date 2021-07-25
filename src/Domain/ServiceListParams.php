@@ -87,8 +87,6 @@ class ServiceListParams
         return $this;
     }
 
-
-
     public function getClass():string
     {
         return $this->class;

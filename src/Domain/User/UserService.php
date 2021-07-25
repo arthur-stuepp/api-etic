@@ -47,6 +47,7 @@ class UserService extends ApplicationService implements IUserService
         if (isset($user->password)) {
             $user->password = password_hash($user->password, PASSWORD_BCRYPT);
         }
+    
 
         return $this->processAndSave($user);
     }

@@ -26,17 +26,17 @@ abstract class MysqlRepository implements IRepository
     protected function saveEntity(Entity $entity): bool
     {
         if (isset($entity->id) && $entity->id > 0) {
-            if ($this->db->update($entity->id, $this->getTable(), $entity->jsonSerialize())) {
+            if ($this->db->update($entity->id, $this->getTable(), get_object_vars($entity))) {
                 $this->lastSaveId = $entity->id;
                 return true;
             }
         } else {
-            if ($this->db->insert($this->getTable(), $entity->jsonSerialize())) {
+            if ($this->db->insert($this->getTable(), get_object_vars($entity))) {
                 $this->lastSaveId = $this->db->getLastInsertId();
                 return true;
             }
         }
-    
+
         $this->lastError = $this->db->getLastError();
         return false;
     }
