@@ -18,5 +18,4 @@ interface IUserEventService
     
     public function getEventsUser(int $user): ServicePayload;
 
-    public function read(int $user, int $event): ServicePayload;
 }

@@ -18,7 +18,7 @@ class UserEventService extends ApplicationService implements IUserEventService
     private IUserEventRepository $repository;
     private UserEventValidation $validation;
 
-    public function __construct(IUserEventRepository $repository,UserEventValidation $validation)
+    public function __construct(IUserEventRepository $repository, UserEventValidation $validation)
     {
         $this->repository = $repository;
         $this->validation = $validation;
@@ -27,26 +27,25 @@ class UserEventService extends ApplicationService implements IUserEventService
     public function create(int $user, int $event, array $data): ServicePayload
     {
         $userEvent = new UserEvent($data);
-        $userEvent->user = new User(['id' => $user]);
-        $userEvent->event = new Event(['id' => $event]);
-        if (!isset($userEvent->cheking)) {
-            $userEvent->cheking = false;
-        }
+        $userEvent->cheking = false;
         $userEvent->waitlist = false;
-        $message = $this->checkUserEvent($userEvent);
-
-        if ($message != null) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, $message);
+        $user = $this->repository->getUserById($user);
+        if (!$user) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => Validation::ENTITY_NOT_FOUND]);
+        } else {
+            $userEvent->user = $user;
+        }
+        $event = $this->repository->getEventById($event);
+        if (!$event) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['event' => Validation::ENTITY_NOT_FOUND]);
+        } else {
+            $userEvent->event = $event;
         }
         $payload = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$user)->setLimit(1));
         if ($payload['total'] > 0) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Usuario já esta inscrito nesse evento']);
         }
-        $payload = $this->repository->list(
-            $this->params(UserEvent::class)
-                ->setFields('user,team,cheking,waitlist')
-                ->setFilters('event', (string)$event)
-        );
+        $payload = $this->repository->list($this->params(UserEvent::class)->setFields('id')->setFilters('event', (string)$event));
         if ($payload['total'] >= $userEvent->event->capacity) {
             $userEvent->waitlist = true;
         }
@@ -55,14 +54,24 @@ class UserEventService extends ApplicationService implements IUserEventService
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' =>$this->repository->getLastSaveId()]);
+        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 
     public function update(int $user, int $event, array $data): ServicePayload
     {
+        if (!$this->repository->getUserById($user)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => Validation::ENTITY_NOT_FOUND]);
+        }
+        if (!$this->repository->getEventById($event)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['event' => Validation::ENTITY_NOT_FOUND]);
+        }
         $userEvent = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$user)->setLimit(1))['result'][0] ?? false;
         if (!$userEvent) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => Validation::ENTITY_NOT_FOUND]);
+        }
+        unset($data['waitlist']);
+        if (USER_TYPE !== User::TYPE_ADMIN) {
+            unset($data['cheking']);
         }
         $userEvent->setData($data);
 
@@ -73,21 +82,6 @@ class UserEventService extends ApplicationService implements IUserEventService
         return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 
-    protected function checkUserEvent(UserEvent $userEvent): ?array
-    {
-        $message = null;
-        if (!$this->repository->getUserById($userEvent->user->id)) {
-            $message['user'] = 'Usuário não encontrado';
-        }
-        $event = $this->repository->getEventById($userEvent->event->id);
-        if (!$event) {
-            $message['event'] = 'Evento não encontrado';
-        } else {
-            $userEvent->event = $event;
-        }
-
-        return $message;
-    }
 
     public function getUsersEvent(int $event): ServicePayload
     {
@@ -110,8 +104,8 @@ class UserEventService extends ApplicationService implements IUserEventService
 
     public function getEventsUser(int $user): ServicePayload
     {
-        if(!$this->validation->hasPermissionToReadEventsUser($user)){
-            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN,$this->validation->getMessages());
+        if (!$this->validation->hasPermissionToReadEventsUser($user)) {
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
         }
 
         if (!$this->repository->getUserById($user)) {
@@ -127,19 +121,6 @@ class UserEventService extends ApplicationService implements IUserEventService
         );
     }
 
-    public function read(int $user, int $event): ServicePayload
-    {
-        $payload = $this->repository->list(
-            $this->params(UserEvent::class)
-                ->setFilters('user', (string)$user)
-                ->setFilters('event', (string)$event)
-        );
-        if ($payload['total'] === 0) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => Validation::ENTITY_NOT_FOUND]);
-        }
-        return $this->ServicePayload(ServicePayload::STATUS_FOUND, $payload['result'][0]);
-    }
-
 
     public function delete(int $user, int $event): ServicePayload
     {
@@ -148,7 +129,7 @@ class UserEventService extends ApplicationService implements IUserEventService
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
         }
 
-        $userEvent = $this->repository->list(ParamsFactory::UserEvent()->setFilters('event', (string)$event)->setFilters('user', (string)$user)->setLimit(1))['result'][0] ?? false;
+        $userEvent = $this->repository->list($this->params(UserEvent::class)->setFilters('event', (string)$event)->setFilters('user', (string)$user)->setLimit(1))['result'][0] ?? false;
         if (!$userEvent) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => Validation::ENTITY_NOT_FOUND]);
         }
@@ -156,7 +137,7 @@ class UserEventService extends ApplicationService implements IUserEventService
         if ($this->repository->delete($userEvent->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_DELETED, ['message' => 'Removido com Sucesso']);
         } else {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_DELETED, ['userEvent' => 'Erro ao remover']);
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => 'Não foi possivel deletar esse registro', 'description' => $this->repository->getLastError()]);
         }
     }
 }

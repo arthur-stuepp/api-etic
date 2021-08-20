@@ -47,7 +47,7 @@ class UserService extends ApplicationService implements IUserService
         if (isset($user->password)) {
             $user->password = password_hash($user->password, PASSWORD_BCRYPT);
         }
-    
+
 
         return $this->processAndSave($user);
     }
@@ -77,7 +77,7 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->validation->isValid($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_INVALID, 'fields' => $this->validation->getMessages()]);
         }
-        if (!$this->schoolRepository->getById($user->school->id)) {
+        if (isset($user->school) && !$this->schoolRepository->getById($user->school->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['school' => Validation::ENTITY_NOT_FOUND]);
         }
         if ($this->validation->isDuplicateEntity($user, $this->repository->list(ParamsFactory::User()->setFilters('email', $user->email)))) {

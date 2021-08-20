@@ -31,12 +31,6 @@ class UserValidation extends Validation
         if (!isset($user->birthday)) {
             $this->messages['birthday'] = self::FIELD_NOT_SEND;
         }
-        if (!isset($user->company)) {
-            $this->messages['company'] =  self::FIELD_NOT_SEND;
-        }
-        if (!isset($user->school)) {
-            $this->messages['school'] =  self::FIELD_NOT_SEND;
-        }
         if (!isset($user->taxId)) {
             $this->messages['taxId'] = self::FIELD_NOT_SEND;
         } else {
@@ -54,8 +48,6 @@ class UserValidation extends Validation
                 $this->messages['type'] = 'Valor invalido para usuario comum';
             }
         }
-
-
 
         return $this->validate();
     }
