@@ -4,53 +4,37 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use Exception;
 use App\Domain\ServicePayload;
-use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpBadRequestException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use App\Domain\DomainException\DomainRecordNotFoundException;
+use Slim\Exception\HttpBadRequestException;
 
 abstract class Action
 {
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * @var Response
-     */
-    protected $response;
-
-    /**
-     * @var array
-     */
-    protected $args;
+    protected Request $request;
+    protected Response $response;
+    protected array $args;
 
 
     /**
-     * @param Request  $request
+     * @param Request $request
      * @param Response $response
-     * @param array    $args
+     * @param array $args
      * @return Response
-     * @throws HttpNotFoundException
      * @throws HttpBadRequestException
      */
-    public function __invoke(Request $request, Response $response, $args): Response
+    public function __invoke(Request $request, Response $response, array $args): Response
     {
         $this->request = $request;
         $this->response = $response;
         $this->args = $args;
-   
-         return  $this->action();
-  
+
+        return $this->action();
+
     }
 
     /**
      * @return Response
-     * @throws DomainRecordNotFoundException
      * @throws HttpBadRequestException
      */
     abstract protected function action(): Response;
@@ -71,39 +55,25 @@ abstract class Action
     }
 
     /**
-     * @param  string $name
+     * @param string $name
      * @return mixed
      * @throws HttpBadRequestException
      */
     protected function resolveArg(string $name)
     {
         if (!isset($this->args[$name])) {
-            throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
+            throw new HttpBadRequestException($this->request, "Could not resolve argument `$name`.");
         }
 
         return $this->args[$name];
     }
-
-    /**
-     * @param  array|object|null $data
-     * @return Response
-     */
+    
     protected function respondWithData($data = null, int $statusCode = 200): Response
     {
         $payload = new ActionPayload($statusCode, $data);
 
         return $this->respond($payload);
     }
-
-
-    protected function respondWithPayload(ServicePayload $payload): Response
-    {
-        $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
-
-        return $this->respond($payload);
-    }
-
-
 
     /**
      * @param ActionPayload $payload
@@ -117,5 +87,12 @@ abstract class Action
         return $this->response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus($payload->getStatusCode());
+    }
+
+    protected function respondWithPayload(ServicePayload $payload): Response
+    {
+        $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
+
+        return $this->respond($payload);
     }
 }

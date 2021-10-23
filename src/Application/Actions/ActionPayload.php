@@ -57,9 +57,7 @@ class ActionPayload implements JsonSerializable
         return $this->error;
     }
 
-    /**
-     * @return array
-     */
+
     public function jsonSerialize()
     {
         if ($this->error !== null) {
