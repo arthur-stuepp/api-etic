@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity;
-use App\Domain\IRepository;
-use App\Infrastructure\DB\DB;
 use App\Domain\ServiceListParams;
+use App\Infrastructure\DB\DB;
 
-abstract class MysqlRepository implements IRepository
+class MysqlRepository
 {
     protected string $class;
     protected string $table;
     private DB $db;
-    private string $lastError;
-    private int $lastSaveId;
 
     public function __construct(DB $db)
     {
@@ -23,60 +20,57 @@ abstract class MysqlRepository implements IRepository
     }
 
 
-    protected function saveEntity(Entity $entity): bool
+    public function saveEntity(Entity $entity): bool
     {
+        $class = get_class($entity);
         if (isset($entity->id) && $entity->id > 0) {
-            if ($this->db->update($entity->id, $this->getTable(), get_object_vars($entity))) {
-                $this->lastSaveId = $entity->id;
+            if ($this->db->update($entity->id, $this->getTable($class), get_object_vars($entity))) {
+
                 return true;
             }
         } else {
-            if ($this->db->insert($this->getTable(), get_object_vars($entity))) {
-                $this->lastSaveId = $this->db->getLastInsertId();
+            if ($this->db->insert($this->getTable($class), get_object_vars($entity))) {
                 return true;
             }
         }
 
-        $this->lastError = $this->db->getLastError();
+
         return false;
     }
 
-    /*
-    *@return  Entity|false
-    */
-    public function getById(int $id)
+
+    private function getTable(string $class): string
     {
 
-        $params = new ServiceListParams($this->getClass());
+        $class = explode('\\', $class);
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', end($class)));
+    }
+
+    /**
+     * @param int $id
+     * @param string $table
+     * @return false|Entity
+     */
+    public function getById(int $id, string $table)
+    {
+
+        $params = new ServiceListParams($table);
         $params->setFilters('id', (string)$id)->setLimit(1);
 
         return $this->list($params)['result'][0] ?? false;
     }
 
-
-    public function delete(int $id): bool
-    {
-        if (!($this->db->delete($this->getTable(), $id))) {
-            $this->lastError = $this->db->getLastError();
-            return false;
-        }
-        return true;
-    }
-
-    abstract protected function getClass(): string;
-
-    public function getTable()
-    {
-
-        $class = explode('\\', $this->getClass());
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', end($class)));
-    }
-
     public function list(ServiceListParams $params): array
     {
-        $rows = $this->db->list($this->getTable(), $params->getFields(), $params->getFilters(), $params->getPage(), $params->getLimit());
+        $rows = $this->db->list(
+            $this->getTable($params->getClass()),
+            $params->getFields(),
+            $params->getFilters(),
+            $params->getPage(),
+            $params->getLimit()
+        );
         for ($i = 0; $i <= count($rows['result']) - 1; $i++) {
-            $class = $this->getClass();
+            $class = $params->getClass();
             $entity = new $class($rows['result'][$i]);
             $rows['result'][$i] = $entity;
         }
@@ -84,14 +78,22 @@ abstract class MysqlRepository implements IRepository
         return $rows;
     }
 
-    public function getLastError(): string
+    public function delete(int $id, string $table): bool
     {
-        return $this->lastError;
+        if (!($this->db->delete($table, $id))) {
+            return false;
+        }
+        return true;
+    }
+
+    public function getError(): string
+    {
+        return $this->db->getError();
     }
 
 
-    public function getLastSaveId(): int
+    public function getSavedId(): int
     {
-        return $this->lastSaveId;
+        return $this->db->getLastInsertId();
     }
 }

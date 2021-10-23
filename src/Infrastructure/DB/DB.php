@@ -11,19 +11,20 @@ use PDOException;
 class DB
 {
     private PDO $db;
-    private string $lastError;
+    private string $error;
 
-    public function __construct()
+
+    public function __construct(string $dsn = MYSQL_DSN, string $user = MYSQL_USER, string $password = MYSQL_PWD)
     {
 
         try {
-            $this->db = new PDO(MYSQL_DSN, MYSQL_USER, MYSQL_PWD);
+            $this->db = new PDO($dsn, $user, $password);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
-            // $this->db->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8');
         } catch (PDOException $e) {
-            $this->lastError = 'ERROR: ' . $e->getMessage();
+            throw new Exception("Erro ao conectar com o banco", 500);
+
         }
     }
 
@@ -31,11 +32,8 @@ class DB
     {
         $data = $this->camel_to_snake($data);
         try {
-            $fields  = implode(',', array_keys($data));
-            $values = implode(' , :', array_keys($data));
-            if (!empty($values)) {
-                $values = ' :' . $values;
-            }
+            $fields = implode(',', array_keys($data));
+            $values = ':' . implode(' , :', array_keys($data));
             $sql = 'INSERT INTO ' . $table . '(' . $fields . ')  VALUES (' . $values . ')';
             $sqlDebug = $sql;
             $stmt = $this->db->prepare($sql);
@@ -47,31 +45,27 @@ class DB
                 $stmt->bindValue(':' . $key, $value);
             }
             $stmt->execute();
-            $this->lastInsertId = $this->db->lastInsertId();
 
             return true;
         } catch (Exception $e) {
-            $this->lastError = $e->getMessage();
+            $this->error = $e->getMessage();
 
 
             return false;
         }
     }
+
     public function update(int $id, string $table, array $data): bool
     {
         $data = $this->camel_to_snake($data);
         unset($data['id']);
-
         try {
             $fields = '';
             foreach ($data as $key => $value) {
                 $fields .= $key . ' = :' . $key . ', ';
             }
             $fields = rtrim($fields, ', ');
-            if (!empty($values)) {
-                $values = ' :' . $values;
-            }
-            $sql = 'UPDATE ' . $table .  ' SET ' . $fields . ' WHERE id = :id';
+            $sql = 'UPDATE ' . $table . ' SET ' . $fields . ' WHERE id = :id';
             $sqlDebug = $sql;
             $stmt = $this->db->prepare($sql);
             $data['id'] = $id;
@@ -89,14 +83,10 @@ class DB
                 }
             }
             $stmt->execute();
-            $this->lastInsertId = $id;
 
             return true;
         } catch (Exception $e) {
-            var_dump($sqlDebug);
-            die;
-            $this->lastError = $e->getMessage();
-
+            $this->error = $e->getMessage();
             return false;
         }
     }
@@ -107,25 +97,22 @@ class DB
         try {
             $sql = 'DELETE FROM ' . $table . ' WHERE ' . $field . '= :id';
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
+            $stmt->execute([':id' => $id]);
             return true;
         } catch (Exception $e) {
-            $this->lastError = $e->getMessage();
-
+            $this->error = $e->getMessage();
             return false;
         }
     }
 
-    public function list(string $table, array $fields = [], array $filters = [], int $page = 1, int $limit = 50)
+    public function list(string $table, array $fields = [], array $filters = [], int $page = 1, int $limit = 50): array
     {
-
         if (isset($filters['name']) && isset($filters['search'])) {
             unset($filters['name']);
         }
         $filters = $this->camel_to_snake($filters);
         try {
-            $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table .  $this->getFilters($filters) . $this->getLimit($page, $limit);
+            $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table . $this->getFilters($filters) . $this->getLimit($page, $limit);
             $stmt = $this->db->prepare($sql);
             $sqlDebug = $sql;
             if ($filters !== []) {
@@ -155,7 +142,7 @@ class DB
                 'result' => $rows
             ];
         } catch (Exception $e) {
-            $this->lastError = $e->getMessage();
+            $this->error = $e->getMessage();
 
             return ['total' => 0, 'result' => []];
         }
@@ -163,15 +150,12 @@ class DB
 
     private function getLimit(int $page, int $limit): string
     {
-
-        $offset  =  ($page - 1) * $limit;
-
-        return   ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+        $offset = ($page - 1) * $limit;
+        return ' LIMIT ' . $limit . ' OFFSET ' . $offset;
     }
+
     private function getFilters(array $filters): string
     {
-
-
         $filterSql = '';
         if ($filters !== []) {
             $filterSql = ' WHERE ';
@@ -189,43 +173,41 @@ class DB
 
     private function getFields(array $fields): string
     {
-        $fields = $this->camel_to_snake($fields);
-        $fieldSql = '*';
-        if ($fields !== []) {
-
-            $fieldSql = implode(',', array_values($fields));
+        if ($fields === []) {
+            return '*';
         }
-        return $fieldSql;
+
+        return implode(',', array_values($this->camel_to_snake($fields)));
     }
 
 
-    public function getLastError(): string
+    public function getError(): string
     {
-        return $this->lastError;
+        return $this->error;
     }
 
-    protected function camel_to_snake(array $arr): array
+    private function camel_to_snake(array $array): array
     {
-        foreach ($arr as $key => $value) {
+        foreach ($array as $key => $value) {
             $newKey = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
             if ($newKey != $key) {
-                $arr[$newKey] = $value;
-                unset($arr[$key]);
+                $array[$newKey] = $value;
+                unset($array[$key]);
             }
         }
-        return $arr;
+        return $array;
     }
 
-    protected function snakeToCamel(array $arr): array
+    private function snakeToCamel(array $array): array
     {
-        foreach ($arr as $key => $value) {
+        foreach ($array as $key => $value) {
             $newKey = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
             if ($newKey != $key) {
-                $arr[$newKey] = $value;
-                unset($arr[$key]);
+                $array[$newKey] = $value;
+                unset($array[$key]);
             }
         }
-        return $arr;
+        return $array;
     }
 
 
@@ -233,6 +215,4 @@ class DB
     {
         return (int)$this->db->lastInsertId();
     }
-
-    
 }
