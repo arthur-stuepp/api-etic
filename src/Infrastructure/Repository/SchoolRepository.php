@@ -6,16 +6,41 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\School\ISchoolRepository;
 use App\Domain\School\School;
+use App\Domain\Services\ServiceListParams;
 
-class SchoolRepository extends MysqlRepository implements ISchoolRepository
+;
+
+class SchoolRepository implements ISchoolRepository
 {
+
+    private MysqlRepository $repository;
+
+    public function __construct(MysqlRepository $mysqlRepository)
+    {
+        $this->repository = $mysqlRepository;
+    }
+
     public function save(School $school): bool
     {
-        return $this->saveEntity($school);
+        return $this->repository->saveEntity($school);
     }
-    public function getClass(): string
+
+    public function getById(int $id)
     {
-        return School::class;
+        $params = new ServiceListParams(School::class);
+        $params->setFilters('id', (string)$id)
+            ->setLimit(1);
+        return $this->repository->list($params)['entities'][0] ?? false;
     }
+
+    public function list(ServiceListParams $params): array
+    {
+        return $this->repository->list($params);
+    }
+
+    public function delete($id): bool
+    {
+        return $this->repository->delete($id, School::class);
+    }
+
 }
- 

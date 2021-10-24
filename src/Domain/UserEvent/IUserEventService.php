@@ -3,7 +3,7 @@
 
 namespace App\Domain\UserEvent;
 
-use App\Domain\ServicePayload;
+use App\Domain\Services\ServicePayload;
 
 
 interface IUserEventService

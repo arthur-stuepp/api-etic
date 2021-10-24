@@ -6,7 +6,7 @@ namespace App\Application\Actions\School;
 
 
 use App\Domain\School\School;
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class SchoolListAction extends SchoolAction

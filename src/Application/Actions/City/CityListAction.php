@@ -5,7 +5,7 @@ namespace App\Application\Actions\City;
 
 
 use App\Domain\City\City;
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class CityListAction extends CityAction

@@ -6,16 +6,38 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Event\Event;
 use App\Domain\Event\IEventRepository;
+use App\Domain\School\School;
+use App\Domain\Services\ServiceListParams;
 
-class EventRepository extends MysqlRepository implements IEventRepository
+class EventRepository  implements IEventRepository
 {
-    protected function getClass(): string
+    private MysqlRepository $repository;
+
+    public function __construct(MysqlRepository $mysqlRepository)
     {
-        return Event::class;
+        $this->repository = $mysqlRepository;
     }
 
     public function save(Event $event): bool
     {
-        return $this->saveEntity($event);
+        return $this->repository->saveEntity($event);
+    }
+
+    public function getById(int $id)
+    {
+        $params = new ServiceListParams(School::class);
+        $params->setFilters('id', (string)$id)
+            ->setLimit(1);
+        return $this->repository->list($params)['entities'][0] ?? false;
+    }
+
+    public function list(ServiceListParams $params): array
+    {
+        return $this->repository->list($params);
+    }
+
+    public function delete($id): bool
+    {
+        return $this->repository->delete($id, Event::class);
     }
 }

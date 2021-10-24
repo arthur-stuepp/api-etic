@@ -4,7 +4,7 @@
 namespace App\Domain\State;
 
 
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 
 interface IStateService
 {

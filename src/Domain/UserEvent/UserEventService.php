@@ -7,8 +7,8 @@ namespace App\Domain\UserEvent;
 use App\Domain\User\User;
 use App\Domain\Validation;
 use App\Domain\Event\Event;
-use App\Domain\ServicePayload;
-use App\Domain\ApplicationService;
+use App\Domain\Services\ServicePayload;
+use App\Domain\Services\ApplicationService;
 use App\Domain\Factory\ParamsFactory;
 use App\Domain\UserEvent\UserEventValidation;
 

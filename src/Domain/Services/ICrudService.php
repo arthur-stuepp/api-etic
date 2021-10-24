@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Services;
 
-use App\Domain\ServicePayload;
+use App\Domain\Services\ServicePayload;
 
-interface IService
+interface ICrudService
 {
-    public function Create(array $data): ServicePayload;
+    public function create(array $data): ServicePayload;
 
     public function update(int $id, array $data): ServicePayload;
 
-    public function Delete(int $id): ServicePayload;
+    public function delete(int $id): ServicePayload;
 
     public function read(int $id): ServicePayload;
 

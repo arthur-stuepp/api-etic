@@ -33,7 +33,7 @@ abstract class Entity implements JsonSerializable
         return (string) $this->id;
     }
 
-    protected function convertProperty($key, $value)
+    private function convertProperty($key, $value)
     {
         $rp = new ReflectionProperty($this, $key);
         $type = $rp->getType()->getName();

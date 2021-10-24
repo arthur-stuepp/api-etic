@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\School;
 
-use App\Domain\ServicePayload;
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServicePayload;
+use App\Domain\Services\ServiceListParams;;
 use App\Domain\Validation;
-use App\Domain\ApplicationService;
+use App\Domain\Services\ApplicationService;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
 use App\Domain\Traits\TraitDeleteService;

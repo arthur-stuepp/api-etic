@@ -45,7 +45,6 @@ class User extends Entity
         $json = parent::jsonSerialize();
         if (isset($json['password'])) {
             unset($json['password']);
-
             
         }
         return $json;

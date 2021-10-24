@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Traits;
 
-use App\Domain\ServicePayload;
+use App\Domain\Services\ServicePayload;
 
 trait TraitReadService
 {

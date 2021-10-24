@@ -31,7 +31,7 @@ abstract class Validation
         return count($this->messages) == 0;
     }
 
-    public static function validateTaxId(string $taxId)
+    public static function validateTaxId(string $taxId): bool
     {
 
         $taxId = self::extractNumbers($taxId);

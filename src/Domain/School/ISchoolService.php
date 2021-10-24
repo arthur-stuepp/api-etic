@@ -2,8 +2,8 @@
 
 namespace App\Domain\School;
 
-use App\Domain\IService;
+use App\Domain\Services\ICrudService;
 
-interface ISchoolService extends IService
+interface ISchoolService extends ICrudService
 {
 }

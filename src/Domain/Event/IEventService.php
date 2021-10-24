@@ -2,8 +2,8 @@
 
 namespace App\Domain\Event;
 
-use App\Domain\IService;
+use App\Domain\Services\ICrudService;
 
-interface IEventService extends IService
+interface IEventService extends ICrudService
 {
 }

@@ -6,7 +6,7 @@ namespace App\Domain\UserEvent;
 
 use App\Domain\User\User;
 use App\Domain\Validation;
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 
 class UserEventValidation extends Validation
 {

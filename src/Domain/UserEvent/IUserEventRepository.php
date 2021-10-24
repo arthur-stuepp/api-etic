@@ -3,7 +3,7 @@
 namespace App\Domain\UserEvent;
 
 use App\Domain\IRepository;
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 
 interface IUserEventRepository extends IRepository
 {

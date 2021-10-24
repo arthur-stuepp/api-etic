@@ -2,8 +2,8 @@
 
 namespace App\Domain\User;
 
-use App\Domain\IService;
+use App\Domain\Services\ICrudService;
 
-interface IUserService extends IService 
+interface IUserService extends ICrudService 
 {
 }

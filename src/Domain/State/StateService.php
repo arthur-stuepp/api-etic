@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\State;
 
-use App\Domain\ApplicationService;
+use App\Domain\Services\ApplicationService;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
 

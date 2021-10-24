@@ -9,7 +9,7 @@ use App\Domain\User\IUserService;
 
 abstract class UserAction extends Action
 {
-    protected $service;
+    protected IUserService $service;
 
     public function __construct(IUserService $service)
     {

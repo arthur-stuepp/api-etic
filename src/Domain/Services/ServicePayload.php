@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Services;
 class ServicePayload
 {
     public const STATUS_VALID = 200;
@@ -36,7 +36,7 @@ class ServicePayload
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(int $status): self
     {
         $this->status = $status;
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\User;
 
 use App\Domain\Validation;
-use App\Domain\ServicePayload;
-use App\Domain\ServiceListParams;
-use App\Domain\ApplicationService;
+use App\Domain\Services\ServicePayload;
+use App\Domain\Services\ServiceListParams;;
+use App\Domain\Services\ApplicationService;
 use App\Domain\City\ICityRepository;
 use App\Domain\Factory\ParamsFactory;
 use App\Domain\Traits\TraitListService;

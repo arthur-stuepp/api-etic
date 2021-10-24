@@ -6,7 +6,7 @@ namespace App\Domain\Factory;
 
 use App\Domain\User\User;
 use App\Domain\Event\Event;
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 use App\Domain\UserEvent\UserEvent;
 
 

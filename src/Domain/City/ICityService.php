@@ -2,7 +2,7 @@
 
 namespace App\Domain\City;
 
-use App\Domain\ServiceListParams;
+use App\Domain\Services\ServiceListParams;;
 interface ICityService
 {
     public function read(int $id);

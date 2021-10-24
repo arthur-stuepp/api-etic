@@ -6,8 +6,8 @@ namespace App\Domain\Auth;
 
 use Firebase\JWT\JWT;
 use App\Domain\User\User;
-use App\Domain\ServicePayload;
-use App\Domain\ApplicationService;
+use App\Domain\Services\ServicePayload;
+use App\Domain\Services\ApplicationService;
 use App\Domain\User\IUserRepository;
 
 class AuthService extends ApplicationService implements IAuthService
