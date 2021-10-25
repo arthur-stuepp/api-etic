@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity;
-use App\Domain\Services\ServiceListParams;;
+use App\Domain\IHasUniquiProperties;
+use App\Domain\Services\ServiceListParams;
 use App\Infrastructure\DB\DB;
 
 class MysqlRepository
 {
-    protected string $class;
-    protected string $table;
     private DB $db;
 
     public function __construct(DB $db)
@@ -30,6 +29,7 @@ class MysqlRepository
             }
         } else {
             if ($this->db->insert($this->getTable($class), get_object_vars($entity))) {
+                $entity->id = $this->db->getLastInsertId();
                 return true;
             }
         }
@@ -91,9 +91,22 @@ class MysqlRepository
         return $this->db->getError();
     }
 
-
-    public function getSavedId(): int
+    public function isDuplicateEntity(IHasUniquiProperties $properties, string $entity): ?string
     {
-        return $this->db->getLastInsertId();
+        $fields = $properties->getFields();
+        foreach ($fields as $field) {
+            $params = new ServiceListParams($entity);
+            $params->setFilters($field, $properties->$field);
+            $params->setFields('id');
+            if (isset($properties->id)) {
+                $params->setFilters('id', $properties->id);
+            }
+            if ($this->list($params)['total'] > 0) {
+                return $field;
+            }
+        }
+        return null;
     }
+
+
 }

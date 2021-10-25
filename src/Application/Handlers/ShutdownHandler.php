@@ -9,20 +9,9 @@ use Slim\Exception\HttpInternalServerErrorException;
 
 class ShutdownHandler
 {
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var HttpErrorHandler
-     */
-    private $errorHandler;
-
-    /**
-     * @var bool
-     */
-    private $displayErrorDetails;
+    private Request $request;
+    private HttpErrorHandler $errorHandler;
+    private bool $displayErrorDetails;
 
     /**
      * ShutdownHandler constructor.
@@ -54,21 +43,21 @@ class ShutdownHandler
             if ($this->displayErrorDetails) {
                 switch ($errorType) {
                     case E_USER_ERROR:
-                        $message = "ERRO FATAL: {$errorMessage}. ";
-                        $message .= " na linha {$errorLine} no arquivo {$errorFile}.";
+                        $message = "ERRO FATAL: $errorMessage. ";
+                        $message .= " na linha $errorLine no arquivo $errorFile.";
                         break;
 
                     case E_USER_WARNING:
-                        $message = "WARNING: {$errorMessage}";
+                        $message = "WARNING: $errorMessage";
                         break;
 
                     case E_USER_NOTICE:
-                        $message = "NOTICE: {$errorMessage}";
+                        $message = "NOTICE: $errorMessage";
                         break;
 
                     default:
-                        $message = "ERRO FATAL : {$errorMessage}";
-                        $message .= " na linha {$errorLine} no arquivo {$errorFile}.";
+                        $message = "ERRO FATAL : $errorMessage";
+                        $message .= " na linha $errorLine no arquivo $errorFile.";
                         break;
                 }
             }

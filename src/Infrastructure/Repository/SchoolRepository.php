@@ -8,7 +8,6 @@ use App\Domain\School\ISchoolRepository;
 use App\Domain\School\School;
 use App\Domain\Services\ServiceListParams;
 
-;
 
 class SchoolRepository implements ISchoolRepository
 {
@@ -30,7 +29,7 @@ class SchoolRepository implements ISchoolRepository
         $params = new ServiceListParams(School::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['entities'][0] ?? false;
+        return $this->repository->list($params)['result'][0] ?? false;
     }
 
     public function list(ServiceListParams $params): array
@@ -41,6 +40,10 @@ class SchoolRepository implements ISchoolRepository
     public function delete($id): bool
     {
         return $this->repository->delete($id, School::class);
+    }
+    public function getError(): string
+    {
+        return $this->repository->getError();
     }
 
 }

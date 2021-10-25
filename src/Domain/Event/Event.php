@@ -9,8 +9,6 @@ use DateTime;
 
 class Event extends Entity
 {
-
-
     public const TYPE_EVENT = 1;
     public const TYPE_GAME = 2;
     public const TYPE_HACKATHON = 3;

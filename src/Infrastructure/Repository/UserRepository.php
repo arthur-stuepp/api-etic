@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\Event\Event;
+use App\Domain\IHasUniquiProperties;
 use App\Domain\Services\ServiceListParams;
-use App\Domain\User\User;
 use App\Domain\User\IUserRepository;
+use App\Domain\User\User;
 
-class UserRepository  implements IUserRepository
+class UserRepository implements IUserRepository
 {
+    private MysqlRepository $repository;
+
     public function __construct(MysqlRepository $mysqlRepository)
     {
         $this->repository = $mysqlRepository;
     }
+
     public function save(User $user): bool
     {
         return $this->repository->saveEntity($user);
@@ -37,4 +40,15 @@ class UserRepository  implements IUserRepository
     {
         return $this->repository->delete($id, User::class);
     }
+
+    public function getError(): string
+    {
+        return $this->repository->getError();
+    }
+
+    public function getDuplicateField(IHasUniquiProperties $properties):?string
+    {
+        return $this->repository->isDuplicateEntity($properties, User::class);
+    }
 }
+

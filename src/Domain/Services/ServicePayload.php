@@ -7,14 +7,13 @@ class ServicePayload
 {
     public const STATUS_VALID = 200;
     public const STATUS_FOUND = 200;
-    public const STATUS_CREATED = 201;
-    public const STATUS_UPDATED = 201;
+    public const STATUS_SAVED = 201;
     public const STATUS_DELETED = 202;
+    public const STATUS_INVALID_INPUT = 400;
     public const STATUS_FORBIDDEN = 403;
     public const STATUS_NOT_FOUND = 404;
-    public const STATUS_NOT_CREATED = 422;
     public const STATUS_NOT_DELETED = 409;
-    public const STATUS_NOT_UPDATED = 422;
+    public const STATUS_DUPLICATE_ENTITY = 409;
     public const STATUS_NOT_VALID = 422;
     public const STATUS_ERROR = 500;
 
@@ -51,7 +50,7 @@ class ServicePayload
         return $this->result;
     }
 
-    public function setResult($result)
+    public function setResult($result): ServicePayload
     {
         $this->result = $result;
 

@@ -6,7 +6,6 @@ namespace App\Application\Handlers;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
-use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
@@ -49,7 +48,7 @@ class HttpErrorHandler extends SlimErrorHandler
         }
 
         if (
-            !($exception instanceof HttpException) && ($exception instanceof Exception || $exception instanceof Throwable) && $this->displayErrorDetails
+            !($exception instanceof HttpException) && ($exception instanceof Throwable) && $this->displayErrorDetails
         ) {
             $error->setMessage('Erro : ' . $exception->getMessage() . ' na linha ' . $exception->getLine() . ' no arquivo ' . $exception->getFile());
         }

@@ -91,4 +91,5 @@ class ServiceListParams
     {
         return $this->class;
     }
+    
 }

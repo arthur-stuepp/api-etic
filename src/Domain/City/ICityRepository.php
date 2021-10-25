@@ -2,8 +2,6 @@
 
 namespace App\Domain\City;
 
-
-use App\Domain\IRepository;
 use App\Domain\Services\ServiceListParams;;
 
 interface ICityRepository 

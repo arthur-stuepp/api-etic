@@ -2,11 +2,11 @@
 
 namespace App\Domain\User;
 
-use App\Domain\User\User;
+use App\Domain\IHasUniquiProperties;
 use App\Domain\IRepository;
-use App\Domain\Services\ServiceListParams;;
 
-interface IUserRepository
+
+interface IUserRepository extends IRepository
 {
     public function save(User $user): bool;
 
@@ -17,6 +17,7 @@ interface IUserRepository
     */
     public function getById(int $id);
 
-    public function list(ServiceListParams $params): array;
-    
+    public function getDuplicateField(IHasUniquiProperties $properties): ?string;
+
+
 }

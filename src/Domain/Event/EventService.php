@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use App\Domain\Validation;
 use App\Domain\Services\ServicePayload;
 use App\Domain\Services\ApplicationService;
-use App\Domain\Factory\ParamsFactory;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
 use App\Domain\Traits\TraitDeleteService;
@@ -33,22 +31,22 @@ class EventService extends ApplicationService implements IEventService
         $event = new Event($data);
 
         if (!$this->validation->hasPermissionToSave()) {
-            return $this->validation->getMessages();
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
         }
 
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validation->getMessages()]);
         }
 
-        if ($this->validation->isDuplicateEntity($event, $this->repository->list(ParamsFactory::Event()->setFilters('name', $event->name)))) {
+        if ($this->validation->isDuplicateEntity($event, $this->repository->list($this->params(Event::class)->setFilters('name', $event->name)))) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['name' => Validation::FIELD_DUPLICATE]]);
         }
 
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getLastError()]);
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
+        return $this->ServicePayload(ServicePayload::STATUS_SAVED, ['id' => $this->repository->getError()]);
     }
 
 
@@ -67,15 +65,15 @@ class EventService extends ApplicationService implements IEventService
         if (!$this->validation->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validation->getMessages()]);
         }
-        if ($this->validation->isDuplicateEntity($event, $this->repository->list(ParamsFactory::Event()->setFilters('description', $event->description)))) {
+        if ($this->validation->isDuplicateEntity($event, $this->repository->list($this->params(Event::class)->setFilters('description', $event->description)))) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['description' => Validation::FIELD_DUPLICATE]);
         }
 
 
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getLastError()]);
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
+        return $this->ServicePayload(ServicePayload::STATUS_SAVED, ['id' => $this->repository->getError()]);
     }
 }

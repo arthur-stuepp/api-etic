@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Services;
 
-use App\Domain\Services\ServicePayload;
-
 interface ICrudService
 {
     public function create(array $data): ServicePayload;

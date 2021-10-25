@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Model\DateTimeModel;
 use Exception;
 use JsonSerializable;
 use ReflectionProperty;
-use App\Domain\Model\DateTimeModel;
 
 abstract class Entity implements JsonSerializable
 {
@@ -28,11 +28,6 @@ abstract class Entity implements JsonSerializable
         }
     }
 
-    public function __toString(): string
-    {
-        return (string) $this->id;
-    }
-
     private function convertProperty($key, $value)
     {
         $rp = new ReflectionProperty($this, $key);
@@ -46,7 +41,7 @@ abstract class Entity implements JsonSerializable
             case 'int':
                 if ($value === null && ($rp->getType()->allowsNull())) {
                     $this->$key = null;
-                } else {
+                } elseif (is_numeric($value)) {
                     $this->$key = (int)$value;
                 }
                 return;
@@ -70,6 +65,11 @@ abstract class Entity implements JsonSerializable
         }
     }
 
+
+    public function __toString(): string
+    {
+        return (string)$this->id;
+    }
 
     public function jsonSerialize(): array
     {

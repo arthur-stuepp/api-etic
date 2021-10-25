@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use DateTime;
-use App\Domain\Entity;
 use App\Domain\City\City;
+use App\Domain\Entity;
+use App\Domain\IHasUniquiProperties;
 use App\Domain\School\School;
+use DateTime;
 
-class User extends Entity
+class User extends Entity implements IHasUniquiProperties
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
 
     public int $id;
 
-    public int $type;
+    public int $type = self::TYPE_USER;
 
     public string $name;
 
@@ -45,8 +46,13 @@ class User extends Entity
         $json = parent::jsonSerialize();
         if (isset($json['password'])) {
             unset($json['password']);
-            
+
         }
         return $json;
+    }
+
+    public function getFields(): array
+    {
+        return ['email', 'taxId'];
     }
 }

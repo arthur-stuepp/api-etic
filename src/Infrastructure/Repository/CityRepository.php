@@ -21,16 +21,14 @@ class CityRepository implements ICityRepository
     {
         $params = new ServiceListParams(City::class);
         $params->setFilters('id', (string)$id)->setLimit(1);
-        return $this->list($params)['entities'][0] ?? false;
+        return $this->list($params)['result'][0] ?? false;
     }
 
     public function list(ServiceListParams $params): array
     {
-        $result = $this->repository->list($params);
-        $result['entities'] = array_map(function ($row) {
-            return new City($row);
-        }, $result['entities']);
-        return $result;
+      
+        return $this->repository->list($params);
+   
     }
 
 

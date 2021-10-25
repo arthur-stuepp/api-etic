@@ -40,4 +40,9 @@ class EventRepository  implements IEventRepository
     {
         return $this->repository->delete($id, Event::class);
     }
+
+    public function getError(): string
+    {
+        return $this->repository->getError();
+    }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\DB;
 
-use PDO;
 use Exception;
+use PDO;
 use PDOException;
 
 class DB
@@ -14,6 +14,9 @@ class DB
     private string $error;
 
 
+    /**
+     * @throws Exception
+     */
     public function __construct(string $dsn = MYSQL_DSN, string $user = MYSQL_USER, string $password = MYSQL_PWD)
     {
 
@@ -55,6 +58,18 @@ class DB
         }
     }
 
+    private function camel_to_snake(array $array): array
+    {
+        foreach ($array as $key => $value) {
+            $newKey = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
+            if ($newKey != $key) {
+                $array[$newKey] = $value;
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+
     public function update(int $id, string $table, array $data): bool
     {
         $data = $this->camel_to_snake($data);
@@ -90,7 +105,6 @@ class DB
             return false;
         }
     }
-
 
     public function delete(string $table, $id, string $field = 'id'): bool
     {
@@ -128,7 +142,7 @@ class DB
                 }
             }
 
-            $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
+                $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
             $stmt->execute();
             $calcRows->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -148,10 +162,13 @@ class DB
         }
     }
 
-    private function getLimit(int $page, int $limit): string
+    private function getFields(array $fields): string
     {
-        $offset = ($page - 1) * $limit;
-        return ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+        if ($fields === []) {
+            return '*';
+        }
+
+        return implode(',', array_values($this->camel_to_snake($fields)));
     }
 
     private function getFilters(array $filters): string
@@ -171,31 +188,12 @@ class DB
         return $filterSql;
     }
 
-    private function getFields(array $fields): string
+    private function getLimit(int $page, int $limit): string
     {
-        if ($fields === []) {
-            return '*';
-        }
 
-        return implode(',', array_values($this->camel_to_snake($fields)));
-    }
-
-
-    public function getError(): string
-    {
-        return $this->error;
-    }
-
-    private function camel_to_snake(array $array): array
-    {
-        foreach ($array as $key => $value) {
-            $newKey = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
-            if ($newKey != $key) {
-                $array[$newKey] = $value;
-                unset($array[$key]);
-            }
-        }
-        return $array;
+        $offset = ($page - 1) * $limit;
+        $limit = $limit === 0 ? 1 : $limit;
+        return ' LIMIT ' . $limit . ' OFFSET ' . $offset;
     }
 
     private function snakeToCamel(array $array): array
@@ -210,6 +208,10 @@ class DB
         return $array;
     }
 
+    public function getError(): string
+    {
+        return $this->error;
+    }
 
     public function getLastInsertId(): int
     {

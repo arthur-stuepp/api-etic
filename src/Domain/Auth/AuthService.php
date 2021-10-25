@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Auth;
 
-use Firebase\JWT\JWT;
-use App\Domain\User\User;
-use App\Domain\Services\ServicePayload;
 use App\Domain\Services\ApplicationService;
+use App\Domain\Services\ServicePayload;
 use App\Domain\User\IUserRepository;
+use App\Domain\User\User;
+use Firebase\JWT\JWT;
 
 class AuthService extends ApplicationService implements IAuthService
 {
@@ -38,6 +38,7 @@ class AuthService extends ApplicationService implements IAuthService
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
         }
         $token = $this->tokenGenerate($user);
+        
         return $this->ServicePayload(ServicePayload::STATUS_VALID, ['token' => $token, 'user' => $user]);
     }
 

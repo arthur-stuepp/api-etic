@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use App\Domain\Validation;
-use App\Domain\Services\ServicePayload;
-use App\Domain\Services\ServiceListParams;;
-use App\Domain\Services\ApplicationService;
 use App\Domain\City\ICityRepository;
-use App\Domain\Factory\ParamsFactory;
+use App\Domain\School\ISchoolRepository;
+use App\Domain\Services\ApplicationService;
+use App\Domain\Services\EntityValidator;
+use App\Domain\Services\ServiceListParams;
+use App\Domain\Services\ServicePayload;
+use App\Domain\Services\Validator;
+use App\Domain\Traits\TraitDeleteService;
 use App\Domain\Traits\TraitListService;
 use App\Domain\Traits\TraitReadService;
-use App\Domain\School\ISchoolRepository;
-use App\Domain\Traits\TraitDeleteService;
 
 
 class UserService extends ApplicationService implements IUserService
 {
-    private UserValidation $validation;
+    private EntityValidator $validation;
     private IUserRepository $repository;
     private ISchoolRepository $schoolRepository;
     private ICityRepository $cityRepository;
@@ -28,13 +28,12 @@ class UserService extends ApplicationService implements IUserService
     use TraitReadService;
     use TraitListService;
 
-    public function __construct(UserValidation $validation, IUserRepository $repository, ISchoolRepository $schoolRepository, ICityRepository $cityRepository)
+    public function __construct(EntityValidator $validation, IUserRepository $repository, ISchoolRepository $schoolRepository, ICityRepository $cityRepository)
     {
         $this->validation = $validation;
         $this->repository = $repository;
         $this->schoolRepository = $schoolRepository;
         $this->cityRepository = $cityRepository;
-        $this->params = new ServiceListParams(User::class);
     }
 
     public function create(array $data): ServicePayload
@@ -52,16 +51,36 @@ class UserService extends ApplicationService implements IUserService
         return $this->processAndSave($user);
     }
 
+    private function processAndSave(User $user): ServicePayload
+    {
+        if (!$this->validation->isValid($user)) {
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['message' => Validator::ENTITY_INVALID, 'fields' => $this->validation->getMessages()]);
+        }
+
+        $field = $this->repository->getDuplicateField($user);
+        if ($field !== null) {
+            return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['message' => Validator::ENTITY_DUPLICATE, $field => Validator::FIELD_DUPLICATE]);
+        }
+
+        if (!$this->schoolRepository->getById($user->school->id)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validator::ENTITY_INVALID, 'school' => Validator::ENTITY_NOT_FOUND]);
+        }
+        if (!$this->cityRepository->getById($user->city->id)) {
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validator::ENTITY_INVALID, 'city' => Validator::ENTITY_NOT_FOUND]);
+        }
+        if (!$this->repository->save($user)) {
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validator::ENTITY_SAVE_ERROR, 'description' => $this->repository->getError()]);
+        }
+
+        return $this->ServicePayload(ServicePayload::STATUS_SAVED, $user);
+    }
 
     public function update(int $id, array $data): ServicePayload
     {
-        if (!$this->validation->hasPermissionToRead($id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, $this->validation->getMessages());
-        }
         $user = $this->repository->getById($id);
 
         if (!$user) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => Validation::ENTITY_NOT_FOUND]);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => Validator::ENTITY_NOT_FOUND]);
         }
         if (isset($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
@@ -69,30 +88,5 @@ class UserService extends ApplicationService implements IUserService
         $user->setData($data);
 
         return $this->processAndSave($user);
-    }
-
-
-    private function processAndSave(User $user): ServicePayload
-    {
-        if (!$this->validation->isValid($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_INVALID, 'fields' => $this->validation->getMessages()]);
-        }
-        if (isset($user->school) && !$this->schoolRepository->getById($user->school->id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['school' => Validation::ENTITY_NOT_FOUND]);
-        }
-        if ($this->validation->isDuplicateEntity($user, $this->repository->list(ParamsFactory::User()->setFilters('email', $user->email)))) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['email' => Validation::FIELD_DUPLICATE]]);
-        }
-        if ($this->validation->isDuplicateEntity($user, $this->repository->list(ParamsFactory::User()->setFilters('taxId', Validation::extractNumbers($user->taxId))))) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID,  ['message' => Validation::ENTITY_DUPLICATE, 'fields' => ['taxId' => Validation::FIELD_DUPLICATE]]);
-        }
-        if (!$this->cityRepository->getById($user->city->id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['city' => Validation::ENTITY_NOT_FOUND]);
-        }
-        if (!$this->repository->save($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => Validation::ENTITY_SAVE_ERROR, 'description' => $this->repository->getLastError()]);
-        }
-
-        return $this->ServicePayload(ServicePayload::STATUS_CREATED, ['id' => $this->repository->getLastSaveId()]);
     }
 }
