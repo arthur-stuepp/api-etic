@@ -8,15 +8,8 @@ namespace App\Domain\Services;
 abstract class Validator
 {
 
-    public const RULE_CONST = 'RULE_CONST';
-    public const RULE_TAX_ID = 'RULE_TAX_ID';
     public const FIELD_REQUIRED = 'Campo obrigatorio';
     public const FIELD_INVALID = 'Valor invalido';
-    public const FIELD_DUPLICATE = 'Valor duplicado';
-    public const ENTITY_INVALID = 'Dados invalidos';
-    public const ENTITY_DUPLICATE = 'Registro duplicado';
-    public const ENTITY_NOT_FOUND = 'Registro não encontrada';
-    public const ENTITY_SAVE_ERROR = 'Erro ao salvar';
 
 
     protected array $messages = [];
@@ -26,7 +19,7 @@ abstract class Validator
         return $this->messages;
     }
 
-    public function validateTaxId(string $taxId): bool
+    protected function validateTaxId(string $taxId): bool
     {
 
         $taxId = self::extractNumbers($taxId);
@@ -48,7 +41,7 @@ abstract class Validator
         return true;
     }
 
-    public function extractNumbers(string $string): string
+    protected function extractNumbers(string $string): string
     {
         return preg_replace('/[^0-9]/is', '', $string);
     }

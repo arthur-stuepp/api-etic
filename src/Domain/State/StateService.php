@@ -18,7 +18,6 @@ class StateService extends ApplicationService implements IStateService
 
     public function __construct(IStateRepository $repository)
     {
-
         $this->repository = $repository;
     }
 }

@@ -20,7 +20,6 @@ abstract class Entity implements JsonSerializable
 
     public function setData(array $properties)
     {
-
         foreach ($properties as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->convertProperty($key, $value);

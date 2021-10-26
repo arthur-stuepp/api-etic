@@ -22,28 +22,10 @@ class EntityValidator extends Validator
         $this->reflectionClass = new ReflectionClass($this->entity);
         $this->messages = [];
         $this->validateRequiredFields();
+        $this->validateConsts();
+
+
         return $this->validate();
-    }
-    
-
-    private function validateConst(string $field): void
-    {
-        if (isset($this->entity->$field)) {
-
-            $consts = $this->reflectionClass->getConstants();
-            $find = false;
-            foreach ($consts as $const => $value) {
-                if (strpos($const, strtoupper($field) . '_') !== false) {
-                    if ($this->entity->$field === $value) {
-                        $find = true;
-                        break;
-                    }
-                }
-            }
-            if (!$find) {
-                $this->messages[$field] = self::FIELD_INVALID;
-            }
-        }
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
@@ -51,15 +33,32 @@ class EntityValidator extends Validator
     {
         $fields = $this->reflectionClass->getProperties();
         foreach ($fields as $field) {
-            $fieldName=$field->name;
+            $fieldName = $field->name;
             $rp = new ReflectionProperty(get_class($this->entity), $fieldName);
-           
-            if (($fieldName!=='id')&&!isset($this->entity->$fieldName) && (!$rp->getType()->allowsNull())) {
+
+            if (($fieldName !== 'id') && !isset($this->entity->$fieldName) && (!$rp->getType()->allowsNull())) {
                 $this->messages[$fieldName] = Validator::FIELD_REQUIRED;
             }
 
         }
     }
 
+    private function validateConsts(): void
+    {
+        $consts = $this->reflectionClass->getConstants();
+        if ($consts !== []) {
+            $fields = [];
+            foreach ($consts as $const => $value) {
+                $fields[explode('_', $const)[0]][] = $value;
 
+            }
+            foreach ($fields as $field => $constValues) {
+                    $property=strtolower($field);
+                if (!in_array($this->entity->$property, $constValues)) {
+                    $this->messages[$property] = self::FIELD_INVALID;
+                }
+            }
+        }
+    }
+    
 }

@@ -7,7 +7,7 @@ namespace App\Domain\School;
 use App\Domain\Entity;
 use App\Domain\IHasUniquiProperties;
 
-class School extends Entity implements  IHasUniquiProperties
+class School extends Entity implements IHasUniquiProperties
 {
 
     public int $id;
@@ -16,6 +16,6 @@ class School extends Entity implements  IHasUniquiProperties
 
     public function getFields(): array
     {
-       return ['name'];
+        return ['name'];
     }
 }

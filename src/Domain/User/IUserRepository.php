@@ -12,9 +12,11 @@ interface IUserRepository extends IRepository
 
     public function delete(int $id): bool;
 
-    /*
-    * @return User|false
-    */
+
+    /**
+     * @param int $id
+     * @return User|false
+     */
     public function getById(int $id);
 
     public function getDuplicateField(IHasUniquiProperties $properties): ?string;

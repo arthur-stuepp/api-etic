@@ -33,7 +33,7 @@ class User extends Entity implements IHasUniquiProperties
 
     public School $school;
 
-    public bool $disability;
+    public bool $disability=false;
 
     public string $password;
 
