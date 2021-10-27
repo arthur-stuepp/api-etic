@@ -7,7 +7,7 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Event\Event;
 use App\Domain\Event\IEventRepository;
 use App\Domain\School\School;
-use App\Domain\Services\ServiceListParams;
+use App\Domain\General\ServiceListParams;
 
 class EventRepository  implements IEventRepository
 {

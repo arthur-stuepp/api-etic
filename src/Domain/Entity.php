@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\Model\DateTimeModel;
+use App\Domain\General\Factory\EntityFactory;
+use App\Domain\General\Interfaces\IEntity;
+use App\Domain\General\Model\DateTimeModel;
 use Exception;
-use JsonSerializable;
 use ReflectionProperty;
 
-abstract class Entity implements JsonSerializable
+abstract class Entity implements IEntity
 {
+    public int $id;
 
     public function __construct(array $properties)
     {
         $this->setData($properties);
     }
-
 
     public function setData(array $properties)
     {
@@ -27,6 +28,7 @@ abstract class Entity implements JsonSerializable
         }
     }
 
+    /** @noinspection PhpUnhandledExceptionInspection */
     private function convertProperty($key, $value)
     {
         $rp = new ReflectionProperty($this, $key);
@@ -56,14 +58,18 @@ abstract class Entity implements JsonSerializable
                     return;
                 }
         }
-        $name = 'App\\Domain\\' . $key . '\\' . $key;
-        if (class_exists($name)) {
+        if (EntityFactory::entityExist($key)) {
             if (is_int($value)) {
-                $this->$key = new $name(['id' => $value]);
+                $this->$key = EntityFactory::getEntity($key, ['id' => $value]);
             }
         }
     }
 
+
+    public function getId(): int
+    {
+        return $this->id ?? 0;
+    }
 
     public function __toString(): string
     {

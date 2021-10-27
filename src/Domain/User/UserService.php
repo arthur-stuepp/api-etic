@@ -4,42 +4,53 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use App\Domain\City\ICityRepository;
+use App\Domain\Address\IAddressRepository;
+use App\Domain\ApplicationService;
+use App\Domain\General\Interfaces\IAuthService;
+use App\Domain\General\Interfaces\ICrudService;
+use App\Domain\General\ServiceListParams;
+use App\Domain\General\Traits\TraitDeleteService;
+use App\Domain\General\Traits\TraitListService;
+use App\Domain\General\Traits\TraitReadService;
+use App\Domain\General\Validator\EntityValidator;
 use App\Domain\School\ISchoolRepository;
-use App\Domain\Services\ApplicationService;
-use App\Domain\Services\EntityValidator;
-use App\Domain\Services\ServiceListParams;
-use App\Domain\Services\ServicePayload;
-use App\Domain\Traits\TraitDeleteService;
-use App\Domain\Traits\TraitListService;
-use App\Domain\Traits\TraitReadService;
+use App\Domain\ServicePayload;
+use Firebase\JWT\JWT;
 
 
-class UserService extends ApplicationService implements IUserService
+class UserService extends ApplicationService implements ICrudService, IAuthService
 {
     private EntityValidator $validation;
     private IUserRepository $repository;
     private ISchoolRepository $schoolRepository;
-    private ICityRepository $cityRepository;
+    private IAddressRepository $addressRepository;
     private ServiceListParams $params;
+    private string $class;
 
     use TraitDeleteService;
     use TraitReadService;
     use TraitListService;
 
-    public function __construct(EntityValidator $validation, IUserRepository $repository, ISchoolRepository $schoolRepository, ICityRepository $cityRepository)
+    public function __construct
+    (
+        EntityValidator    $validation,
+        IUserRepository    $repository,
+        ISchoolRepository  $schoolRepository,
+        IAddressRepository $addressRepository
+    )
     {
         $this->validation = $validation;
         $this->repository = $repository;
         $this->schoolRepository = $schoolRepository;
-        $this->cityRepository = $cityRepository;
+        $this->addressRepository = $addressRepository;
+        $this->class = User::class;
     }
 
     public function create(array $data): ServicePayload
     {
-        
+
         $user = new User($data);
-        
+
         if (isset($user->password)) {
             $user->password = password_hash($user->password, PASSWORD_BCRYPT);
         }
@@ -53,18 +64,20 @@ class UserService extends ApplicationService implements IUserService
         if (!$this->validation->isValid($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['message' => self::ENTITY_INVALID, 'fields' => $this->validation->getMessages()]);
         }
-       
+
         $field = $this->repository->getDuplicateField($user);
         if ($field !== null) {
-            return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['message' => self::ENTITY_DUPLICATE, 'field'=>$field]);
+            return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['message' => self::ENTITY_DUPLICATE, 'field' => $field]);
         }
 
         if (!$this->schoolRepository->getById($user->school->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => self::ENTITY_INVALID, 'school' => self::ENTITY_NOT_FOUND]);
         }
-        if (!$this->cityRepository->getById($user->city->id)) {
+
+        if (!$this->addressRepository->getCityById($user->city->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => self::ENTITY_INVALID, 'city' => self::ENTITY_NOT_FOUND]);
         }
+
         if (!$this->repository->save($user)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => self::ENTITY_SAVE_ERROR, 'description' => $this->repository->getError()]);
         }
@@ -84,6 +97,37 @@ class UserService extends ApplicationService implements IUserService
         }
         $user->setData($data);
 
+
         return $this->processAndSave($user);
+    }
+
+    public function auth(array $data): ServicePayload
+    {
+        $userAuth = new User($data);
+        $user = $this->repository->list($this->params(User::class)->setFilters('email', $userAuth->email)->setLimit(1))['result'][0] ?? false;
+        if (!$user) {
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Usuario não existente']);
+        }
+        if (!password_verify($userAuth->password, $user->password)) {
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
+        }
+        $token = $this->tokenGenerate($user);
+
+        return $this->ServicePayload(ServicePayload::STATUS_VALID, ['token' => $token, 'user' => $user]);
+    }
+
+    private function tokenGenerate(User $user): string
+    {
+
+        $token = [
+            'iss' => 'https://' . $_SERVER['HTTP_HOST'],
+            'iat' => time(),
+            'exp' => strtotime('+1 day', time()),
+            'user' => $user->id,
+            'type' => $user->type,
+
+        ];
+
+        return JWT::encode($token, KEY);
     }
 }

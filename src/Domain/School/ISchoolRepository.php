@@ -2,7 +2,7 @@
 
 namespace App\Domain\School;
 
-use App\Domain\IRepository;
+use App\Domain\General\Interfaces\IRepository;
 
 interface ISchoolRepository extends IRepository
 {

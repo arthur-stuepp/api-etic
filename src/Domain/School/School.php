@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\School;
 
 use App\Domain\Entity;
-use App\Domain\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IHasUniquiProperties;
 
 class School extends Entity implements IHasUniquiProperties
 {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity;
-use App\Domain\IHasUniquiProperties;
-use App\Domain\Services\ServiceListParams;
+use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\ServiceListParams;
 use App\Infrastructure\DB\DB;
 
 class MysqlRepository
@@ -91,19 +91,23 @@ class MysqlRepository
         return $this->db->getError();
     }
 
-    public function isDuplicateEntity(IHasUniquiProperties $properties, string $entity): ?string
+    public function isDuplicateEntity(IHasUniquiProperties $entity): ?string
     {
-        $fields = $properties->getFields();
+        $fields = $entity->getFields();
         foreach ($fields as $field) {
-            $params = new ServiceListParams($entity);
-            $params->setFilters($field, $properties->$field);
+            $params = new ServiceListParams(get_class($entity));
+            $params->setFilters($field, $entity->$field);
             $params->setFields('id');
-            if (isset($properties->id)) {
-                $params->setFilters('id', $properties->id);
+            $payload = $this->list($params);
+            if ($payload['total'] > 0) {
+                if ($entity->getId() === 0) {
+                    return $field;
+                }
+                if ($entity->getId() !== $payload['result'][0]->id) {
+                    return $field;
+                }
             }
-            if ($this->list($params)['total'] > 0) {
-                return $field;
-            }
+
         }
         return null;
     }

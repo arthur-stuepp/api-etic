@@ -2,8 +2,8 @@
 
 namespace App\Domain\User;
 
-use App\Domain\IHasUniquiProperties;
-use App\Domain\IRepository;
+use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IRepository;
 
 
 interface IUserRepository extends IRepository

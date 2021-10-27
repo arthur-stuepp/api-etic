@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use App\Domain\City\City;
+use App\Domain\Address\City;
 use App\Domain\Entity;
-use App\Domain\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IHasUniquiProperties;
 use App\Domain\School\School;
 use DateTime;
 
@@ -33,7 +33,7 @@ class User extends Entity implements IHasUniquiProperties
 
     public School $school;
 
-    public bool $disability=false;
+    public bool $disability = false;
 
     public string $password;
 

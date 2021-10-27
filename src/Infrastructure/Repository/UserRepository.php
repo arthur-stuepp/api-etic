@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\IHasUniquiProperties;
-use App\Domain\Services\ServiceListParams;
+use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\ServiceListParams;
 use App\Domain\User\IUserRepository;
 use App\Domain\User\User;
 
@@ -28,7 +28,7 @@ class UserRepository implements IUserRepository
         $params = new ServiceListParams(User::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['entities'][0] ?? false;
+        return $this->repository->list($params)['result'][0] ?? false;
     }
 
     public function list(ServiceListParams $params): array
@@ -48,7 +48,7 @@ class UserRepository implements IUserRepository
 
     public function getDuplicateField(IHasUniquiProperties $properties):?string
     {
-        return $this->repository->isDuplicateEntity($properties, User::class);
+        return $this->repository->isDuplicateEntity($properties);
     }
 }
 

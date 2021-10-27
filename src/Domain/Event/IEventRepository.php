@@ -2,7 +2,7 @@
 
 namespace App\Domain\Event;
 
-use App\Domain\IRepository;
+use App\Domain\General\Interfaces\IRepository;
 
 interface IEventRepository extends IRepository
 {

@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use App\Domain\Services\ApplicationService;
-use App\Domain\Services\EntityValidator;
-use App\Domain\Services\ServicePayload;
-use App\Domain\Traits\TraitDeleteService;
-use App\Domain\Traits\TraitListService;
-use App\Domain\Traits\TraitReadService;
+use App\Domain\ApplicationService;
+use App\Domain\General\Interfaces\ICrudService;
+use App\Domain\General\Traits\TraitDeleteService;
+use App\Domain\General\Traits\TraitListService;
+use App\Domain\General\Traits\TraitReadService;
+use App\Domain\General\Validator\EntityValidator;
+use App\Domain\ServicePayload;
 
-class EventService extends ApplicationService implements IEventService
+class EventService extends ApplicationService implements ICrudService
 {
     private EntityValidator $validator;
     private IEventRepository $repository;
+    private string $class;
 
     use TraitDeleteService;
     use TraitReadService;
@@ -25,6 +27,7 @@ class EventService extends ApplicationService implements IEventService
     {
         $this->validator = $validator;
         $this->repository = $repository;
+        $this->class=Event::class;
     }
 
     public function create(array $data): ServicePayload
@@ -39,7 +42,7 @@ class EventService extends ApplicationService implements IEventService
         if (!$this->validator->isValid($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validator->getMessages()]);
         }
-        
+
         if (!$this->repository->save($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => $this->repository->getError()]);
         }
@@ -56,6 +59,7 @@ class EventService extends ApplicationService implements IEventService
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Registro não encontrado']);
         }
         $event->setData($data);
+
         return $this->validateAndSave($event);
 
 

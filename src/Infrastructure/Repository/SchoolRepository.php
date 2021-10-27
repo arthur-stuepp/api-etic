@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\ServiceListParams;
 use App\Domain\School\ISchoolRepository;
 use App\Domain\School\School;
-use App\Domain\Services\ServiceListParams;
-use App\Domain\User\User;
 
 
 class SchoolRepository implements ISchoolRepository
@@ -43,13 +42,15 @@ class SchoolRepository implements ISchoolRepository
     {
         return $this->repository->delete($id, School::class);
     }
+
     public function getError(): string
     {
         return $this->repository->getError();
     }
-    public function getDuplicateField(IHasUniquiProperties $properties):?string
+
+    public function getDuplicateField(IHasUniquiProperties $properties): ?string
     {
-        return $this->repository->isDuplicateEntity($properties, School::class);
+        return $this->repository->isDuplicateEntity($properties);
     }
 
 }
