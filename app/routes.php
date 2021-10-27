@@ -19,6 +19,7 @@ return function (App $app) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
     });
+
     $app->post('/auth', LoginAction::class);
     $app->post('/users', SaveAction::class);
 

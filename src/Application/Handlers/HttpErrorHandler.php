@@ -52,7 +52,7 @@ class HttpErrorHandler extends SlimErrorHandler
         ) {
             $error->setMessage('Erro : ' . $exception->getMessage() . ' na linha ' . $exception->getLine() . ' no arquivo ' . $exception->getFile());
         }
-
+            
         $payload = new ActionPayload($statusCode, null, $error);
         $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
 

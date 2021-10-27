@@ -19,7 +19,7 @@ class ActionError implements JsonSerializable
     public const VERIFICATION_ERROR = 'VERIFICATION_ERROR';
 
     private string $type;
-    private string  $message;
+    private string $message;
 
     public function __construct(string $type, ?string $message)
     {
@@ -47,7 +47,9 @@ class ActionError implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-
+        if ($this->type === self::NOT_ALLOWED) {
+            $this->message = str_ireplace('Method not allowed. Must be one of', 'Metodo não aceito. Precisar ser uma das opções', $this->message);
+        }
         return ['message' => $this->message];
     }
 }
