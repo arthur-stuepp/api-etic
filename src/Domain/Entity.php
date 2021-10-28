@@ -13,6 +13,7 @@ use ReflectionProperty;
 abstract class Entity implements IEntity
 {
     public int $id;
+    public ?DateTimeModel $createdAt;
 
     public function __construct(array $properties)
     {
@@ -50,6 +51,7 @@ abstract class Entity implements IEntity
                 $this->$key = (bool)$value;
                 return;
             case 'DateTime':
+            case DateTimeModel::class:
                 try {
                     $this->$key = new DateTimeModel($value);
                     return;

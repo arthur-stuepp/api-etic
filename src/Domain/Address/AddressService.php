@@ -22,7 +22,7 @@ class AddressService extends ApplicationService implements IAddressService
     {
         $state = $this->repository->getStateById($id);
         if ($state === false) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, self::ENTITY_NOT_FOUND);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
         return $this->ServicePayload(ServicePayload::STATUS_FOUND, $state);
     }
@@ -31,7 +31,7 @@ class AddressService extends ApplicationService implements IAddressService
     {
         $state = $this->repository->getCityById($id);
         if ($state === false) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, self::ENTITY_NOT_FOUND);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
         return $this->ServicePayload(ServicePayload::STATUS_FOUND, $state);
     }

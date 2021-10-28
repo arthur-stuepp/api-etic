@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\General\Interfaces\IEntity;
+
 class ServicePayload
 {
     public const STATUS_VALID = 200;
@@ -15,11 +17,11 @@ class ServicePayload
     public const STATUS_NOT_FOUND = 404;
     public const STATUS_NOT_DELETED = 409;
     public const STATUS_DUPLICATE_ENTITY = 409;
-    public const STATUS_NOT_VALID = 422;
+    public const STATUS_INVALID_ENTITY = 422;
     public const STATUS_ERROR = 500;
 
     /**
-     * @var array|string
+     * @var array|string|IEntity
      */
     private $result;
 
@@ -36,12 +38,6 @@ class ServicePayload
         return $this->status;
     }
 
-    public function setStatus(int $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
 
     public function getResult()
     {
@@ -51,10 +47,4 @@ class ServicePayload
         return $this->result;
     }
 
-    public function setResult($result): ServicePayload
-    {
-        $this->result = $result;
-
-        return $this;
-    }
 }

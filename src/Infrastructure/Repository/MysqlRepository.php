@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity;
-use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IUniquiProperties;
 use App\Domain\General\ServiceListParams;
 use App\Infrastructure\DB\DB;
 
@@ -91,9 +91,9 @@ class MysqlRepository
         return $this->db->getError();
     }
 
-    public function isDuplicateEntity(IHasUniquiProperties $entity): ?string
+    public function isDuplicateEntity(IUniquiProperties $entity): ?string
     {
-        $fields = $entity->getFields();
+        $fields = $entity->getProperties();
         foreach ($fields as $field) {
             $params = new ServiceListParams(get_class($entity));
             $params->setFilters($field, $entity->$field);

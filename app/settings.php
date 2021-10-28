@@ -9,7 +9,6 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         'settings' => [
             'displayErrorDetails' => DEBUG, // Should be set to false in production
-            "determineRouteBeforeAppMiddleware" => true,
         ],
     ]);
 };

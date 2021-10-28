@@ -47,9 +47,6 @@ class ActionError implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        if ($this->type === self::NOT_ALLOWED) {
-            $this->message = str_ireplace('Method not allowed. Must be one of', 'Metodo não aceito. Precisar ser uma das opções', $this->message);
-        }
         return ['message' => $this->message];
     }
 }

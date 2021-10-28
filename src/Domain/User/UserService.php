@@ -62,24 +62,24 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
     private function processAndSave(User $user): ServicePayload
     {
         if (!$this->validation->isValid($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['message' => self::ENTITY_INVALID, 'fields' => $this->validation->getMessages()]);
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
 
         $field = $this->repository->getDuplicateField($user);
         if ($field !== null) {
-            return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['message' => self::ENTITY_DUPLICATE, 'field' => $field]);
+            return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
         }
 
         if (!$this->schoolRepository->getById($user->school->id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => self::ENTITY_INVALID, 'school' => self::ENTITY_NOT_FOUND]);
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['school' => self::ENTITY_NOT_FOUND]);
         }
 
         if (!$this->addressRepository->getCityById($user->city->id)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => self::ENTITY_INVALID, 'city' => self::ENTITY_NOT_FOUND]);
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['city' => self::ENTITY_NOT_FOUND]);
         }
 
         if (!$this->repository->save($user)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => self::ENTITY_SAVE_ERROR, 'description' => $this->repository->getError()]);
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_SAVED, $user);
@@ -90,7 +90,7 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
         $user = $this->repository->getById($id);
 
         if (!$user) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => self::ENTITY_NOT_FOUND]);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
         if (isset($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);

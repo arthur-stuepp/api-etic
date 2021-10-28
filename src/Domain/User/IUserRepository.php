@@ -2,7 +2,7 @@
 
 namespace App\Domain\User;
 
-use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IUniquiProperties;
 use App\Domain\General\Interfaces\IRepository;
 
 
@@ -19,7 +19,7 @@ interface IUserRepository extends IRepository
      */
     public function getById(int $id);
 
-    public function getDuplicateField(IHasUniquiProperties $properties): ?string;
+    public function getDuplicateField(IUniquiProperties $properties): ?string;
 
 
 }

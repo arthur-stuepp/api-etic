@@ -6,11 +6,11 @@ namespace App\Domain\User;
 
 use App\Domain\Address\City;
 use App\Domain\Entity;
-use App\Domain\General\Interfaces\IHasUniquiProperties;
+use App\Domain\General\Interfaces\IUniquiProperties;
 use App\Domain\School\School;
 use DateTime;
 
-class User extends Entity implements IHasUniquiProperties
+class User extends Entity implements IUniquiProperties
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
@@ -51,7 +51,7 @@ class User extends Entity implements IHasUniquiProperties
         return $json;
     }
 
-    public function getFields(): array
+    public function getProperties(): array
     {
         return ['email', 'taxId'];
     }

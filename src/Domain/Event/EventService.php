@@ -40,7 +40,7 @@ class EventService extends ApplicationService implements ICrudService
     private function validateAndSave(Event $event): ServicePayload
     {
         if (!$this->validator->isValid($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_VALID, ['message' => 'Evento invalido', 'fields' => $this->validator->getMessages()]);
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['fields' => $this->validator->getMessages()]);
         }
 
         if (!$this->repository->save($event)) {
