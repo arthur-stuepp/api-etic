@@ -77,9 +77,9 @@ class MysqlRepository
         return $rows;
     }
 
-    public function delete(int $id, string $table): bool
+    public function delete(int $id, string $class): bool
     {
-        if (!($this->db->delete($table, $id))) {
+        if (!($this->db->delete($this->getTable($class), $id))) {
             return false;
         }
         return true;

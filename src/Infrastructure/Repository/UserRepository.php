@@ -54,12 +54,10 @@ class UserRepository implements IUserRepository
                 if ($fields === [] || in_array('city', $fields)) {
                     $city = $this->addressRepository->getCityById($user->getCity()->getId());
                     $user->setCity($city);
-
                 }
                 if ($fields === [] || in_array('school', $fields)) {
                     $school = $this->schoolRepository->getById($user->getSchool()->getId());
                     $user->setSchool($school);
-
                 }
 
                 return $user;

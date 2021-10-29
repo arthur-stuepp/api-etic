@@ -11,6 +11,7 @@ class DeleteAction extends CrudAction
 
     protected function action(): Response
     {
+        $this->setService();
         [$id] = array_values($this->args);
 
         return $this->respondWithPayload($this->service->delete((int)$id));
