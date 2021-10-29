@@ -12,10 +12,10 @@ use ReflectionProperty;
 
 abstract class Entity implements IEntity
 {
-    public int $id;
-    public ?DateTimeModel $createdAt;
+    protected int $id;
+    protected ?DateTimeModel $createdAt;
 
-    public function __construct(array $properties)
+    public function __construct(array $properties=[])
     {
         $this->setData($properties);
     }
@@ -30,7 +30,7 @@ abstract class Entity implements IEntity
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
-    private function convertProperty($key, $value)
+    protected function convertProperty($key, $value)
     {
         $rp = new ReflectionProperty($this, $key);
         $type = $rp->getType()->getName();
@@ -73,6 +73,12 @@ abstract class Entity implements IEntity
         return $this->id ?? 0;
     }
 
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+
     public function __toString(): string
     {
         return (string)$this->id;
@@ -91,5 +97,10 @@ abstract class Entity implements IEntity
                 }
         }
         return $vars;
+    }
+
+    public function getData(): array
+    {
+        return get_object_vars($this);
     }
 }

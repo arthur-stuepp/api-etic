@@ -8,18 +8,19 @@ use App\Domain\Entity;
 use ReflectionClass;
 use ReflectionProperty;
 
-class EntityValidator extends Validator
+class InputValidator extends Validator
 {
-
-
-    private Entity $entity;
+    private array $data;
     private ReflectionClass $reflectionClass;
+    private string $className;
 
 
-    public function isValid(Entity $entity): bool
+    /** @noinspection PhpUnhandledExceptionInspection */
+    public function isValid(array $data, Entity $entity): bool
     {
-        $this->entity = $entity;
-        $this->reflectionClass = new ReflectionClass($this->entity);
+        $this->className = get_class($entity);
+        $this->data = $data;
+        $this->reflectionClass = new ReflectionClass($entity);
         $this->messages = [];
         $this->validateRequiredFields();
         $this->validateConsts();
@@ -34,11 +35,14 @@ class EntityValidator extends Validator
         $fields = $this->reflectionClass->getProperties();
         foreach ($fields as $field) {
             $fieldName = $field->name;
-            $rp = new ReflectionProperty(get_class($this->entity), $fieldName);
+            $rp = new ReflectionProperty($this->className, $fieldName);
 
-            if (($fieldName !== 'id') && !isset($this->entity->$fieldName) && (!$rp->getType()->allowsNull())) {
-                $this->messages[$fieldName] = Validator::FIELD_REQUIRED;
+            if ($fieldName !== 'id') {
+                if (!isset($this->data[$fieldName]) && (!$rp->getType()->allowsNull())) {
+                    $this->messages[$fieldName] = Validator::FIELD_REQUIRED;
+                }
             }
+
 
         }
     }
@@ -53,12 +57,12 @@ class EntityValidator extends Validator
 
             }
             foreach ($fields as $field => $constValues) {
-                    $property=strtolower($field);
-                if (!in_array($this->entity->$property, $constValues)) {
+                $property = strtolower($field);
+                if (!in_array($this->data[$property], $constValues)) {
                     $this->messages[$property] = self::FIELD_INVALID;
                 }
             }
         }
     }
-    
+
 }

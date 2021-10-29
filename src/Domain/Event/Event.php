@@ -6,7 +6,6 @@ namespace App\Domain\Event;
 
 use App\Domain\Entity;
 use App\Domain\General\Model\DateTimeModel;
-use App\Domain\User\User;
 
 class Event extends Entity
 {
@@ -31,5 +30,61 @@ class Event extends Entity
     /**
      * @var EventUser[]
      */
-    private array $users;
+    private array $users = [];
+
+    /**
+     * @var int[]
+     */
+    private array $deleteIds=[];
+
+    public function getUsers(): array
+    {
+        return $this->users ?? [];
+    }
+
+    public function setUsers(array $eventUsers)
+    {
+        if ($this->users === []) {
+            $this->users = $eventUsers;
+        }
+
+    }
+
+    public function addUser(EventUser $eventUser)
+    {
+        if ($this->getUser($eventUser->user->id) === null) {
+            $this->users[] = $eventUser;
+        }
+    }
+
+    public function getUser(int $userId): ?EventUser
+    {
+        return array_filter($this->users, function ($eventUser) use ($userId) {
+                return $eventUser->user->getId() === $userId;
+            })[0] ?? null;
+
+    }
+
+    public function removeUser(EventUser $eventUser)
+    {
+        $userId = $eventUser->user;
+        foreach ($this->users as $key => $eventUser) {
+            if ($eventUser->user === $userId) {
+                $this->deleteIds[] = $eventUser->id;
+                unset($this->users[$key]);
+                return;
+            }
+        }
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getDeleteIds(): array
+    {
+        return $this->deleteIds;
+    }
+    
+
+
 }

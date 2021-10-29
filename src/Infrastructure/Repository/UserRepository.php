@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
+use App\Domain\Address\IAddressRepository;
 use App\Domain\General\Interfaces\IUniquiProperties;
 use App\Domain\General\ServiceListParams;
 use App\Domain\User\IUserRepository;
@@ -12,10 +13,12 @@ use App\Domain\User\User;
 class UserRepository implements IUserRepository
 {
     private MysqlRepository $repository;
+    private IAddressRepository $addressRepository;
 
-    public function __construct(MysqlRepository $mysqlRepository)
+    public function __construct(MysqlRepository $mysqlRepository, IAddressRepository $addressRepository)
     {
         $this->repository = $mysqlRepository;
+        $this->addressRepository = $addressRepository;
     }
 
     public function save(User $user): bool
@@ -31,9 +34,30 @@ class UserRepository implements IUserRepository
         return $this->repository->list($params)['result'][0] ?? false;
     }
 
+    public function getByEmail(string $email)
+    {
+        $params = new ServiceListParams(User::class);
+        $params->setFilters('email', $email)
+            ->setLimit(1);
+        return $this->repository->list($params)['result'][0] ?? false;
+    }
+
     public function list(ServiceListParams $params): array
     {
-        return $this->repository->list($params);
+        $payload = $this->repository->list($params);
+        $fields = $params->getFields();
+        $payload['result'] = array_map(/**
+         */ function (User $user) use ($fields) {
+            if ($fields === [] || in_array('city', $fields)) {
+                $city = $this->addressRepository->getCityById($user->getCity()->id);
+                $user->setCity($city);
+
+            }
+
+            return $user;
+
+        }, $payload['result']);
+        return $payload;
     }
 
     public function delete($id): bool

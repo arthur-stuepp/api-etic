@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
 
@@ -10,12 +10,14 @@ use App\Domain\General\Interfaces\IUniquiProperties;
 class School extends Entity implements IUniquiProperties
 {
 
-    public int $id;
+    protected int $id;
 
-    public string $name;
+    protected string $name;
+    
 
     public function getProperties(): array
     {
-        return ['name'];
+        return ['name' => $this->name];
     }
+
 }

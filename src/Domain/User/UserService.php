@@ -12,7 +12,7 @@ use App\Domain\General\ServiceListParams;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;
-use App\Domain\General\Validator\EntityValidator;
+use App\Domain\General\Validator\InputValidator;
 use App\Domain\School\ISchoolRepository;
 use App\Domain\ServicePayload;
 use Firebase\JWT\JWT;
@@ -20,7 +20,7 @@ use Firebase\JWT\JWT;
 
 class UserService extends ApplicationService implements ICrudService, IAuthService
 {
-    private EntityValidator $validation;
+    private InputValidator $validation;
     private IUserRepository $repository;
     private ISchoolRepository $schoolRepository;
     private IAddressRepository $addressRepository;
@@ -33,7 +33,7 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
 
     public function __construct
     (
-        EntityValidator    $validation,
+        InputValidator     $validation,
         IUserRepository    $repository,
         ISchoolRepository  $schoolRepository,
         IAddressRepository $addressRepository
@@ -48,33 +48,25 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
 
     public function create(array $data): ServicePayload
     {
-
-        $user = new User($data);
-
-        if (isset($user->password)) {
-            $user->password = password_hash($user->password, PASSWORD_BCRYPT);
-        }
-
-
-        return $this->processAndSave($user);
+        return $this->processAndSave($data, new User());
     }
 
-    private function processAndSave(User $user): ServicePayload
+    private function processAndSave(array $data, User $user): ServicePayload
     {
-        if (!$this->validation->isValid($user)) {
+        if (!$this->validation->isValid($data, $user)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
-
+        $user->setData($data);
         $field = $this->repository->getDuplicateField($user);
         if ($field !== null) {
             return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
         }
 
-        if (!$this->schoolRepository->getById($user->school->id)) {
+        if (!$this->schoolRepository->getById($user->getSchool()->getId())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['school' => self::ENTITY_NOT_FOUND]);
         }
 
-        if (!$this->addressRepository->getCityById($user->city->id)) {
+        if (!$this->addressRepository->getCityById($user->getCity()->id)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['city' => self::ENTITY_NOT_FOUND]);
         }
 
@@ -92,23 +84,20 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
-        if (isset($data['password'])) {
-            $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-        }
-        $user->setData($data);
 
-
-        return $this->processAndSave($user);
+        return $this->processAndSave($data, $user);
     }
 
     public function auth(array $data): ServicePayload
     {
-        $userAuth = new User($data);
-        $user = $this->repository->list($this->params(User::class)->setFilters('email', $userAuth->email)->setLimit(1))['result'][0] ?? false;
+        if (!isset($data['email'], $data['password'])) {
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT);
+        }
+        $user = $this->repository->getByEmail($data['email']);
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Usuario não existente']);
         }
-        if (!password_verify($userAuth->password, $user->password)) {
+        if (!$user->passwordVerify($data['password'])) {
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
         }
         $token = $this->tokenGenerate($user);
@@ -123,8 +112,8 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
             'iss' => 'https://' . $_SERVER['HTTP_HOST'],
             'iat' => time(),
             'exp' => strtotime('+1 day', time()),
-            'user' => $user->id,
-            'type' => $user->type,
+            'user' => $user->getId(),
+            'type' => $user->getType(),
 
         ];
 

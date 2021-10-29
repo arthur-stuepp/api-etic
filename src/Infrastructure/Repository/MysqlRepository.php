@@ -18,18 +18,19 @@ class MysqlRepository
         $this->db = $db;
     }
 
-
     public function saveEntity(Entity $entity): bool
     {
         $class = get_class($entity);
-        if (isset($entity->id) && $entity->id > 0) {
-            if ($this->db->update($entity->id, $this->getTable($class), get_object_vars($entity))) {
+        $data = $entity->getData();
+        unset($data['createdAt']);
+        if ($entity->getId() !== 0) {
+            if ($this->db->update($entity->getId(), $this->getTable($class), $data)) {
 
                 return true;
             }
         } else {
-            if ($this->db->insert($this->getTable($class), get_object_vars($entity))) {
-                $entity->id = $this->db->getLastInsertId();
+            if ($this->db->insert($this->getTable($class), $data)) {
+                $entity->setId($this->db->getLastInsertId());
                 return true;
             }
         }
@@ -41,7 +42,6 @@ class MysqlRepository
 
     private function getTable(string $class): string
     {
-
         $class = explode('\\', $class);
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', end($class)));
     }
@@ -53,7 +53,6 @@ class MysqlRepository
      */
     public function getById(int $id, string $table)
     {
-
         $params = new ServiceListParams($table);
         $params->setFilters('id', (string)$id)->setLimit(1);
 
@@ -94,16 +93,16 @@ class MysqlRepository
     public function isDuplicateEntity(IUniquiProperties $entity): ?string
     {
         $fields = $entity->getProperties();
-        foreach ($fields as $field) {
+        foreach ($fields as $field => $value) {
             $params = new ServiceListParams(get_class($entity));
-            $params->setFilters($field, $entity->$field);
+            $params->setFilters($field,(string) $value);
             $params->setFields('id');
             $payload = $this->list($params);
             if ($payload['total'] > 0) {
                 if ($entity->getId() === 0) {
                     return $field;
                 }
-                if ($entity->getId() !== $payload['result'][0]->id) {
+                if ($entity->getId() !== $payload['result'][0]->getId()) {
                     return $field;
                 }
             }

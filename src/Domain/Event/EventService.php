@@ -9,12 +9,12 @@ use App\Domain\General\Interfaces\ICrudService;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;
-use App\Domain\General\Validator\EntityValidator;
+use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 
 class EventService extends ApplicationService implements ICrudService
 {
-    private EntityValidator $validator;
+    private InputValidator $validator;
     private IEventRepository $repository;
     private string $class;
 
@@ -23,7 +23,7 @@ class EventService extends ApplicationService implements ICrudService
     use TraitListService;
 
 
-    public function __construct(EntityValidator $validator, IEventRepository $repository)
+    public function __construct(InputValidator $validator, IEventRepository $repository)
     {
         $this->validator = $validator;
         $this->repository = $repository;

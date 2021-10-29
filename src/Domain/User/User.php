@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnusedprotectedFieldInspection */
+/** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
 
@@ -7,52 +8,88 @@ namespace App\Domain\User;
 use App\Domain\Address\City;
 use App\Domain\Entity;
 use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
-use DateTime;
 
 class User extends Entity implements IUniquiProperties
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
 
-    public int $id;
+    protected int $id;
 
-    public int $type = self::TYPE_USER;
+    protected int $type = self::TYPE_USER;
 
-    public string $name;
+    protected string $name;
 
-    public string $address;
+    protected string $address;
 
-    public City $city;
+    protected City $city;
 
-    public string $email;
+    protected string $email;
 
-    public DateTime $birthday;
+    protected DateTimeModel $birthday;
 
-    public ?string $company;
+    protected ?string $company;
 
-    public School $school;
+    protected School $school;
 
-    public bool $disability = false;
+    protected bool $disability = false;
 
-    public string $password;
+    protected string $password;
 
-    public string $taxId;
+    protected string $taxId;
 
-    public ?int $indication;
+    protected ?int $indication;
 
-    public function jsonSerialize(): array
+    public function passwordVerify(string $passoword): bool
     {
-        $json = parent::jsonSerialize();
-        if (isset($json['password'])) {
-            unset($json['password']);
+        return password_verify($passoword, $this->password);
+    }
 
-        }
-        return $json;
+    public function getCity(): City
+    {
+        return $this->city;
+    }
+
+    public function setCity(City $city)
+    {
+        $this->city = $city;
+    }
+
+    public function getSchool(): School
+    {
+        return $this->school;
+    }
+
+    public function setSchool(School $school)
+    {
+        $this->school = $school;
+    }
+
+    public function getType(): int
+    {
+        return $this->type;
     }
 
     public function getProperties(): array
     {
-        return ['email', 'taxId'];
+        return ['email' => $this->email, 'taxId' => $this->type];
     }
+
+    public function jsonSerialize(): array
+    {
+        $json = parent::jsonSerialize();
+        unset($json['password']);
+        if (isset($json['email'])) {
+            $json['email'] = substr($json['email'], 0, 3) . '****' . substr($json['email'], strpos($json['email'], "@"));
+        }
+        return $json;
+    }
+
+    public function setPassword(string $passoword)
+    {
+        $this->password = password_hash($passoword, PASSWORD_BCRYPT);
+    }
+
 }
