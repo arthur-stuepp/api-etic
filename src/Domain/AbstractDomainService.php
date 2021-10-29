@@ -6,11 +6,11 @@ namespace App\Domain;
 
 use App\Domain\General\ServiceListParams;
 
-abstract class ApplicationService
+abstract class AbstractDomainService
 {
     public const ENTITY_INVALID = 'Entidade invalida';
     public const ENTITY_DUPLICATE = 'Entidade duplicada';
-    public const ENTITY_NOT_FOUND = 'Entidade não encontrado';
+    public const ENTITY_NOT_FOUND = 'Entidade não encontrada';
     public const ENTITY_SAVE_ERROR = 'Erro ao salvar entidade';
     
 

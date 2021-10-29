@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Address;
 
-use App\Domain\ApplicationService;
+use App\Domain\AbstractDomainService;
 use App\Domain\General\ServiceListParams;
 use App\Domain\ServicePayload;
 
-class AddressService extends ApplicationService implements IAddressService
+class AddressService extends AbstractDomainService implements IAddressService
 {
 
     private IAddressRepository $repository;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\User;
 
 use App\Domain\Address\IAddressRepository;
-use App\Domain\ApplicationService;
+use App\Domain\AbstractDomainService;
 use App\Domain\General\Interfaces\IAuthService;
 use App\Domain\General\Interfaces\ICrudService;
 use App\Domain\General\ServiceListParams;
@@ -18,7 +18,7 @@ use App\Domain\ServicePayload;
 use Firebase\JWT\JWT;
 
 
-class UserService extends ApplicationService implements ICrudService, IAuthService
+class UserService extends AbstractDomainService implements ICrudService, IAuthService
 {
     private InputValidator $validation;
     private IUserRepository $repository;

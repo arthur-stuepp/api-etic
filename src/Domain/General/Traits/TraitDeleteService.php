@@ -21,7 +21,7 @@ trait TraitDeleteService
                 return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => 'Não foi possivel deletar esse registro', 'description' => $this->repository->getError()]);
             }
         } else {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Registro não encontrado']);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
     }
 }
