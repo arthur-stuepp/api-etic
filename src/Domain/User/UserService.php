@@ -66,7 +66,7 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['school' => self::ENTITY_NOT_FOUND]);
         }
 
-        if (!$this->addressRepository->getCityById($user->getCity()->id)) {
+        if (!$this->addressRepository->getCityById($user->getCity()->getId())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['city' => self::ENTITY_NOT_FOUND]);
         }
 
@@ -97,7 +97,7 @@ class UserService extends ApplicationService implements ICrudService, IAuthServi
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Usuario não existente']);
         }
-        if (!$user->passwordVerify($data['password'])) {
+        if (!$user->comparePassword($data['password'])) {
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
         }
         $token = $this->tokenGenerate($user);

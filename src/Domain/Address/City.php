@@ -9,9 +9,9 @@ use App\Domain\Entity;
 class City extends Entity
 {
 
-    public int $id;
+    protected int $id;
 
-    public string $name;
+    protected string $name;
 
-    public State $state;
+    protected State $state;
 }

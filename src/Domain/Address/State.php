@@ -9,10 +9,10 @@ use App\Domain\Entity;
 class State extends Entity
 {
 
-    public int $id;
+    protected int $id;
 
-    public string $code;
+    protected string $code;
 
-    public string $name;
+    protected string $name;
 
 }

@@ -7,6 +7,7 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Address\IAddressRepository;
 use App\Domain\General\Interfaces\IUniquiProperties;
 use App\Domain\General\ServiceListParams;
+use App\Domain\School\ISchoolRepository;
 use App\Domain\User\IUserRepository;
 use App\Domain\User\User;
 
@@ -14,11 +15,13 @@ class UserRepository implements IUserRepository
 {
     private MysqlRepository $repository;
     private IAddressRepository $addressRepository;
+    private ISchoolRepository $schoolRepository;
 
-    public function __construct(MysqlRepository $mysqlRepository, IAddressRepository $addressRepository)
+    public function __construct(MysqlRepository $mysqlRepository, IAddressRepository $addressRepository, ISchoolRepository $schoolRepository)
     {
         $this->repository = $mysqlRepository;
         $this->addressRepository = $addressRepository;
+        $this->schoolRepository = $schoolRepository;
     }
 
     public function save(User $user): bool
@@ -46,17 +49,22 @@ class UserRepository implements IUserRepository
     {
         $payload = $this->repository->list($params);
         $fields = $params->getFields();
-        $payload['result'] = array_map(/**
-         */ function (User $user) use ($fields) {
-            if ($fields === [] || in_array('city', $fields)) {
-                $city = $this->addressRepository->getCityById($user->getCity()->id);
-                $user->setCity($city);
+        $payload['result'] = array_map(
+            function (User $user) use ($fields) {
+                if ($fields === [] || in_array('city', $fields)) {
+                    $city = $this->addressRepository->getCityById($user->getCity()->getId());
+                    $user->setCity($city);
 
-            }
+                }
+                if ($fields === [] || in_array('school', $fields)) {
+                    $school = $this->schoolRepository->getById($user->getSchool()->getId());
+                    $user->setSchool($school);
 
-            return $user;
+                }
 
-        }, $payload['result']);
+                return $user;
+
+            }, $payload['result']);
         return $payload;
     }
 

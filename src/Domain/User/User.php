@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnusedprotectedFieldInspection */
+<?php /** @noinspection PhpUnused */
+/** @noinspection PhpUnusedprotectedFieldInspection */
 /** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
@@ -42,7 +43,7 @@ class User extends Entity implements IUniquiProperties
 
     protected ?int $indication;
 
-    public function passwordVerify(string $passoword): bool
+    public function comparePassword(string $passoword): bool
     {
         return password_verify($passoword, $this->password);
     }
