@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Domain\Address\IAddressRepository;
-use App\Domain\Event\IEventRepository;
-use App\Domain\School\ISchoolRepository;
-use App\Domain\User\IUserRepository;
+use App\Domain\Event\EventRepositoryInterface;
+use App\Domain\School\SchoolRepositoryInterface;
+use App\Domain\User\UserRepositoryInterface;
 use App\Infrastructure\Repository\AddressRepository;
 use App\Infrastructure\Repository\EventRepository;
 use App\Infrastructure\Repository\SchoolRepository;
@@ -17,9 +17,9 @@ use function DI\autowire;
 return function (ContainerBuilder $containerBuilder) {
 
     $containerBuilder->addDefinitions([
-        ISchoolRepository::class => autowire(SchoolRepository::class),
-        IEventRepository::class => autowire(EventRepository::class),
-        IUserRepository::class => autowire(UserRepository::class),
+        SchoolRepositoryInterface::class => autowire(SchoolRepository::class),
+        EventRepositoryInterface::class => autowire(EventRepository::class),
+        UserRepositoryInterface::class => autowire(UserRepository::class),
         IAddressRepository::class => autowire(AddressRepository::class),
     ]);
 };

@@ -4,7 +4,7 @@ namespace App\Domain\General\Interfaces;
 
 use App\Domain\General\ServiceListParams;
 
-interface IRepository{
+interface RepositoryInterface{
     public function list(ServiceListParams $params): array;
 
     public function delete(int $id): bool;

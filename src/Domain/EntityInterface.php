@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Domain\General\Factory\EntityFactory;
-use App\Domain\General\Interfaces\IEntity;
+use App\Domain\General\Interfaces\EntityInterface;
 use App\Domain\General\Model\DateTimeModel;
 use Exception;
 use ReflectionProperty;
 
-abstract class Entity implements IEntity
+abstract class EntityInterface implements EntityInterface
 {
     protected int $id;
     protected ?DateTimeModel $createdAt;

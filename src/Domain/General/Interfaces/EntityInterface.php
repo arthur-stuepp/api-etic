@@ -4,7 +4,7 @@ namespace App\Domain\General\Interfaces;
 
 use JsonSerializable;
 
-interface IEntity extends JsonSerializable
+interface EntityInterface extends JsonSerializable
 {
     public function getId(): int;
 

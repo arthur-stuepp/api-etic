@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\School;
 
-use App\Domain\Entity;
-use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\EntityInterface;
+use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 
-class School extends Entity implements IUniquiProperties
+class School extends EntityInterface implements UniquiPropertiesInterface
 {
 
     protected int $id;

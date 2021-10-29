@@ -2,9 +2,9 @@
 
 namespace App\Domain\School;
 
-use App\Domain\General\Interfaces\IRepository;
+use App\Domain\General\Interfaces\RepositoryInterface;
 
-interface ISchoolRepository extends IRepository
+interface SchoolRepositoryInterface extends RepositoryInterface
 {
     public function save(School $school): bool;
 

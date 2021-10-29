@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domain\General\Factory;
 
-use App\Domain\Event\EventService;
-use App\Domain\General\Interfaces\ICrudService;
-use App\Domain\School\SchoolService;
-use App\Domain\User\UserService;
+use App\Domain\Event\EventServiceInterface;
+use App\Domain\General\Interfaces\CrudServiceInterface;
+use App\Domain\School\SchoolServiceInterface;
+use App\Domain\User\UserServiceInterfaceInterface;
 use DI\Container;
 
 class ServiceFactory
 {
     private Container $container;
     private array $services = [
-        'users' => UserService::class,
-        'events' => EventService::class,
-        'schools' => SchoolService::class,
+        'users' => UserServiceInterfaceInterface::class,
+        'events' => EventServiceInterface::class,
+        'schools' => SchoolServiceInterface::class,
     ];
 
     public function __construct(Container $container)
@@ -26,7 +26,7 @@ class ServiceFactory
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
-    public function getService(string $pattern): ICrudService
+    public function getService(string $pattern): CrudServiceInterface
     {
         return $this->container->get($this->services[$pattern]);
     }

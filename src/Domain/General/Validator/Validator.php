@@ -22,7 +22,7 @@ abstract class Validator
     protected function validateTaxId(string $taxId): bool
     {
 
-        $taxId = self::extractNumbers($taxId);
+        $taxId = $this->extractNumbers($taxId);
         if (strlen($taxId) != 11) {
             return false;
         }

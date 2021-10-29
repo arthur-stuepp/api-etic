@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\General\Validator;
 
-use App\Domain\Entity;
+use App\Domain\EntityInterface;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -16,7 +16,7 @@ class InputValidator extends Validator
 
 
     /** @noinspection PhpUnhandledExceptionInspection */
-    public function isValid(array $data, Entity $entity): bool
+    public function isValid(array $data, EntityInterface $entity): bool
     {
         $this->className = get_class($entity);
         $this->data = $data;

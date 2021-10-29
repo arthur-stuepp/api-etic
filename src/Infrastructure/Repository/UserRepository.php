@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Address\IAddressRepository;
-use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
-use App\Domain\School\ISchoolRepository;
-use App\Domain\User\IUserRepository;
+use App\Domain\School\SchoolRepositoryInterface;
+use App\Domain\User\UserRepositoryInterface;
 use App\Domain\User\User;
 
-class UserRepository implements IUserRepository
+class UserRepository implements UserRepositoryInterface
 {
     private MysqlRepository $repository;
     private IAddressRepository $addressRepository;
-    private ISchoolRepository $schoolRepository;
+    private SchoolRepositoryInterface $schoolRepository;
 
-    public function __construct(MysqlRepository $mysqlRepository, IAddressRepository $addressRepository, ISchoolRepository $schoolRepository)
+    public function __construct(MysqlRepository $mysqlRepository, IAddressRepository $addressRepository, SchoolRepositoryInterface $schoolRepository)
     {
         $this->repository = $mysqlRepository;
         $this->addressRepository = $addressRepository;
@@ -72,7 +72,7 @@ class UserRepository implements IUserRepository
     }
 
 
-    public function getDuplicateField(IUniquiProperties $properties): ?string
+    public function getDuplicateField(UniquiPropertiesInterface $properties): ?string
     {
         return $this->repository->isDuplicateEntity($properties);
     }

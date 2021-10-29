@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
-use App\Domain\School\ISchoolRepository;
+use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\School\School;
 
 
-class SchoolRepository implements ISchoolRepository
+class SchoolRepository implements SchoolRepositoryInterface
 {
 
     private MysqlRepository $repository;
@@ -48,7 +48,7 @@ class SchoolRepository implements ISchoolRepository
         return $this->repository->getError();
     }
 
-    public function getDuplicateField(IUniquiProperties $properties): ?string
+    public function getDuplicateField(UniquiPropertiesInterface $properties): ?string
     {
         return $this->repository->isDuplicateEntity($properties);
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\School;
 
 use App\Domain\AbstractDomainService;
-use App\Domain\General\Interfaces\ICrudService;
+use App\Domain\General\Interfaces\CrudServiceInterface;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;
@@ -13,17 +13,17 @@ use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 
 
-class SchoolService extends AbstractDomainService implements ICrudService
+class SchoolServiceInterface extends AbstractDomainService implements CrudServiceInterface
 {
     use TraitDeleteService;
     use TraitReadService;
     use TraitListService;
 
     private InputValidator $validation;
-    private ISchoolRepository $repository;
+    private SchoolRepositoryInterface $repository;
     private string $class;
 
-    public function __construct(InputValidator $validation, ISchoolRepository $repository)
+    public function __construct(InputValidator $validation, SchoolRepositoryInterface $repository)
     {
         $this->validation = $validation;
         $this->repository = $repository;

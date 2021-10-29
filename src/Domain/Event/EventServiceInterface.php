@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Domain\Event;
 
 use App\Domain\AbstractDomainService;
-use App\Domain\General\Interfaces\ICrudService;
+use App\Domain\General\Interfaces\CrudServiceInterface;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;
 use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 
-class EventService extends AbstractDomainService implements ICrudService
+class EventServiceInterface extends AbstractDomainService implements CrudServiceInterface
 {
     private InputValidator $validator;
-    private IEventRepository $repository;
+    private EventRepositoryInterface $repository;
     private string $class;
 
     use TraitDeleteService;
@@ -23,7 +23,7 @@ class EventService extends AbstractDomainService implements ICrudService
     use TraitListService;
 
 
-    public function __construct(InputValidator $validator, IEventRepository $repository)
+    public function __construct(InputValidator $validator, EventRepositoryInterface $repository)
     {
         $this->validator = $validator;
         $this->repository = $repository;

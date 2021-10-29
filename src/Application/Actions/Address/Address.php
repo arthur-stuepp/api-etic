@@ -9,9 +9,7 @@ use App\Domain\Address\IAddressService;
 
 abstract class Address extends Action
 {
-    /**
-     * @var IAddressService
-     */
+
     protected IAddressService $service;
 
     public function __construct(IAddressService $service)

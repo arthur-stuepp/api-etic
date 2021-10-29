@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use App\Domain\Entity;
+use App\Domain\EntityInterface;
 use App\Domain\General\Model\DateTimeModel;
 
-class Event extends Entity
+class Event extends EntityInterface
 {
     public const TYPE_EVENT = 1;
     public const TYPE_GAME = 2;
@@ -41,18 +41,11 @@ class Event extends Entity
     {
         return $this->users ?? [];
     }
-
-    public function setUsers(array $eventUsers)
-    {
-        if ($this->users === []) {
-            $this->users = $eventUsers;
-        }
-
-    }
+    
 
     public function addUser(EventUser $eventUser)
     {
-        if ($this->getUser($eventUser->user->id) === null) {
+        if ($this->getUser($eventUser->user->getId()) === 0) {
             $this->users[] = $eventUser;
         }
     }
@@ -75,14 +68,6 @@ class Event extends Entity
                 return;
             }
         }
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getDeleteIds(): array
-    {
-        return $this->deleteIds;
     }
     
 

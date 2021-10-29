@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Address;
 
-use App\Domain\Entity;
+use App\Domain\EntityInterface;
 
-class City extends Entity
+class City extends EntityInterface
 {
 
     protected int $id;

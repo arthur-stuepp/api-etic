@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use App\Domain\Entity;
+use App\Domain\EntityInterface;
 use App\Domain\User\User;
 
-class EventUser extends Entity
+class EventUser extends EntityInterface
 {
     
     public int $event;

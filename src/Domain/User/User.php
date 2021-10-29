@@ -7,12 +7,12 @@ declare(strict_types=1);
 namespace App\Domain\User;
 
 use App\Domain\Address\City;
-use App\Domain\Entity;
-use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\EntityInterface;
+use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
 
-class User extends Entity implements IUniquiProperties
+class User extends EntityInterface implements UniquiPropertiesInterface
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;

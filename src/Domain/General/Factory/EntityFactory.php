@@ -7,7 +7,7 @@ namespace App\Domain\General\Factory;
 use App\Domain\Address\City;
 use App\Domain\Address\State;
 use App\Domain\Event\Event;
-use App\Domain\General\Interfaces\IEntity;
+use App\Domain\General\Interfaces\EntityInterface;
 use App\Domain\School\School;
 use App\Domain\User\User;
 
@@ -27,7 +27,7 @@ class EntityFactory
         return isset(self::$entities[$field]);
     }
 
-    public static function getEntity(string $field, array $value): IEntity
+    public static function getEntity(string $field, array $value): EntityInterface
     {
         return new self::$entities[$field]($value);
     }

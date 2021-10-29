@@ -7,7 +7,7 @@ namespace App\Domain\General\Interfaces;
 use App\Domain\General\ServiceListParams;
 use App\Domain\ServicePayload;
 
-interface ICrudService
+interface CrudServiceInterface
 {
     public function create(array $data): ServicePayload;
 

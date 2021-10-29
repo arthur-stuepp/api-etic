@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Event\Event;
-use App\Domain\Event\IEventRepository;
+use App\Domain\Event\EventRepositoryInterface;
 use App\Domain\School\School;
 use App\Domain\General\ServiceListParams;
 
-class EventRepository  implements IEventRepository
+class EventRepository  implements EventRepositoryInterface
 {
     private MysqlRepository $repository;
 

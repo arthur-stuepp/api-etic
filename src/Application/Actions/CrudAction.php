@@ -6,11 +6,11 @@ namespace App\Application\Actions;
 
 
 use App\Domain\General\Factory\ServiceFactory;
-use App\Domain\General\Interfaces\ICrudService;
+use App\Domain\General\Interfaces\CrudServiceInterface;
 
 abstract class CrudAction extends Action
 {
-    protected ICrudService $service;
+    protected CrudServiceInterface $service;
     protected ServiceFactory $factory;
 
     public function __construct(ServiceFactory $factory)

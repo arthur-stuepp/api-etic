@@ -6,7 +6,7 @@ namespace App\Domain\General\Interfaces;
 
 use App\Domain\ServicePayload;
 
-interface IAuthService
+interface AuthServiceInterface
 {
     public function auth(array $data): ServicePayload;
 

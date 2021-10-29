@@ -6,23 +6,23 @@ namespace App\Domain\User;
 
 use App\Domain\Address\IAddressRepository;
 use App\Domain\AbstractDomainService;
-use App\Domain\General\Interfaces\IAuthService;
-use App\Domain\General\Interfaces\ICrudService;
+use App\Domain\General\Interfaces\AuthServiceInterface;
+use App\Domain\General\Interfaces\CrudServiceInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;
 use App\Domain\General\Validator\InputValidator;
-use App\Domain\School\ISchoolRepository;
+use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\ServicePayload;
 use Firebase\JWT\JWT;
 
 
-class UserService extends AbstractDomainService implements ICrudService, IAuthService
+class UserServiceInterfaceInterface extends AbstractDomainService implements CrudServiceInterface, AuthServiceInterface
 {
     private InputValidator $validation;
-    private IUserRepository $repository;
-    private ISchoolRepository $schoolRepository;
+    private UserRepositoryInterface $repository;
+    private SchoolRepositoryInterface $schoolRepository;
     private IAddressRepository $addressRepository;
     private ServiceListParams $params;
     private string $class;
@@ -33,10 +33,10 @@ class UserService extends AbstractDomainService implements ICrudService, IAuthSe
 
     public function __construct
     (
-        InputValidator     $validation,
-        IUserRepository    $repository,
-        ISchoolRepository  $schoolRepository,
-        IAddressRepository $addressRepository
+        InputValidator            $validation,
+        UserRepositoryInterface   $repository,
+        SchoolRepositoryInterface $schoolRepository,
+        IAddressRepository        $addressRepository
     )
     {
         $this->validation = $validation;

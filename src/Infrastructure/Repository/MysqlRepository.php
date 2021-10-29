@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\Entity;
-use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\EntityInterface;
+use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 use App\Infrastructure\DB\DB;
 
@@ -18,7 +18,7 @@ class MysqlRepository
         $this->db = $db;
     }
 
-    public function saveEntity(Entity $entity): bool
+    public function saveEntity(EntityInterface $entity): bool
     {
         $class = get_class($entity);
         $data = $entity->toRepository();
@@ -49,7 +49,7 @@ class MysqlRepository
     /**
      * @param int $id
      * @param string $table
-     * @return false|Entity
+     * @return false|EntityInterface
      */
     public function getById(int $id, string $table)
     {
@@ -90,7 +90,7 @@ class MysqlRepository
         return $this->db->getError();
     }
 
-    public function isDuplicateEntity(IUniquiProperties $entity): ?string
+    public function isDuplicateEntity(UniquiPropertiesInterface $entity): ?string
     {
         $fields = $entity->getProperties();
         foreach ($fields as $field => $value) {

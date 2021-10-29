@@ -2,11 +2,11 @@
 
 namespace App\Domain\User;
 
-use App\Domain\General\Interfaces\IRepository;
-use App\Domain\General\Interfaces\IUniquiProperties;
+use App\Domain\General\Interfaces\RepositoryInterface;
+use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 
 
-interface IUserRepository extends IRepository
+interface UserRepositoryInterface extends RepositoryInterface
 {
     public function save(User $user): bool;
 
@@ -24,7 +24,7 @@ interface IUserRepository extends IRepository
      */
     public function getByEmail(string $email);
 
-    public function getDuplicateField(IUniquiProperties $properties): ?string;
+    public function getDuplicateField(UniquiPropertiesInterface $properties): ?string;
 
 
 }

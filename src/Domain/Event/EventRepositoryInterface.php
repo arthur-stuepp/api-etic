@@ -2,9 +2,9 @@
 
 namespace App\Domain\Event;
 
-use App\Domain\General\Interfaces\IRepository;
+use App\Domain\General\Interfaces\RepositoryInterface;
 
-interface IEventRepository extends IRepository
+interface EventRepositoryInterface extends RepositoryInterface
 {
     public function save(Event $event):bool;
 
