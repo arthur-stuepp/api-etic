@@ -21,7 +21,7 @@ class MysqlRepository
     public function saveEntity(Entity $entity): bool
     {
         $class = get_class($entity);
-        $data = $entity->getData();
+        $data = $entity->toRepository();
         unset($data['createdAt']);
         if ($entity->getId() !== 0) {
             if ($this->db->update($entity->getId(), $this->getTable($class), $data)) {

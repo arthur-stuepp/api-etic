@@ -15,7 +15,7 @@ abstract class Entity implements IEntity
     protected int $id;
     protected ?DateTimeModel $createdAt;
 
-    public function __construct(array $properties=[])
+    public function __construct(array $properties = [])
     {
         $this->setData($properties);
     }
@@ -30,41 +30,53 @@ abstract class Entity implements IEntity
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
-    protected function convertProperty($key, $value)
+    private function convertProperty($key, $value)
     {
+
         $rp = new ReflectionProperty($this, $key);
         $type = $rp->getType()->getName();
-
+        $convertedValue = null;
         switch ($type) {
             case 'string':
-                $this->$key = (string)$value;
-                return;
+                $convertedValue = (string)$value;
+                break;
 
             case 'int':
-                if ($value === null && ($rp->getType()->allowsNull())) {
-                    $this->$key = null;
-                } elseif (is_numeric($value)) {
-                    $this->$key = (int)$value;
+                if (is_numeric($value)) {
+                    $convertedValue = (int)$value;
                 }
-                return;
+                break;
             case 'bool':
-                $this->$key = (bool)$value;
-                return;
+                $convertedValue = (bool)$value;
+                break;
             case 'DateTime':
             case DateTimeModel::class:
                 try {
-                    $this->$key = new DateTimeModel($value);
-                    return;
+                    $convertedValue = new DateTimeModel($value);
+                    break;
                 } catch (Exception $e) {
 
-                    return;
+                    break;
+                }
+            default:
+                if (EntityFactory::entityExist($key)) {
+                    if (is_int($value)) {
+                        $convertedValue = EntityFactory::getEntity($key, ['id' => $value]);
+                    }
                 }
         }
-        if (EntityFactory::entityExist($key)) {
-            if (is_int($value)) {
-                $this->$key = EntityFactory::getEntity($key, ['id' => $value]);
-            }
+
+        if ($convertedValue === null && ($rp->getType()->allowsNull())) {
+            $this->$key = null;
+            return;
         }
+        if (method_exists($this, 'set' . ucfirst($key))) {
+            $method = 'set' . ucfirst($key);
+            $this->$method($convertedValue);
+            return;
+        }
+        $this->$key = $convertedValue;
+
     }
 
 
@@ -75,9 +87,11 @@ abstract class Entity implements IEntity
 
     public function setId(int $id): void
     {
-        $this->id = $id;
-    }
+        if (!isset($this->id)) {
+            $this->id = $id;
+        }
 
+    }
 
     public function __toString(): string
     {
@@ -99,7 +113,7 @@ abstract class Entity implements IEntity
         return $vars;
     }
 
-    public function getData(): array
+    public function toRepository(): array
     {
         return get_object_vars($this);
     }

@@ -12,6 +12,6 @@ interface IEntity extends JsonSerializable
 
     public function __toString(): string;
 
-    public function getData(): array;
+    public function toRepository(): array;
 
 }
