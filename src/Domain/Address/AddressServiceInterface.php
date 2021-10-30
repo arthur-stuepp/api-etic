@@ -4,10 +4,7 @@
 namespace App\Domain\Address;
 
 
-use App\Domain\General\ServiceListParams;
-
-
-interface IAddressService
+interface AddressServiceInterface
 {
     public function readState(int $id);
 

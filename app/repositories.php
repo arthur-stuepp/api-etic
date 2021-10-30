@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Domain\Address\IAddressRepository;
+use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\Event\EventRepositoryInterface;
 use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\User\UserRepositoryInterface;
@@ -20,6 +20,6 @@ return function (ContainerBuilder $containerBuilder) {
         SchoolRepositoryInterface::class => autowire(SchoolRepository::class),
         EventRepositoryInterface::class => autowire(EventRepository::class),
         UserRepositoryInterface::class => autowire(UserRepository::class),
-        IAddressRepository::class => autowire(AddressRepository::class),
+        AddressRepositoryInterface::class => autowire(AddressRepository::class),
     ]);
 };

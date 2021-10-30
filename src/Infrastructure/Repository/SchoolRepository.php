@@ -6,8 +6,8 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
-use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\School\School;
+use App\Domain\School\SchoolRepositoryInterface;
 
 
 class SchoolRepository implements SchoolRepositoryInterface
@@ -36,6 +36,7 @@ class SchoolRepository implements SchoolRepositoryInterface
     public function list(ServiceListParams $params): array
     {
         return $this->repository->list($params);
+
     }
 
     public function delete($id): bool

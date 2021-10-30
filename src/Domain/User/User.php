@@ -1,18 +1,16 @@
 <?php /** @noinspection PhpUnused */
-/** @noinspection PhpUnusedprotectedFieldInspection */
-/** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
 
 namespace App\Domain\User;
 
+use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
-use App\Domain\EntityInterface;
 use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
 
-class User extends EntityInterface implements UniquiPropertiesInterface
+class User extends AbstractEntity implements UniquiPropertiesInterface
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
@@ -48,25 +46,26 @@ class User extends EntityInterface implements UniquiPropertiesInterface
         return password_verify($passoword, $this->password);
     }
 
-    public function getCity(): City
+    public function getCityId(): int
     {
-        return $this->city;
+        return $this->city->getId();
     }
 
-    public function setCity(City $city)
+    public function getSchoolId(): int
+    {
+        return $this->school->getId();
+    }
+
+    public function setCity(City $city): void
     {
         $this->city = $city;
     }
 
-    public function getSchool(): School
-    {
-        return $this->school;
-    }
-
-    public function setSchool(School $school)
+    public function setSchool(School $school): void
     {
         $this->school = $school;
     }
+
 
     public function getType(): int
     {

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\Address\IAddressRepository;
+use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\School\SchoolRepositoryInterface;
-use App\Domain\User\UserRepositoryInterface;
 use App\Domain\User\User;
+use App\Domain\User\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
     private MysqlRepository $repository;
-    private IAddressRepository $addressRepository;
+    private AddressRepositoryInterface $addressRepository;
     private SchoolRepositoryInterface $schoolRepository;
 
-    public function __construct(MysqlRepository $mysqlRepository, IAddressRepository $addressRepository, SchoolRepositoryInterface $schoolRepository)
+    public function __construct(MysqlRepository $mysqlRepository, AddressRepositoryInterface $addressRepository, SchoolRepositoryInterface $schoolRepository)
     {
         $this->repository = $mysqlRepository;
         $this->addressRepository = $addressRepository;
@@ -51,13 +51,12 @@ class UserRepository implements UserRepositoryInterface
         $fields = $params->getFields();
         $payload['result'] = array_map(
             function (User $user) use ($fields) {
+
                 if ($fields === [] || in_array('city', $fields)) {
-                    $city = $this->addressRepository->getCityById($user->getCity()->getId());
-                    $user->setCity($city);
+                    $user->setCity($this->addressRepository->getCityById($user->getCityId()));
                 }
                 if ($fields === [] || in_array('school', $fields)) {
-                    $school = $this->schoolRepository->getById($user->getSchool()->getId());
-                    $user->setSchool($school);
+                    $user->setSchool($this->schoolRepository->getById($user->getSchoolId()));
                 }
 
                 return $user;

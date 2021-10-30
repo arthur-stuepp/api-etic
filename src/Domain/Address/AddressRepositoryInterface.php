@@ -4,7 +4,7 @@ namespace App\Domain\Address;
 
 use App\Domain\General\ServiceListParams;
 
-interface IAddressRepository
+interface AddressRepositoryInterface
 {
     /**
      * @param int $id

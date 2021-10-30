@@ -1,31 +1,31 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use App\Domain\EntityInterface;
+use App\Domain\AbstractEntity;
 use App\Domain\General\Model\DateTimeModel;
 
-class Event extends EntityInterface
+class Event extends AbstractEntity
 {
     public const TYPE_EVENT = 1;
     public const TYPE_GAME = 2;
     public const TYPE_HACKATHON = 3;
 
-    public int $id;
+    protected int $id;
 
-    public string $name;
+    protected string $name;
 
-    public int $type = self::TYPE_EVENT;
+    protected int $type = self::TYPE_EVENT;
 
-    public string $description;
+    protected string $description;
 
-    public int $capacity;
+    protected int $capacity;
 
-    public DateTimeModel $startTime;
+    protected DateTimeModel $startTime;
 
-    public DateTimeModel $endTime;
+    protected DateTimeModel $endTime;
 
     /**
      * @var EventUser[]
@@ -36,16 +36,11 @@ class Event extends EntityInterface
      * @var int[]
      */
     private array $deleteIds=[];
-
-    public function getUsers(): array
-    {
-        return $this->users ?? [];
-    }
     
 
-    public function addUser(EventUser $eventUser)
+    public function subscribeUser(EventUser $eventUser)
     {
-        if ($this->getUser($eventUser->user->getId()) === 0) {
+        if ($this->getUser($eventUser->getUser()->getId()) === 0) {
             $this->users[] = $eventUser;
         }
     }
@@ -53,16 +48,16 @@ class Event extends EntityInterface
     public function getUser(int $userId): ?EventUser
     {
         return array_filter($this->users, function ($eventUser) use ($userId) {
-                return $eventUser->user->getId() === $userId;
+                return $eventUser->getUser()->getId()=== $userId;
             })[0] ?? null;
 
     }
 
-    public function removeUser(EventUser $eventUser)
+    public function unsubscribeUser(EventUser $eventUser)
     {
-        $userId = $eventUser->user;
+        $userId = $eventUser->getUser()->getId();
         foreach ($this->users as $key => $eventUser) {
-            if ($eventUser->user === $userId) {
+            if ($eventUser->getUser()->getId() === $userId) {
                 $this->deleteIds[] = $eventUser->id;
                 unset($this->users[$key]);
                 return;

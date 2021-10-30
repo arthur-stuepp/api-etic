@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use App\Domain\Address\IAddressRepository;
 use App\Domain\AbstractDomainService;
+use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\General\Interfaces\AuthServiceInterface;
 use App\Domain\General\Interfaces\CrudServiceInterface;
 use App\Domain\General\ServiceListParams;
@@ -18,12 +18,12 @@ use App\Domain\ServicePayload;
 use Firebase\JWT\JWT;
 
 
-class UserServiceInterfaceInterface extends AbstractDomainService implements CrudServiceInterface, AuthServiceInterface
+class UserService extends AbstractDomainService implements CrudServiceInterface, AuthServiceInterface
 {
     private InputValidator $validation;
     private UserRepositoryInterface $repository;
     private SchoolRepositoryInterface $schoolRepository;
-    private IAddressRepository $addressRepository;
+    private AddressRepositoryInterface $addressRepository;
     private ServiceListParams $params;
     private string $class;
 
@@ -33,10 +33,10 @@ class UserServiceInterfaceInterface extends AbstractDomainService implements Cru
 
     public function __construct
     (
-        InputValidator            $validation,
-        UserRepositoryInterface   $repository,
-        SchoolRepositoryInterface $schoolRepository,
-        IAddressRepository        $addressRepository
+        InputValidator             $validation,
+        UserRepositoryInterface    $repository,
+        SchoolRepositoryInterface  $schoolRepository,
+        AddressRepositoryInterface $addressRepository
     )
     {
         $this->validation = $validation;
@@ -48,26 +48,26 @@ class UserServiceInterfaceInterface extends AbstractDomainService implements Cru
 
     public function create(array $data): ServicePayload
     {
-        return $this->processAndSave($data, new User());
+        return $this->processAndSave($data);
     }
 
-    private function processAndSave(array $data, User $user): ServicePayload
+    private function processAndSave(array $data): ServicePayload
     {
+        $user = new User($data);
         if (!$this->validation->isValid($data, $user)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
-        $user->setData($data);
         $field = $this->repository->getDuplicateField($user);
         if ($field !== null) {
             return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
         }
 
-        if (!$this->schoolRepository->getById($user->getSchool()->getId())) {
-            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['school' => self::ENTITY_NOT_FOUND]);
+        if (!$this->schoolRepository->getById($user->getSchoolId())) {
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['school' => self::NOT_FOUND]);
         }
 
-        if (!$this->addressRepository->getCityById($user->getCity()->getId())) {
-            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['city' => self::ENTITY_NOT_FOUND]);
+        if (!$this->addressRepository->getCityById($user->getCityId())) {
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['city' => self::NOT_FOUND]);
         }
 
         if (!$this->repository->save($user)) {
@@ -85,7 +85,7 @@ class UserServiceInterfaceInterface extends AbstractDomainService implements Cru
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
 
-        return $this->processAndSave($data, $user);
+        return $this->processAndSave($data);
     }
 
     public function auth(array $data): ServicePayload
@@ -94,6 +94,7 @@ class UserServiceInterfaceInterface extends AbstractDomainService implements Cru
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT);
         }
         $user = $this->repository->getByEmail($data['email']);
+
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Usuario não existente']);
         }
@@ -101,7 +102,6 @@ class UserServiceInterfaceInterface extends AbstractDomainService implements Cru
             return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
         }
         $token = $this->tokenGenerate($user);
-
         return $this->ServicePayload(ServicePayload::STATUS_VALID, ['token' => $token, 'user' => $user]);
     }
 

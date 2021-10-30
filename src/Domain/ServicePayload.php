@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\General\Interfaces\EntityInterface;
 
 class ServicePayload
 {
@@ -21,7 +20,7 @@ class ServicePayload
     public const STATUS_ERROR = 500;
 
     /**
-     * @var array|string|EntityInterface
+     * @var array|string|AbstractEntity
      */
     private $result;
 

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Domain\General\Factory\EntityFactory;
-use App\Domain\General\Interfaces\EntityInterface;
 use App\Domain\General\Model\DateTimeModel;
 use Exception;
+use JsonSerializable;
 use ReflectionProperty;
 
-abstract class EntityInterface implements EntityInterface
+abstract class AbstractEntity implements JsonSerializable
 {
     protected int $id;
     protected ?DateTimeModel $createdAt;
@@ -20,7 +20,7 @@ abstract class EntityInterface implements EntityInterface
         $this->setData($properties);
     }
 
-    public function setData(array $properties)
+    protected function setData(array $properties)
     {
         foreach ($properties as $key => $value) {
             if (property_exists($this, $key)) {
@@ -30,12 +30,12 @@ abstract class EntityInterface implements EntityInterface
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
-    private function convertProperty($key, $value)
+    private function convertProperty(string $key, $value)
     {
 
         $rp = new ReflectionProperty($this, $key);
         $type = $rp->getType()->getName();
-        $convertedValue = null;
+        $convertedValue = $value;
         switch ($type) {
             case 'string':
                 $convertedValue = (string)$value;
@@ -87,10 +87,7 @@ abstract class EntityInterface implements EntityInterface
 
     public function setId(int $id): void
     {
-        if (!isset($this->id)) {
-            $this->id = $id;
-        }
-
+        $this->id = $id;
     }
 
     public function __toString(): string

@@ -12,7 +12,7 @@ use App\Domain\General\Traits\TraitReadService;
 use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 
-class EventServiceInterface extends AbstractDomainService implements CrudServiceInterface
+class EventService extends AbstractDomainService implements CrudServiceInterface
 {
     private InputValidator $validator;
     private EventRepositoryInterface $repository;
@@ -27,19 +27,18 @@ class EventServiceInterface extends AbstractDomainService implements CrudService
     {
         $this->validator = $validator;
         $this->repository = $repository;
-        $this->class=Event::class;
+        $this->class = Event::class;
     }
 
     public function create(array $data): ServicePayload
     {
-        $event = new Event($data);
-
-        return $this->validateAndSave($event);
+        return $this->validateAndSave($data);
     }
 
-    private function validateAndSave(Event $event): ServicePayload
+    private function validateAndSave(array $data): ServicePayload
     {
-        if (!$this->validator->isValid($event)) {
+        $event = new Event($data);
+        if (!$this->validator->isValid($data, $event)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['fields' => $this->validator->getMessages()]);
         }
 

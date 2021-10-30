@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domain\General\Factory;
 
-use App\Domain\Event\EventServiceInterface;
+use App\Domain\Event\EventService;
 use App\Domain\General\Interfaces\CrudServiceInterface;
-use App\Domain\School\SchoolServiceInterface;
-use App\Domain\User\UserServiceInterfaceInterface;
+use App\Domain\School\SchoolService;
+use App\Domain\User\UserService;
 use DI\Container;
 
 class ServiceFactory
 {
     private Container $container;
     private array $services = [
-        'users' => UserServiceInterfaceInterface::class,
-        'events' => EventServiceInterface::class,
-        'schools' => SchoolServiceInterface::class,
+        'users' => UserService::class,
+        'events' => EventService::class,
+        'schools' => SchoolService::class,
     ];
 
     public function __construct(Container $container)

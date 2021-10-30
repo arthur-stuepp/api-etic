@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
+use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\Address\City;
-use App\Domain\Address\IAddressRepository;
 use App\Domain\Address\State;
 use App\Domain\General\ServiceListParams;
 
-class AddressRepository implements IAddressRepository
+class AddressRepository implements AddressRepositoryInterface
 {
     private MysqlRepository $repository;
 

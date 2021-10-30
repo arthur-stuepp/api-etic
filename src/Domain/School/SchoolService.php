@@ -13,7 +13,7 @@ use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 
 
-class SchoolServiceInterface extends AbstractDomainService implements CrudServiceInterface
+class SchoolService extends AbstractDomainService implements CrudServiceInterface
 {
     use TraitDeleteService;
     use TraitReadService;
@@ -32,18 +32,18 @@ class SchoolServiceInterface extends AbstractDomainService implements CrudServic
 
     public function create(array $data): ServicePayload
     {
-        return $this->processAndSave($data, new School());
+        return $this->processAndSave($data);
     }
 
-    private function processAndSave(array $data, School $school): ServicePayload
+    private function processAndSave(array $data): ServicePayload
     {
+        $school = new School($data);
         if (!$this->validation->isValid($data, $school)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
-        $school->setData($data);
 
         if (!$this->repository->save($school)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => self::ENTITY_SAVE_ERROR, 'description' => $this->repository->getError()]);
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_SAVED, $school);
@@ -56,7 +56,7 @@ class SchoolServiceInterface extends AbstractDomainService implements CrudServic
         if (!$school) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
-        return $this->processAndSave($data, $school);
+        return $this->processAndSave($data);
 
 
     }

@@ -2,7 +2,7 @@
 
 namespace App\Domain\General\Interfaces;
 
-interface  UniquiPropertiesInterface extends EntityInterface
+interface  UniquiPropertiesInterface
 {
     public function getProperties(): array;
 

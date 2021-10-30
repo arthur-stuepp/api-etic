@@ -8,12 +8,12 @@ use App\Domain\AbstractDomainService;
 use App\Domain\General\ServiceListParams;
 use App\Domain\ServicePayload;
 
-class AddressService extends AbstractDomainService implements IAddressService
+class AddressService extends AbstractDomainService implements AddressServiceInterface
 {
 
-    private IAddressRepository $repository;
+    private AddressRepositoryInterface $repository;
 
-    public function __construct(IAddressRepository $repository)
+    public function __construct(AddressRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

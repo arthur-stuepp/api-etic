@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\EntityInterface;
+use App\Domain\AbstractEntity;
 use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 use App\Infrastructure\DB\DB;
@@ -18,7 +18,7 @@ class MysqlRepository
         $this->db = $db;
     }
 
-    public function saveEntity(EntityInterface $entity): bool
+    public function saveEntity(AbstractEntity $entity): bool
     {
         $class = get_class($entity);
         $data = $entity->toRepository();
@@ -46,37 +46,6 @@ class MysqlRepository
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', end($class)));
     }
 
-    /**
-     * @param int $id
-     * @param string $table
-     * @return false|EntityInterface
-     */
-    public function getById(int $id, string $table)
-    {
-        $params = new ServiceListParams($table);
-        $params->setFilters('id', (string)$id)->setLimit(1);
-
-        return $this->list($params)['result'][0] ?? false;
-    }
-
-    public function list(ServiceListParams $params): array
-    {
-        $rows = $this->db->list(
-            $this->getTable($params->getClass()),
-            $params->getFields(),
-            $params->getFilters(),
-            $params->getPage(),
-            $params->getLimit()
-        );
-        for ($i = 0; $i <= count($rows['result']) - 1; $i++) {
-            $class = $params->getClass();
-            $entity = new $class($rows['result'][$i]);
-            $rows['result'][$i] = $entity;
-        }
-
-        return $rows;
-    }
-
     public function delete(int $id, string $class): bool
     {
         if (!($this->db->delete($this->getTable($class), $id))) {
@@ -95,7 +64,7 @@ class MysqlRepository
         $fields = $entity->getProperties();
         foreach ($fields as $field => $value) {
             $params = new ServiceListParams(get_class($entity));
-            $params->setFilters($field,(string) $value);
+            $params->setFilters($field, (string)$value);
             $params->setFields('id');
             $payload = $this->list($params);
             if ($payload['total'] > 0) {
@@ -109,6 +78,24 @@ class MysqlRepository
 
         }
         return null;
+    }
+
+    public function list(ServiceListParams $params): array
+    {
+        $rows = $this->db->list(
+            $this->getTable($params->getClass()),
+            $params->getFields(),
+            $params->getFilters(),
+            $params->getPage(),
+            $params->getLimit()
+        );
+        for ($i = 0; $i < count($rows['result']); $i++) {
+            $class = $params->getClass();
+            $entity = new $class($rows['result'][$i]);
+            $rows['result'][$i] = $entity;
+        }
+
+        return $rows;
     }
 
 

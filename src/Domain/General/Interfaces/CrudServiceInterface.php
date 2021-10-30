@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\General\Interfaces;
 
-use App\Domain\General\ServiceListParams;
 use App\Domain\ServicePayload;
 
 interface CrudServiceInterface
