@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\DB;
 
+use App\Infrastructure\DatabaseException\DatabaseException;
 use Exception;
 use PDO;
 use PDOException;
@@ -12,6 +13,7 @@ class DB
 {
     private PDO $db;
     private string $error;
+    private array $tables;
 
 
     /**
@@ -25,14 +27,31 @@ class DB
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+            $this->fetchAllTables();
         } catch (PDOException $e) {
-            throw new Exception("Erro ao conectar com o banco", 500);
+            throw new DatabaseException('Erro ao conectar com o banco', $e->getMessage());
 
         }
     }
 
+    private function fetchAllTables()
+    {
+        $sql = 'SHOW TABLES ';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $this->tables = array_map(function ($tables) {
+            return array_values($tables)[0];
+        }, $stmt->fetchAll(PDO::FETCH_ASSOC));
+
+    }
+
     public function insert(string $table, array $data): bool
     {
+        if (!$this->validateTable($table)) {
+            $this->error = 'Tabela :' . $table . ' não encontrada';
+            return false;
+        }
         $data = $this->camel_to_snake($data);
         try {
             $fields = implode(',', array_keys($data));
@@ -58,6 +77,11 @@ class DB
         }
     }
 
+    private function validateTable(string $table): bool
+    {
+        return in_array($table, $this->tables);
+    }
+
     private function camel_to_snake(array $array): array
     {
         foreach ($array as $key => $value) {
@@ -72,6 +96,10 @@ class DB
 
     public function update(int $id, string $table, array $data): bool
     {
+        if (!$this->validateTable($table)) {
+            $this->error = 'Tabela :' . $table . ' não encontrada';
+            return false;
+        }
         $data = $this->camel_to_snake($data);
         unset($data['id']);
         try {
@@ -108,6 +136,10 @@ class DB
 
     public function delete(string $table, $id, string $field = 'id'): bool
     {
+        if (!$this->validateTable($table)) {
+            $this->error = 'Tabela :' . $table . ' não encontrada';
+            return false;
+        }
         try {
             $sql = 'DELETE FROM ' . $table . ' WHERE ' . $field . '= :id';
             $stmt = $this->db->prepare($sql);
@@ -142,7 +174,7 @@ class DB
                 }
             }
 
-                $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
+            $calcRows = $this->db->prepare('SELECT FOUND_ROWS()');
             $stmt->execute();
             $calcRows->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -217,4 +249,13 @@ class DB
     {
         return (int)$this->db->lastInsertId();
     }
+
+//    public function fetchAllFields($table)
+//    {
+//        $sql = "SHOW FIELDS FROM " . $table;
+//        $this->prepare($sql)
+//            ->execute();
+//
+//        return $this;
+//    }
 }
