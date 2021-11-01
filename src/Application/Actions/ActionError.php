@@ -20,6 +20,7 @@ class ActionError implements JsonSerializable
 
     private string $type;
     private string $message;
+    private string $description;
 
     public function __construct(string $type, ?string $message)
     {
@@ -44,9 +45,22 @@ class ActionError implements JsonSerializable
         return $this;
     }
 
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
 
     public function jsonSerialize(): array
     {
-        return ['message' => $this->message];
+        $data = [
+            'type' => $this->type,
+            'message' => $this->message
+        ];
+        if (isset($this->description)) {
+            $data['description'] = $this->description;
+        }
+        return $data;
     }
+
+
 }

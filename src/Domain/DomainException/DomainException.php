@@ -8,10 +8,12 @@ use App\Domain\ServicePayload;
 use Exception;
 use Throwable;
 
-abstract class DomainException extends Exception
+class DomainException extends Exception
 {
-    public function __construct($message, $code = ServicePayload::STATUS_INVALID_ENTITY, Throwable $previous = null)
+
+    public function __construct(string $message, $code = ServicePayload::STATUS_INVALID_ENTITY, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
+    
 }

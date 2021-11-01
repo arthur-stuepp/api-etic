@@ -6,6 +6,7 @@ namespace App\Application\Handlers;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
+use App\Domain\General\Interfaces\DisplayMessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
@@ -47,12 +48,13 @@ class HttpErrorHandler extends SlimErrorHandler
             }
         }
 
-        if (
-            !($exception instanceof HttpException) && ($exception instanceof Throwable) && $this->displayErrorDetails
-        ) {
-            $error->setMessage('Erro : ' . $exception->getMessage() . ' na linha ' . $exception->getLine() . ' no arquivo ' . $exception->getFile());
+        if ($exception instanceof DisplayMessageInterface) {
+            $error->setMessage($exception->getDisplayMessage());
         }
-            
+        if (!($exception instanceof HttpException) && ($exception instanceof Throwable) && $this->displayErrorDetails) {
+            $error->setDescription('Erro : ' . $exception->getMessage() . ' na linha ' . $exception->getLine() . ' no arquivo ' . $exception->getFile());
+        }
+
         $payload = new ActionPayload($statusCode, null, $error);
         $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
 
