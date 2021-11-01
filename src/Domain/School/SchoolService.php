@@ -32,14 +32,19 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
 
     public function create(array $data): ServicePayload
     {
-        return $this->processAndSave($data);
-    }
-
-    private function processAndSave(array $data): ServicePayload
-    {
         $school = new School($data);
         if (!$this->validation->isValid($data, $school)) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+        }
+        
+        return $this->processAndSave($school);
+    }
+
+    private function processAndSave(School $school): ServicePayload
+    {
+        $field = $this->repository->getDuplicateField($school);
+        if ($field !== null) {
+            return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
         }
 
         if (!$this->repository->save($school)) {
@@ -47,6 +52,7 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_SAVED, $school);
+
     }
 
     public function update(int $id, array $data): ServicePayload
@@ -56,7 +62,15 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
         if (!$school) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
-        return $this->processAndSave($data);
+
+        if (!$this->validation->isValid($data, $school)) {
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+        }
+        
+        $school = new School($data);
+        $school->setId($id);
+
+        return $this->processAndSave($school);
 
 
     }

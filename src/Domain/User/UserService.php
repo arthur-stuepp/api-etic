@@ -48,15 +48,17 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
 
     public function create(array $data): ServicePayload
     {
-        return $this->processAndSave($data);
-    }
-
-    private function processAndSave(array $data): ServicePayload
-    {
-        $user = new User($data);
-        if (!$this->validation->isValid($data, $user)) {
+        if (!$this->validation->isValid($data, new User())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
+        $user = new User($data);
+
+        return $this->processAndSave($user);
+    }
+
+    private function processAndSave(User $user): ServicePayload
+    {
+
         $field = $this->repository->getDuplicateField($user);
         if ($field !== null) {
             return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
@@ -84,8 +86,10 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
+        $user = new User($data);
+        $user->setId($id);
 
-        return $this->processAndSave($data);
+        return $this->processAndSave($user);
     }
 
     public function auth(array $data): ServicePayload
@@ -96,12 +100,13 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
         $user = $this->repository->getByEmail($data['email']);
 
         if (!$user) {
-            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Usuario não existente']);
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Email ou senha Incorretos']);
         }
         if (!$user->comparePassword($data['password'])) {
-            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Senha incorreta.']);
+            return $this->ServicePayload(ServicePayload::STATUS_FORBIDDEN, ['message' => 'Email ou senha Incorretos']);
         }
         $token = $this->tokenGenerate($user);
+
         return $this->ServicePayload(ServicePayload::STATUS_VALID, ['token' => $token, 'user' => $user]);
     }
 

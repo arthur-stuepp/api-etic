@@ -10,7 +10,7 @@ use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
 
-class User extends AbstractEntity implements UniquiPropertiesInterface
+class User extends AbstractEntity implements UniquiPropertiesInterface 
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
