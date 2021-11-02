@@ -18,7 +18,7 @@ class Event extends AbstractEntity
     public const TYPE_HACKATHON = 3;
     protected int $id;
     protected string $name;
-    protected int $type = self::TYPE_EVENT; 
+    protected int $type = self::TYPE_EVENT;
     protected string $description;
     protected int $capacity;
     protected DateTimeModel $startTime;
@@ -28,7 +28,7 @@ class Event extends AbstractEntity
     public function __construct(array $properties = [])
     {
         parent::__construct($properties);
-        $this->class=new ArrayObject();
+        $this->class = new ArrayObject();
     }
 
     /**
@@ -68,7 +68,7 @@ class Event extends AbstractEntity
         if (!$this->class->offsetExists($userId)) {
             throw new DomainException('Usuario Não encontrado nesse evento', ServicePayload::STATUS_NOT_FOUND);
         }
-        
+
         $this->class->offsetUnset($userId);
     }
 

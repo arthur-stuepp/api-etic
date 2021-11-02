@@ -53,6 +53,9 @@ class DB
             return false;
         }
         $data = $this->camel_to_snake($data);
+        $fields = array_flip($this->fetchAllFields($table));
+
+        $data = (array_intersect_key($data, $fields));
         try {
             $fields = implode(',', array_keys($data));
             $values = ':' . implode(' , :', array_keys($data));
@@ -92,6 +95,19 @@ class DB
             }
         }
         return $array;
+    }
+
+    public function fetchAllFields($table): array
+
+    {
+        $sql = 'SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_SCHEMA=(SELECT DATABASE()) AND TABLE_NAME =:table';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['table' => $table]);
+
+        return array_map(function ($row) {
+            return $row['COLUMN_NAME'];
+        }, $stmt->fetchAll(PDO::FETCH_ASSOC));
+
     }
 
     public function update(int $id, string $table, array $data): bool
@@ -249,13 +265,4 @@ class DB
     {
         return (int)$this->db->lastInsertId();
     }
-
-//    public function fetchAllFields($table)
-//    {
-//        $sql = "SHOW FIELDS FROM " . $table;
-//        $this->prepare($sql)
-//            ->execute();
-//
-//        return $this;
-//    }
 }

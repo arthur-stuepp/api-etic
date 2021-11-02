@@ -21,15 +21,18 @@ class MysqlRepository
 
     public function saveEntity(AbstractEntity $entity): bool
     {
+   
         $class = get_class($entity);
         $reflect = new ReflectionClass($entity);
-        $props = $reflect->getProperties();
+        $props = $reflect->getProperties(\ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PUBLIC);
+  
 
         $data = [];
         foreach ($props as $prop) {
             $prop->setAccessible(true);
-            if ($prop->isInitialized($entity)) {
+            if ($prop->isInitialized($entity)) {    
                 $data[$prop->getName()] = $prop->getValue($entity);
+
             }
 
         }
