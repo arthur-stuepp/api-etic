@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\School;
 
 use App\Domain\AbstractEntity;
-use App\Domain\General\Interfaces\UniquiPropertiesInterface;
+use App\Domain\UniquiPropertiesInterface;
 
 class School extends AbstractEntity implements UniquiPropertiesInterface
 {
@@ -19,5 +19,11 @@ class School extends AbstractEntity implements UniquiPropertiesInterface
     {
         return ['name' => $this->name];
     }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
 
 }

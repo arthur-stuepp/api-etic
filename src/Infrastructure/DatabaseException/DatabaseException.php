@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\DatabaseException;
 
-use App\Domain\General\Interfaces\DisplayMessageInterface;
 use Exception;
 use Throwable;
 

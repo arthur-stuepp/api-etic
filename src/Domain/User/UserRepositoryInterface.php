@@ -2,11 +2,11 @@
 
 namespace App\Domain\User;
 
-use App\Domain\General\Interfaces\RepositoryInterface;
-use App\Domain\General\Interfaces\UniquiPropertiesInterface;
+use App\Domain\UniquiPropertiesInterface;
+use App\Domain\General\ServiceListParams;
 
 
-interface UserRepositoryInterface extends RepositoryInterface
+interface UserRepositoryInterface
 {
     public function save(User $user): bool;
 
@@ -25,6 +25,10 @@ interface UserRepositoryInterface extends RepositoryInterface
     public function getByEmail(string $email);
 
     public function getDuplicateField(UniquiPropertiesInterface $properties): ?string;
+
+    public function list(ServiceListParams $params): array;
+    
+    public function getError(): string;
 
 
 }

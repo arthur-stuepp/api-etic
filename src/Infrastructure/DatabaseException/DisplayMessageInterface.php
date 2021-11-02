@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\General\Interfaces;
+namespace App\Infrastructure\DatabaseException;
 
 interface  DisplayMessageInterface
 {

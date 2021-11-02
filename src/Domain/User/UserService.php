@@ -6,8 +6,7 @@ namespace App\Domain\User;
 
 use App\Domain\AbstractDomainService;
 use App\Domain\Address\AddressRepositoryInterface;
-use App\Domain\General\Interfaces\AuthServiceInterface;
-use App\Domain\General\Interfaces\CrudServiceInterface;
+use App\Domain\CrudServiceInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;

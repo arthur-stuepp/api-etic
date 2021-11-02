@@ -14,4 +14,18 @@ class City extends AbstractEntity
     protected string $name;
 
     protected State $state;
+
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+ 
+    public function getState(): State
+    {
+        return $this->state;
+    }
+    
+    
 }

@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\AbstractEntity;
-use App\Domain\General\Interfaces\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
+use App\Domain\UniquiPropertiesInterface;
 use App\Infrastructure\DB\DB;
+use ReflectionClass;
 
 class MysqlRepository
 {
@@ -21,8 +22,18 @@ class MysqlRepository
     public function saveEntity(AbstractEntity $entity): bool
     {
         $class = get_class($entity);
-        $data = $entity->toRepository();
-        unset($data['createdAt']);
+        $reflect = new ReflectionClass($entity);
+        $props = $reflect->getProperties();
+
+        $data = [];
+        foreach ($props as $prop) {
+            $prop->setAccessible(true);
+            if ($prop->isInitialized($entity)) {
+                $data[$prop->getName()] = $prop->getValue($entity);
+            }
+
+        }
+
         if ($entity->getId() !== 0) {
             if ($this->db->update($entity->getId(), $this->getTable($class), $data)) {
 
@@ -95,14 +106,13 @@ class MysqlRepository
             $entity = new $class($rows['result'][$i]);
             $fields = $params->getFields();
             if ($fields !== []) {
-                $diffs=array_diff_key($entity->jsonSerialize(),array_flip($params->getFields()));
+                $diffs = array_diff_key($entity->jsonSerialize(), array_flip($params->getFields()));
                 foreach ($diffs as $key => $value) {
                     if (!isset($fields[$key])) {
                         unset($entity->$key);
                     }
                 }
             }
-
 
             $rows['result'][$i] = $entity;
         }

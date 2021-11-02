@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Address\AddressRepositoryInterface;
-use App\Domain\General\Interfaces\UniquiPropertiesInterface;
+use App\Domain\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\User\User;

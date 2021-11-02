@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\General\Interfaces;
+namespace App\Domain;
 
 interface  UniquiPropertiesInterface
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\General\Factory;
 
 use App\Domain\Event\EventService;
-use App\Domain\General\Interfaces\CrudServiceInterface;
+use App\Domain\CrudServiceInterface;
 use App\Domain\School\SchoolService;
 use App\Domain\User\UserService;
 use DI\Container;

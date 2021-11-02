@@ -6,7 +6,7 @@ namespace App\Application\Actions;
 
 
 use App\Domain\General\Factory\ServiceFactory;
-use App\Domain\General\Interfaces\CrudServiceInterface;
+use App\Domain\CrudServiceInterface;
 
 abstract class CrudAction extends Action
 {

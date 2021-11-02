@@ -6,7 +6,7 @@ namespace App\Application\Handlers;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
-use App\Domain\General\Interfaces\DisplayMessageInterface;
+use App\Infrastructure\DatabaseException\DisplayMessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;

@@ -2,11 +2,11 @@
 
 namespace App\Domain\Event;
 
-use App\Domain\General\Interfaces\RepositoryInterface;
+use App\Domain\General\ServiceListParams;
 
-interface EventRepositoryInterface extends RepositoryInterface
+interface EventRepositoryInterface
 {
-    public function save(Event $event):bool;
+    public function save(Event $event): bool;
 
 
     /**
@@ -14,4 +14,11 @@ interface EventRepositoryInterface extends RepositoryInterface
      * @return Event|false
      */
     public function getById(int $id);
+
+    public function list(ServiceListParams $params): array;
+
+    public function delete(int $id): bool;
+
+    public function getError(): string;
+
 }

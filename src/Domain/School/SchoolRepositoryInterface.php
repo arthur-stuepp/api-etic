@@ -2,12 +2,17 @@
 
 namespace App\Domain\School;
 
-use App\Domain\General\Interfaces\RepositoryInterface;
+use App\Domain\General\ServiceListParams;
 
-interface SchoolRepositoryInterface extends RepositoryInterface
+interface SchoolRepositoryInterface
 {
     public function save(School $school): bool;
 
     public function getById(int $id);
 
+    public function list(ServiceListParams $params): array;
+
+    public function delete(int $id): bool;
+
+    public function getError(): string;
 }

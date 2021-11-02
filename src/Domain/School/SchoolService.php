@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\School;
 
 use App\Domain\AbstractDomainService;
-use App\Domain\General\Interfaces\CrudServiceInterface;
+use App\Domain\CrudServiceInterface;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;

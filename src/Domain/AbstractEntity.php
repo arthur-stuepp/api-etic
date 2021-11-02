@@ -82,13 +82,12 @@ abstract class AbstractEntity implements JsonSerializable
         $this->$key = $convertedValue;
 
     }
-
-
+    
     public function getId(): int
     {
         return $this->id ?? 0;
     }
-
+    
     public function setId(int $id): void
     {
         $this->id = $id;
@@ -113,9 +112,5 @@ abstract class AbstractEntity implements JsonSerializable
         }
         return $vars;
     }
-
-    public function toRepository(): array
-    {
-        return get_object_vars($this);
-    }
+    
 }

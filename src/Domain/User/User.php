@@ -6,7 +6,7 @@ namespace App\Domain\User;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
-use App\Domain\General\Interfaces\UniquiPropertiesInterface;
+use App\Domain\UniquiPropertiesInterface;
 use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
 
