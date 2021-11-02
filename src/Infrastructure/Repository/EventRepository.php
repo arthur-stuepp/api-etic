@@ -25,10 +25,10 @@ class EventRepository  implements EventRepositoryInterface
 
     public function getById(int $id)
     {
-        $params = new ServiceListParams(School::class);
+        $params = new ServiceListParams(Event::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['entities'][0] ?? false;
+        return $this->repository->list($params)['result'][0] ?? false;
     }
 
     public function list(ServiceListParams $params): array
