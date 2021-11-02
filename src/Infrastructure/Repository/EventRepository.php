@@ -6,10 +6,9 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Event\Event;
 use App\Domain\Event\EventRepositoryInterface;
-use App\Domain\School\School;
 use App\Domain\General\ServiceListParams;
 
-class EventRepository  implements EventRepositoryInterface
+class EventRepository implements EventRepositoryInterface
 {
     private MysqlRepository $repository;
 

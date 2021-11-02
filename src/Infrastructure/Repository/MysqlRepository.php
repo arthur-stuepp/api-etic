@@ -80,6 +80,7 @@ class MysqlRepository
         return null;
     }
 
+
     public function list(ServiceListParams $params): array
     {
         $rows = $this->db->list(
@@ -92,6 +93,17 @@ class MysqlRepository
         for ($i = 0; $i < count($rows['result']); $i++) {
             $class = $params->getClass();
             $entity = new $class($rows['result'][$i]);
+            $fields = $params->getFields();
+            if ($fields !== []) {
+                $diffs=array_diff_key($entity->jsonSerialize(),array_flip($params->getFields()));
+                foreach ($diffs as $key => $value) {
+                    if (!isset($fields[$key])) {
+                        unset($entity->$key);
+                    }
+                }
+            }
+
+
             $rows['result'][$i] = $entity;
         }
 

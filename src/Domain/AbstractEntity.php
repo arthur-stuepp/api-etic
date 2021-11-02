@@ -28,6 +28,10 @@ abstract class AbstractEntity implements JsonSerializable
             }
         }
     }
+    public function __unset(string $name)
+    {
+       unset($this->$name);
+    }
 
     /** @noinspection PhpUnhandledExceptionInspection */
     private function convertProperty(string $key, $value)

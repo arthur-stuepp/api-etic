@@ -17,7 +17,7 @@ class CityGetAction extends Address
             $queryParams['state'] = $state;
             return $this->respondWithPayload($this->service->listCity($queryParams));
         }
-        [$state,$id] = array_values($this->args);
+        [,$id] = array_values($this->args);
         
 
         return $this->respondWithPayload($this->service->readCity($id));
