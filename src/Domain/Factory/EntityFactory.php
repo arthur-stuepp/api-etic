@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\General\Factory;
+namespace App\Domain\Factory;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\General\Factory;
+namespace App\Domain\Factory;
 
-use App\Domain\Event\EventService;
 use App\Domain\CrudServiceInterface;
+use App\Domain\Event\EventService;
 use App\Domain\School\SchoolService;
 use App\Domain\User\UserService;
 use DI\Container;
@@ -21,7 +21,6 @@ class ServiceFactory
 
     public function __construct(Container $container)
     {
-
         $this->container = $container;
     }
 
