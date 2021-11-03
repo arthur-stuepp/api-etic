@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Event;
 
 use App\Domain\AbstractDomainService;
-use App\Domain\DomainException\DomainException;
 use App\Domain\CrudServiceInterface;
+use App\Domain\DomainException\DomainException;
 use App\Domain\General\Traits\TraitDeleteService;
 use App\Domain\General\Traits\TraitListService;
 use App\Domain\General\Traits\TraitReadService;
@@ -36,6 +36,7 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
 
     public function create(array $data): ServicePayload
     {
+        $data['type'] = $data['type'] ?? Event::TYPE_EVENT;
         if (!$this->validator->isValid($data, new Event())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
         }
@@ -57,12 +58,11 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
 
-
         if (!$this->validator->isValid($data, new Event())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
         }
+        $data['id'] = $id;
         $event = new Event($data);
-        $event->setId($id);
 
 
         if (!$this->repository->save($event)) {
@@ -76,11 +76,6 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     public function enrollUser(int $userId, array $data): ServicePayload
     {
         return $this->processEnroll($userId, $data, 'roll');
-
-    }   
-    public function unEnrollUser(int $userId, array $data): ServicePayload
-    {
-        return $this->processEnroll($userId, $data, 'enRoll');
 
     }
 
@@ -111,6 +106,12 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['id' => $user]);
+
+    }
+
+    public function unEnrollUser(int $userId, array $data): ServicePayload
+    {
+        return $this->processEnroll($userId, $data, 'enRoll');
 
     }
 

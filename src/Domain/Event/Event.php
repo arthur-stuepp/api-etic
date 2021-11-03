@@ -18,7 +18,7 @@ class Event extends AbstractEntity
     public const TYPE_HACKATHON = 3;
     protected int $id;
     protected string $name;
-    protected int $type = self::TYPE_EVENT;
+    protected int $type ;
     protected string $description;
     protected int $capacity;
     protected DateTimeModel $startTime;
@@ -40,7 +40,7 @@ class Event extends AbstractEntity
         if ($this->class->offsetExists($userId)) {
             throw new DomainException('Usuario já inscrito nesse evento', ServicePayload::STATUS_DUPLICATE_ENTITY);
         }
-        $eventUser = new EventUser(['user' => $userId]);
+        $eventUser = new EventUser(['user' => $userId, 'event' => $this->id]);
         if ($this->class->count() > $this->capacity) {
             $eventUser->setWaitlist(true);
         }

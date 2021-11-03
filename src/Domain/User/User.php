@@ -6,9 +6,9 @@ namespace App\Domain\User;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
-use App\Domain\UniquiPropertiesInterface;
 use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
+use App\Domain\UniquiPropertiesInterface;
 
 class User extends AbstractEntity implements UniquiPropertiesInterface
 {
@@ -17,7 +17,7 @@ class User extends AbstractEntity implements UniquiPropertiesInterface
 
     protected int $id;
 
-    protected int $type = self::TYPE_USER;
+    protected int $type;
 
     protected string $name;
 
@@ -46,26 +46,15 @@ class User extends AbstractEntity implements UniquiPropertiesInterface
         return password_verify($passoword, $this->password);
     }
 
-    public function getCityId(): int
+    public function getCity(): City
     {
-        return $this->city->getId();
+        return $this->city;
     }
 
-    public function getSchoolId(): int
+    public function getSchool(): School
     {
-        return $this->school->getId();
+        return $this->school;
     }
-
-    public function setCity(City $city): void
-    {
-        $this->city = $city;
-    }
-
-    public function setSchool(School $school): void
-    {
-        $this->school = $school;
-    }
-
 
     public function getType(): int
     {
@@ -76,11 +65,12 @@ class User extends AbstractEntity implements UniquiPropertiesInterface
     {
         return ['email' => $this->email, 'taxId' => $this->type];
     }
-    public function changePassword(string $passoword)
+
+    public function getIndication(): ?int
     {
-        $this->password = password_hash($passoword, PASSWORD_BCRYPT);
+        return $this->indication;
     }
-    
+
 
     public function jsonSerialize(): array
     {
@@ -91,7 +81,6 @@ class User extends AbstractEntity implements UniquiPropertiesInterface
         }
         return $json;
     }
-
 
 
 }

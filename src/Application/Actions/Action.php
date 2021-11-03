@@ -48,26 +48,12 @@ abstract class Action
         $input = json_decode(file_get_contents('php://input'), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new HttpBadRequestException($this->request, 'Malformed JSON input.');
+            throw new HttpBadRequestException($this->request, 'JSON Malformatado.');
         }
 
         return $input;
     }
 
-    /**
-     * @param string $name
-     * @return mixed
-     * @throws HttpBadRequestException
-     */
-    protected function resolveArg(string $name)
-    {
-        if (!isset($this->args[$name])) {
-            throw new HttpBadRequestException($this->request, "Could not resolve argument `$name`.");
-        }
-
-        return $this->args[$name];
-    }
-    
     protected function respondWithData($data = null, int $statusCode = 200): Response
     {
         $payload = new ActionPayload($statusCode, $data);
@@ -92,7 +78,7 @@ abstract class Action
     protected function respondWithPayload(ServicePayload $payload): Response
     {
         $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
-        
+
         return $this->respond($payload);
     }
 }

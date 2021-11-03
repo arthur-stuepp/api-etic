@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\General\Factory\EntityFactory;
+use App\Domain\Factory\EntityFactory;
 use App\Domain\General\Model\DateTimeModel;
 use Exception;
 use JsonSerializable;
@@ -18,7 +18,7 @@ abstract class AbstractEntity implements JsonSerializable
     public function __construct(array $properties = [])
     {
         $this->setData($properties);
-    }
+    } 
 
     protected function setData(array $properties)
     {
@@ -27,10 +27,6 @@ abstract class AbstractEntity implements JsonSerializable
                 $this->convertProperty($key, $value);
             }
         }
-    }
-    public function __unset(string $name)
-    {
-       unset($this->$name);
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
@@ -82,15 +78,10 @@ abstract class AbstractEntity implements JsonSerializable
         $this->$key = $convertedValue;
 
     }
-    
+
     public function getId(): int
     {
         return $this->id ?? 0;
-    }
-    
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     public function __toString(): string
@@ -112,5 +103,5 @@ abstract class AbstractEntity implements JsonSerializable
         }
         return $vars;
     }
-    
+
 }

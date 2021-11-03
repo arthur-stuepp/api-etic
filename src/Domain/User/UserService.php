@@ -47,6 +47,7 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
 
     public function create(array $data): ServicePayload
     {
+        $data['type'] = $data['type'] ?? User::TYPE_USER;
         if (!$this->validation->isValid($data, new User())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
@@ -63,11 +64,11 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
             return $this->ServicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
         }
 
-        if (!$this->schoolRepository->getById($user->getSchoolId())) {
+        if (!$this->schoolRepository->getById($user->getSchool()->getId())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['school' => self::NOT_FOUND]);
         }
 
-        if (!$this->addressRepository->getCityById($user->getCityId())) {
+        if (!$this->addressRepository->getCityById($user->getCity()->getId())) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['city' => self::NOT_FOUND]);
         }
 
@@ -75,7 +76,7 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_SAVED, $user);
+        return $this->ServicePayload(ServicePayload::STATUS_SAVED, $this->repository->getById($user->getId()));
     }
 
     public function update(int $id, array $data): ServicePayload
@@ -85,8 +86,8 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
+        $data['id'] = $id;
         $user = new User($data);
-        $user->setId($id);
 
         return $this->processAndSave($user);
     }

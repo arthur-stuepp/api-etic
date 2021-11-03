@@ -67,8 +67,9 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
         }
         
+        $data['id']=$id;
         $school = new School($data);
-        $school->setId($id);
+    
 
         return $this->processAndSave($school);
 

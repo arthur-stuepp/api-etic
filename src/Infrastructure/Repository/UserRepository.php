@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Address\AddressRepositoryInterface;
-use App\Domain\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\School\SchoolRepositoryInterface;
+use App\Domain\UniquiPropertiesInterface;
 use App\Domain\User\User;
 use App\Domain\User\UserRepositoryInterface;
+use ReflectionProperty;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -17,7 +18,9 @@ class UserRepository implements UserRepositoryInterface
     private AddressRepositoryInterface $addressRepository;
     private SchoolRepositoryInterface $schoolRepository;
 
-    public function __construct(MysqlRepository $mysqlRepository, AddressRepositoryInterface $addressRepository, SchoolRepositoryInterface $schoolRepository)
+    public function __construct(MysqlRepository            $mysqlRepository,
+                                AddressRepositoryInterface $addressRepository,
+                                SchoolRepositoryInterface  $schoolRepository)
     {
         $this->repository = $mysqlRepository;
         $this->addressRepository = $addressRepository;
@@ -45,6 +48,7 @@ class UserRepository implements UserRepositoryInterface
         return $this->repository->list($params)['result'][0] ?? false;
     }
 
+    /** @noinspection PhpUnhandledExceptionInspection */
     public function list(ServiceListParams $params): array
     {
         $payload = $this->repository->list($params);
@@ -53,10 +57,14 @@ class UserRepository implements UserRepositoryInterface
             function (User $user) use ($fields) {
 
                 if ($fields === [] || in_array('city', $fields)) {
-                    $user->setCity($this->addressRepository->getCityById($user->getCityId()));
+                    $rp = new ReflectionProperty($user, 'city');
+                    $rp->setAccessible(true);
+                    $rp->setValue($user, $this->addressRepository->getCityById($user->getCity()->getId()));
                 }
                 if ($fields === [] || in_array('school', $fields)) {
-                    $user->setSchool($this->schoolRepository->getById($user->getSchoolId()));
+                    $rp = new ReflectionProperty($user, 'school');
+                    $rp->setAccessible(true);
+                    $rp->setValue($user, $this->schoolRepository->getById(($user->getSchool()->getId())));
                 }
 
                 return $user;

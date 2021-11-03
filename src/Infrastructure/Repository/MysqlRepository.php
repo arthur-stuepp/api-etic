@@ -9,6 +9,7 @@ use App\Domain\General\ServiceListParams;
 use App\Domain\UniquiPropertiesInterface;
 use App\Infrastructure\DB\DB;
 use ReflectionClass;
+use ReflectionProperty;
 
 class MysqlRepository
 {
@@ -19,18 +20,23 @@ class MysqlRepository
         $this->db = $db;
     }
 
+    /**
+     * @noinspection PhpSingleStatementWithBracesInspection
+     * @noinspection PhpUnhandledExceptionInspection
+     */
     public function saveEntity(AbstractEntity $entity): bool
     {
-   
+
         $class = get_class($entity);
         $reflect = new ReflectionClass($entity);
-        $props = $reflect->getProperties(\ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PUBLIC);
-  
+        $props = $reflect->getProperties(ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PUBLIC);
+
 
         $data = [];
+
         foreach ($props as $prop) {
             $prop->setAccessible(true);
-            if ($prop->isInitialized($entity)) {    
+            if ($prop->isInitialized($entity)) {
                 $data[$prop->getName()] = $prop->getValue($entity);
 
             }
@@ -44,7 +50,10 @@ class MysqlRepository
             }
         } else {
             if ($this->db->insert($this->getTable($class), $data)) {
-                $entity->setId($this->db->getLastInsertId());
+                $rp = new ReflectionProperty($entity, 'id');
+                $rp->setAccessible(true);
+                $rp->setValue($entity, $this->db->getLastInsertId());
+
                 return true;
             }
         }
@@ -106,18 +115,7 @@ class MysqlRepository
         );
         for ($i = 0; $i < count($rows['result']); $i++) {
             $class = $params->getClass();
-            $entity = new $class($rows['result'][$i]);
-            $fields = $params->getFields();
-            if ($fields !== []) {
-                $diffs = array_diff_key($entity->jsonSerialize(), array_flip($params->getFields()));
-                foreach ($diffs as $key => $value) {
-                    if (!isset($fields[$key])) {
-                        unset($entity->$key);
-                    }
-                }
-            }
-
-            $rows['result'][$i] = $entity;
+            $rows['result'][$i] = new $class($rows['result'][$i]);;
         }
 
         return $rows;

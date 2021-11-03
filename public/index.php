@@ -12,13 +12,15 @@ use Selective\BasePath\BasePathMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+
+require  __DIR__ . '/../app/config.php';
+
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-if (false) { // Should be set to true in production
+if (!DEBUG) { // Should be set to true in production
 	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
-require  __DIR__ . '/../app/config.php';
 // Set up settings
 $settings = require __DIR__ . '/../app/settings.php';
 $settings($containerBuilder);

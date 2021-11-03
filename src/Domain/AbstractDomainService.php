@@ -9,6 +9,7 @@ use App\Domain\General\ServiceListParams;
 abstract class AbstractDomainService
 {
     protected const INVALID = 'Registro com valores invalidos';
+    protected const BAD_REQUEST = 'Requisição invalida';
     protected const DUPLICATE = 'Registro com valor duplicado';
     protected const NOT_FOUND = 'Registro não encontrado';
     protected const SAVE_ERROR = 'Erro ao salvar';
@@ -16,6 +17,7 @@ abstract class AbstractDomainService
 
     private array $defaultMessages = [
         ServicePayload::STATUS_NOT_FOUND => self::NOT_FOUND,
+        ServicePayload::STATUS_INVALID_INPUT => self::BAD_REQUEST,
         ServicePayload::STATUS_INVALID_ENTITY => self::INVALID,
         ServicePayload::STATUS_DUPLICATE_ENTITY => self::DUPLICATE,
         ServicePayload::STATUS_ERROR => self::SAVE_ERROR,

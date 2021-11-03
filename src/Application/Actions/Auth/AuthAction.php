@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Actions\Auth;
 
 use App\Application\Actions\Action;
-use App\Domain\General\Interfaces\AuthServiceInterface;
+use App\Domain\User\AuthServiceInterface;
 
 abstract class AuthAction extends Action
 {

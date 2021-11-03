@@ -31,8 +31,8 @@ return function (App $app) {
             $user->delete('', DeleteAction::class);
         });
     })->add(Auth::class);
-    $app->group('/events', function (Group $group) {
 
+    $app->group('/events', function (Group $group) {
         $group->get('', GetAction::class);
         $group->post('', SaveAction::class);
         $group->group('/{event}', function (Group $user) {
@@ -42,6 +42,7 @@ return function (App $app) {
             $user->get('/users', SaveAction::class);
         });
     })->add(Auth::class);
+
     $app->group('/schools', function (Group $group) {
         $group->get('', GetAction::class);
         $group->post('', SaveAction::class);
