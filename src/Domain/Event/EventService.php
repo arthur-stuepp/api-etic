@@ -14,7 +14,7 @@ use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 use App\Domain\User\UserRepositoryInterface;
 
-class EventService extends AbstractDomainService implements CrudServiceInterface
+class EventService extends AbstractDomainService implements CrudServiceInterface,EventUserServiceInterface
 {
     private InputValidator $validator;
     private EventRepositoryInterface $repository;
@@ -73,21 +73,21 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
 
     }
 
-    public function enrollUser(int $userId, array $data): ServicePayload
+    public function addUser(int $userId, array $data): ServicePayload
     {
-        return $this->processEnroll($userId, $data, 'roll');
+        return $this->processUser($userId, $data, 'addUser');
 
     }
 
-    private function processEnroll(int $userId, array $data, string $method): ServicePayload
+    private function processUser(int $userId, array $data, string $method): ServicePayload
     {
-        if (isset($data['event'])) {
+        if (!isset($data['event'])) {
             return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['event' => 'Evento não enviado']);
         }
 
-        $event = $this->repository->getById($data['event']);
+        $event = $this->repository->getById((int)$data['event']);
         if (!$event) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['event' => self::NOT_FOUND]);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message'=>'Evento não encontrado']);
         }
 
         $user = $this->userRepository->getById($userId);
@@ -102,16 +102,16 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
         }
 
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, $this->repository->getError());
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description'=>$this->repository->getError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['id' => $user]);
+        return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['id' => $event->getUser($userId)]);
 
     }
 
-    public function unEnrollUser(int $userId, array $data): ServicePayload
+    public function removeUser(int $userId, array $data): ServicePayload
     {
-        return $this->processEnroll($userId, $data, 'enRoll');
+        return $this->processUser($userId, $data, 'enRoll');
 
     }
 

@@ -115,10 +115,25 @@ class MysqlRepository
         );
         for ($i = 0; $i < count($rows['result']); $i++) {
             $class = $params->getClass();
-            $rows['result'][$i] = new $class($rows['result'][$i]);;
+            $rows['result'][$i] = new $class($rows['result'][$i]);
         }
 
         return $rows;
+    }
+
+    public function beginTransaction()
+    {
+        $this->db->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->db->commitTransaction();
+    }
+
+    public function rollBackTransaction()
+    {
+        $this->db->rollBackTransaction();
     }
 
 

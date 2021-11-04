@@ -18,7 +18,7 @@ class Event extends AbstractEntity
     public const TYPE_HACKATHON = 3;
     protected int $id;
     protected string $name;
-    protected int $type ;
+    protected int $type;
     protected string $description;
     protected int $capacity;
     protected DateTimeModel $startTime;
@@ -34,7 +34,7 @@ class Event extends AbstractEntity
     /**
      * @throws DomainException
      */
-    public function enroll(User $user): void
+    public function addUser(User $user): void
     {
         $userId = $user->getId();
         if ($this->class->offsetExists($userId)) {
@@ -47,12 +47,21 @@ class Event extends AbstractEntity
         $this->class[$userId] = $eventUser;
     }
 
-    public function getEnroll(int $userId): ?EventUser
+    public function getUser(int $userId): ?EventUser
     {
         return $this->class->offsetGet($userId);
 
     }
 
+    public function hasUser(int $userId): bool
+    {
+        return $this->class->offsetExists($userId);
+
+    }
+
+    /**
+     * @return EventUser[]
+     */
     public function getClass(): array
     {
         return $this->class->getArrayCopy();
@@ -62,7 +71,7 @@ class Event extends AbstractEntity
     /**
      * @throws DomainException
      */
-    public function unEnroll(User $user): void
+    public function removeUser(User $user): void
     {
         $userId = $user->getId();
         if (!$this->class->offsetExists($userId)) {

@@ -6,6 +6,7 @@ use App\Application\Actions\Address\CityGetAction;
 use App\Application\Actions\Address\StateGetAction;
 use App\Application\Actions\Auth\LoginAction;
 use App\Application\Actions\DeleteAction;
+use App\Application\Actions\EventUser\SaveEventUserAction;
 use App\Application\Actions\GetAction;
 use App\Application\Actions\SaveAction;
 use App\Application\Middleware\Authentication\Auth;
@@ -32,14 +33,17 @@ return function (App $app) {
         });
     })->add(Auth::class);
 
-    $app->group('/events', function (Group $group) {
-        $group->get('', GetAction::class);
-        $group->post('', SaveAction::class);
-        $group->group('/{event}', function (Group $user) {
-            $user->get('', GetAction::class);
-            $user->put('', SaveAction::class);
-            $user->delete('', DeleteAction::class);
-            $user->get('/users', SaveAction::class);
+    $app->group('/events', function (Group $events) {
+        $events->get('', GetAction::class);
+        $events->post('', SaveAction::class);
+        $events->group('/{event}', function (Group $event) {
+            $event->get('', GetAction::class);
+            $event->put('', SaveAction::class);
+            $event->delete('', DeleteAction::class);
+            $event->group('/users/{user}', function (Group $users) {
+                $users->post('', SaveEventUserAction::class);
+            });
+
         });
     })->add(Auth::class);
 

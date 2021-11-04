@@ -265,4 +265,19 @@ class DB
     {
         return (int)$this->db->lastInsertId();
     }
+
+    public function beginTransaction()
+    {
+        $this->db->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->db->commit();
+    }
+
+    public function rollBackTransaction()
+    {
+        $this->db->rollBack();
+    }
 }
