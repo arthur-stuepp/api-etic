@@ -238,7 +238,9 @@ class DB
 
     private function getLimit(int $page, int $limit): string
     {
-
+        if($limit===0){
+            return '';
+        }
         $offset = ($page - 1) * $limit;
         $limit = $limit === 0 ? 1 : $limit;
         return ' LIMIT ' . $limit . ' OFFSET ' . $offset;

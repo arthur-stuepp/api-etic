@@ -41,7 +41,7 @@ class Event extends AbstractEntity
             throw new DomainException('Usuario já inscrito nesse evento', ServicePayload::STATUS_DUPLICATE_ENTITY);
         }
         $eventUser = new EventUser(['user' => $userId, 'event' => $this->id]);
-        if ($this->users->count() > $this->capacity) {
+        if ($this->users->count() >= $this->capacity) {
             $eventUser->setWaitlist(true);
         }
         $this->users[$userId] = $eventUser;

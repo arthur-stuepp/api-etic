@@ -77,7 +77,7 @@ class EventRepository implements EventRepositoryInterface
             $eventUsers = $this->repository->list($params)['result'];
             $arrayObject = new ArrayObject();
             foreach ($eventUsers as $eventUser) {
-                $arrayObject[$eventUser->getId()] = $eventUser;
+                $arrayObject[$eventUser->getUser()->getId()] = $eventUser;
             }
             $rp->setValue($event, $arrayObject);
 
