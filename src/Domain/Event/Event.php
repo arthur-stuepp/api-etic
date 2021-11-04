@@ -23,12 +23,12 @@ class Event extends AbstractEntity
     protected int $capacity;
     protected DateTimeModel $startTime;
     protected DateTimeModel $endTime;
-    private ArrayObject $class;
+    private ArrayObject $users;
 
     public function __construct(array $properties = [])
     {
         parent::__construct($properties);
-        $this->class = new ArrayObject();
+        $this->users = new ArrayObject();
     }
 
     /**
@@ -37,34 +37,34 @@ class Event extends AbstractEntity
     public function addUser(User $user): void
     {
         $userId = $user->getId();
-        if ($this->class->offsetExists($userId)) {
+        if ($this->users->offsetExists($userId)) {
             throw new DomainException('Usuario já inscrito nesse evento', ServicePayload::STATUS_DUPLICATE_ENTITY);
         }
         $eventUser = new EventUser(['user' => $userId, 'event' => $this->id]);
-        if ($this->class->count() > $this->capacity) {
+        if ($this->users->count() > $this->capacity) {
             $eventUser->setWaitlist(true);
         }
-        $this->class[$userId] = $eventUser;
+        $this->users[$userId] = $eventUser;
     }
 
     public function getUser(int $userId): ?EventUser
     {
-        return $this->class->offsetGet($userId);
+        return $this->users->offsetGet($userId);
 
     }
 
     public function hasUser(int $userId): bool
     {
-        return $this->class->offsetExists($userId);
+        return $this->users->offsetExists($userId);
 
     }
 
     /**
      * @return EventUser[]
      */
-    public function getClass(): array
+    public function getUsers(): array
     {
-        return $this->class->getArrayCopy();
+        return $this->users->getArrayCopy();
 
     }
 
@@ -74,11 +74,11 @@ class Event extends AbstractEntity
     public function removeUser(User $user): void
     {
         $userId = $user->getId();
-        if (!$this->class->offsetExists($userId)) {
+        if (!$this->users->offsetExists($userId)) {
             throw new DomainException('Usuario Não encontrado nesse evento', ServicePayload::STATUS_NOT_FOUND);
         }
 
-        $this->class->offsetUnset($userId);
+        $this->users->offsetUnset($userId);
     }
 
 

@@ -14,7 +14,7 @@ use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 use App\Domain\User\UserRepositoryInterface;
 
-class EventService extends AbstractDomainService implements CrudServiceInterface,EventUserServiceInterface
+class EventService extends AbstractDomainService implements CrudServiceInterface, EventUserServiceInterface
 {
     private InputValidator $validator;
     private EventRepositoryInterface $repository;
@@ -87,7 +87,7 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
 
         $event = $this->repository->getById((int)$data['event']);
         if (!$event) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message'=>'Evento não encontrado']);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Evento não encontrado']);
         }
 
         $user = $this->userRepository->getById($userId);
@@ -98,11 +98,11 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
         try {
             $event->$method($user);
         } catch (DomainException $e) {
-            return $this->ServicePayload($e->getCode(), $e->getMessage());
+            return $this->ServicePayload($e->getCode(), ['message' => $e->getMessage()]);
         }
 
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description'=>$this->repository->getError()]);
+            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
 
         return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['id' => $event->getUser($userId)]);

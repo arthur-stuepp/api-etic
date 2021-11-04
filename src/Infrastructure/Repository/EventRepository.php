@@ -8,7 +8,9 @@ use App\Domain\Event\Event;
 use App\Domain\Event\EventRepositoryInterface;
 use App\Domain\Event\EventUser;
 use App\Domain\General\ServiceListParams;
+use ArrayObject;
 use Exception;
+use ReflectionProperty;
 
 class EventRepository implements EventRepositoryInterface
 {
@@ -31,7 +33,7 @@ class EventRepository implements EventRepositoryInterface
                 return !$event->hasUser($eventUser->getUser()->getId());
 
             });
-            foreach ($event->getClass() as $eventUser) {
+            foreach ($event->getUsers() as $eventUser) {
                 if (!$this->repository->saveEntity($eventUser)) {
                     throw new Exception();
                 }
@@ -58,12 +60,29 @@ class EventRepository implements EventRepositoryInterface
         return $this->repository->list($params);
     }
 
+    /** @noinspection PhpUnhandledExceptionInspection */
     public function getById(int $id)
     {
         $params = new ServiceListParams(Event::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['result'][0] ?? false;
+        /** @var Event|false $event */
+        $event = $this->repository->list($params)['result'][0] ?? false;
+
+        if ($event !== false) {
+            $rp = new ReflectionProperty($event, 'users');
+            $rp->setAccessible(true);
+            $params = new ServiceListParams(EventUser::class);
+            $params->setFilters('event', (string)$event->getId())->setLimit(0);
+            $eventUsers = $this->repository->list($params)['result'];
+            $arrayObject = new ArrayObject();
+            foreach ($eventUsers as $eventUser) {
+                $arrayObject[$eventUser->getId()] = $eventUser;
+            }
+            $rp->setValue($event, $arrayObject);
+
+        }
+        return $event;
     }
 
     public function delete($id): bool
