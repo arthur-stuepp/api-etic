@@ -40,9 +40,11 @@ class Event extends AbstractEntity
         if ($this->users->offsetExists($userId)) {
             throw new DomainException('Usuario já inscrito nesse evento', ServicePayload::STATUS_DUPLICATE_ENTITY);
         }
-        $eventUser = new EventUser(['user' => $userId, 'event' => $this->id]);
+        $eventUser = new EventUser(['user' => $userId, 'event' => $this->id, 'cheking' => false]);
         if ($this->users->count() >= $this->capacity) {
             $eventUser->setWaitlist(true);
+        } else {
+            $eventUser->setWaitlist(false);
         }
         $this->users[$userId] = $eventUser;
     }
@@ -77,7 +79,6 @@ class Event extends AbstractEntity
         if (!$this->users->offsetExists($userId)) {
             throw new DomainException('Usuario Não encontrado nesse evento', ServicePayload::STATUS_NOT_FOUND);
         }
-
         $this->users->offsetUnset($userId);
     }
 

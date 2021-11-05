@@ -7,7 +7,6 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\School\SchoolRepositoryInterface;
-use App\Domain\UniquiPropertiesInterface;
 use App\Domain\User\User;
 use App\Domain\User\UserRepositoryInterface;
 use ReflectionProperty;
@@ -18,9 +17,11 @@ class UserRepository implements UserRepositoryInterface
     private AddressRepositoryInterface $addressRepository;
     private SchoolRepositoryInterface $schoolRepository;
 
-    public function __construct(MysqlRepository            $mysqlRepository,
-                                AddressRepositoryInterface $addressRepository,
-                                SchoolRepositoryInterface  $schoolRepository)
+    public function __construct(
+        MysqlRepository            $mysqlRepository,
+        AddressRepositoryInterface $addressRepository,
+        SchoolRepositoryInterface  $schoolRepository
+    )
     {
         $this->repository = $mysqlRepository;
         $this->addressRepository = $addressRepository;
@@ -79,9 +80,9 @@ class UserRepository implements UserRepositoryInterface
     }
 
 
-    public function getDuplicateField(UniquiPropertiesInterface $properties): ?string
+    public function getDuplicateField(User $user): ?string
     {
-        return $this->repository->isDuplicateEntity($properties);
+        return $this->repository->isDuplicateEntity($user, ['email', 'taxId']);
     }
 
     public function getError(): string

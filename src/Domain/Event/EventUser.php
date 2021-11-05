@@ -9,14 +9,12 @@ use App\Domain\User\User;
 
 class EventUser extends AbstractEntity
 {
-
     protected int $event;
     protected User $user;
     protected ?string $team;
     protected bool $waitlist = false;
     protected bool $cheking = false;
-
-
+    
     public function setWaitlist(bool $waitlist): void
     {
         $this->waitlist = $waitlist;
@@ -30,16 +28,6 @@ class EventUser extends AbstractEntity
     public function getUser(): User
     {
         return $this->user;
-    }
-
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function setEvent(int $event)
-    {
-        $this->event = $event;
     }
 
 

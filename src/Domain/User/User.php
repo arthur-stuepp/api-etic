@@ -8,9 +8,8 @@ use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
 use App\Domain\General\Model\DateTimeModel;
 use App\Domain\School\School;
-use App\Domain\UniquiPropertiesInterface;
 
-class User extends AbstractEntity implements UniquiPropertiesInterface
+class User extends AbstractEntity
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
@@ -41,10 +40,6 @@ class User extends AbstractEntity implements UniquiPropertiesInterface
 
     protected ?int $indication;
 
-    public function comparePassword(string $passoword): bool
-    {
-        return password_verify($passoword, $this->password);
-    }
 
     public function getCity(): City
     {
@@ -61,16 +56,31 @@ class User extends AbstractEntity implements UniquiPropertiesInterface
         return $this->type;
     }
 
-    public function getProperties(): array
-    {
-        return ['email' => $this->email, 'taxId' => $this->type];
-    }
 
     public function getIndication(): ?int
     {
         return $this->indication;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getTaxId(): string
+    {
+        return $this->taxId;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function comparePassword(string $passoword): bool
+    {
+        return password_verify($passoword, $this->password);
+    }
 
     public function jsonSerialize(): array
     {

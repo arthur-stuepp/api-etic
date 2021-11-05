@@ -242,7 +242,7 @@ class DB
             return '';
         }
         $offset = ($page - 1) * $limit;
-        $limit = $limit === 0 ? 1 : $limit;
+     
         return ' LIMIT ' . $limit . ' OFFSET ' . $offset;
     }
 

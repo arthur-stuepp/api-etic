@@ -2,7 +2,6 @@
 
 namespace App\Domain\User;
 
-use App\Domain\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 
 
@@ -24,10 +23,10 @@ interface UserRepositoryInterface
      */
     public function getByEmail(string $email);
 
-    public function getDuplicateField(UniquiPropertiesInterface $properties): ?string;
+    public function getDuplicateField(User $user): ?string;
 
     public function list(ServiceListParams $params): array;
-    
+
     public function getError(): string;
 
 

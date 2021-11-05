@@ -6,7 +6,6 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\AbstractEntity;
 use App\Domain\General\ServiceListParams;
-use App\Domain\UniquiPropertiesInterface;
 use App\Infrastructure\DB\DB;
 use ReflectionClass;
 use ReflectionProperty;
@@ -82,12 +81,12 @@ class MysqlRepository
         return $this->db->getError();
     }
 
-    public function isDuplicateEntity(UniquiPropertiesInterface $entity): ?string
+    public function isDuplicateEntity(AbstractEntity $entity,array $fields): ?string
     {
-        $fields = $entity->getProperties();
-        foreach ($fields as $field => $value) {
+        foreach ($fields as $field) {
             $params = new ServiceListParams(get_class($entity));
-            $params->setFilters($field, (string)$value);
+            $method='get'.ucfirst($field);
+            $params->setFilters($field, $entity->$method());
             $params->setFields('id');
             $payload = $this->list($params);
             if ($payload['total'] > 0) {

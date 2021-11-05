@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\UniquiPropertiesInterface;
 use App\Domain\General\ServiceListParams;
 use App\Domain\School\School;
 use App\Domain\School\SchoolRepositoryInterface;
@@ -36,7 +35,6 @@ class SchoolRepository implements SchoolRepositoryInterface
     public function list(ServiceListParams $params): array
     {
         return $this->repository->list($params);
-
     }
 
     public function delete($id): bool
@@ -49,9 +47,9 @@ class SchoolRepository implements SchoolRepositoryInterface
         return $this->repository->getError();
     }
 
-    public function getDuplicateField(UniquiPropertiesInterface $properties): ?string
+    public function getDuplicateField(School $entity): ?string
     {
-        return $this->repository->isDuplicateEntity($properties);
+        return $this->repository->isDuplicateEntity($entity, ['name']);
     }
 
 }
