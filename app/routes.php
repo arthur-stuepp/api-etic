@@ -10,6 +10,7 @@ use App\Application\Actions\EventUser\SaveEventUserAction;
 use App\Application\Actions\GetAction;
 use App\Application\Actions\SaveAction;
 use App\Application\Middleware\Authentication\Auth;
+use App\Application\Middleware\Authorization\OnlyAdmin;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -29,21 +30,21 @@ return function (App $app) {
         $group->group('/{user}', function (Group $user) {
             $user->get('', GetAction::class);
             $user->put('', SaveAction::class);
-            $user->delete('', DeleteAction::class);
+            $user->delete('', DeleteAction::class)->add(OnlyAdmin::class);
         });
     })->add(Auth::class);
 
+
     $app->group('/events', function (Group $events) {
         $events->get('', GetAction::class);
-        $events->post('', SaveAction::class);
+        $events->post('', SaveAction::class)->add(OnlyAdmin::class);
         $events->group('/{event}', function (Group $event) {
             $event->get('', GetAction::class);
-            $event->put('', SaveAction::class);
-            $event->delete('', DeleteAction::class);
+            $event->put('', SaveAction::class)->add(OnlyAdmin::class);
+            $event->delete('', DeleteAction::class)->add(OnlyAdmin::class);
             $event->group('/users/{user}', function (Group $users) {
                 $users->post('', SaveEventUserAction::class);
             });
-
         });
     })->add(Auth::class);
 
@@ -52,8 +53,8 @@ return function (App $app) {
         $group->post('', SaveAction::class);
         $group->group('/{id}', function (Group $school) {
             $school->get('', GetAction::class);
-            $school->put('', SaveAction::class);
-            $school->delete('', DeleteAction::class)->add(Auth::class);
+            $school->put('', SaveAction::class)->add(OnlyAdmin::class)->add(Auth::class);
+            $school->delete('', DeleteAction::class)->add(OnlyAdmin::class)->add(Auth::class);
         });
     });
 

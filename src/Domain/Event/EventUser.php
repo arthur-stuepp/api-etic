@@ -12,17 +12,16 @@ class EventUser extends AbstractEntity
     protected int $event;
     protected User $user;
     protected ?string $team;
-    protected bool $waitlist = false;
-    protected bool $cheking = false;
+    protected bool $waitlist;
+    protected bool $cheking;
     
-    public function setWaitlist(bool $waitlist): void
-    {
-        $this->waitlist = $waitlist;
-    }
-
     public function setCheking(bool $cheking): void
     {
         $this->cheking = $cheking;
+    }   
+    public function setTeam(string $team): void
+    {
+        $this->team = $team;
     }
 
     public function getUser(): User

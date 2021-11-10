@@ -33,13 +33,11 @@ class InputValidator extends Validator
     private function validateRequiredFields()
     {
         $fields = $this->reflectionClass->getProperties();
-        $defaultValues = $this->reflectionClass->getDefaultProperties();
         foreach ($fields as $field) {
             $fieldName = $field->name;
             $rp = new ReflectionProperty($this->className, $fieldName);
             if ($fieldName !== 'id') {
-                if (!isset($this->data[$fieldName]) && (!$rp->getType()->allowsNull()) && (!$rp->isPrivate()) && (!isset($defaultValues[$fieldName]))) {
-
+                if (!isset($this->data[$fieldName]) && (!$rp->getType()->allowsNull()) && (!$rp->isPrivate())) {
                     $this->messages[$fieldName] = Validator::FIELD_REQUIRED;
                 }
             }

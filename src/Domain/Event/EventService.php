@@ -81,38 +81,50 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
 
     private function processUser(int $userId, array $data, string $method): ServicePayload
     {
-        if (!isset($data['event'])) {
-            return $this->ServicePayload(ServicePayload::STATUS_INVALID_ENTITY, ['event' => 'Evento não enviado']);
-        }
-
         $event = $this->repository->getById((int)$data['event']);
         if (!$event) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => 'Evento não encontrado']);
+            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => self::NOT_FOUND]);
         }
-
         $user = $this->userRepository->getById($userId);
         if (!$user) {
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => self::NOT_FOUND]);
         }
-
         try {
-            $event->$method($user);
+            if (in_array($method, ['addUser', 'removeUser'])) {
+                $event->$method($user);
+            } else {
+                $user = $event->getUser($userId);
+                if (isset($data['team'])) {
+                    $user->setTeam((string)$data['team']);
+                }
+                if (isset($data['cheking'])) {
+                    $user->setCheking((bool)$data['cheking']);
+                }
+            }
         } catch (DomainException $e) {
             return $this->ServicePayload($e->getCode(), ['message' => $e->getMessage()]);
         }
-
         if (!$this->repository->save($event)) {
             return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
-
-        return $this->ServicePayload(ServicePayload::STATUS_FOUND, ['id' => $event->getUser($userId)]);
-
+        try {
+            return $this->ServicePayload(ServicePayload::STATUS_VALID, ['id' => $event->getUser($userId)]);
+        } catch (DomainException $e) {
+            return $this->ServicePayload($e->getCode(), ['message' => $e->getMessage()]);
+        }
     }
 
     public function removeUser(int $userId, array $data): ServicePayload
     {
-        return $this->processUser($userId, $data, 'enRoll');
+        return $this->processUser($userId, $data, 'removeUser');
 
     }
+
+    public function updateUser(int $userId, array $data): ServicePayload
+    {
+        return $this->processUser($userId, $data, 'updateUser');
+
+    }
+
 
 }

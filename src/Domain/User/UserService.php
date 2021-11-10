@@ -87,6 +87,9 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
             return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
         $data['id'] = $id;
+        if (!$this->validation->isValid($data, new User())) {
+            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+        }
         $user = new User($data);
 
         return $this->processAndSave($user);

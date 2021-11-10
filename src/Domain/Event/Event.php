@@ -16,6 +16,7 @@ class Event extends AbstractEntity
     public const TYPE_EVENT = 1;
     public const TYPE_GAME = 2;
     public const TYPE_HACKATHON = 3;
+
     protected int $id;
     protected string $name;
     protected int $type;
@@ -40,17 +41,22 @@ class Event extends AbstractEntity
         if ($this->users->offsetExists($userId)) {
             throw new DomainException('Usuario já inscrito nesse evento', ServicePayload::STATUS_DUPLICATE_ENTITY);
         }
-        $eventUser = new EventUser(['user' => $userId, 'event' => $this->id, 'cheking' => false]);
+        $wailist = false;
         if ($this->users->count() >= $this->capacity) {
-            $eventUser->setWaitlist(true);
-        } else {
-            $eventUser->setWaitlist(false);
+            $wailist = true;
         }
+        $eventUser = new EventUser(['user' => $userId, 'event' => $this->id, 'cheking' => false, 'waitlist' => $wailist]);
         $this->users[$userId] = $eventUser;
     }
 
-    public function getUser(int $userId): ?EventUser
+    /**
+     * @throws DomainException
+     */
+    public function getUser(int $userId): EventUser
     {
+        if (!$this->hasUser($userId)) {
+            throw new DomainException('Usuário não encontrado', ServicePayload::STATUS_NOT_FOUND);
+        }
         return $this->users->offsetGet($userId);
 
     }
