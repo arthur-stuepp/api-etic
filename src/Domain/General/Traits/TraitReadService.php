@@ -13,7 +13,7 @@ trait TraitReadService
 
     public function read(int $id): ServicePayload
     {
-        $params = new ServiceListParams(Event::class);
+        $params = new ServiceListParams($this->class);
         $params->setFilters('id', (string)($id))->setLimit(1);
         $entity = $this->repository->list($params)['result'] ?? false;
         if (!$entity) {

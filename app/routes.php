@@ -11,6 +11,7 @@ use App\Application\Actions\GetAction;
 use App\Application\Actions\SaveAction;
 use App\Application\Middleware\Authentication\Auth;
 use App\Application\Middleware\Authorization\OnlyAdmin;
+use App\Application\Middleware\Authorization\Restricted;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -26,10 +27,10 @@ return function (App $app) {
     $app->post('/users', SaveAction::class);
 
     $app->group('/users', function (Group $group) {
-        $group->get('', GetAction::class);
+        $group->get('', GetAction::class)->add(OnlyAdmin::class);
         $group->group('/{user}', function (Group $user) {
-            $user->get('', GetAction::class);
-            $user->put('', SaveAction::class);
+            $user->get('', GetAction::class)->add(Restricted::class);
+            $user->put('', SaveAction::class)->add(Restricted::class);
             $user->delete('', DeleteAction::class)->add(OnlyAdmin::class);
         });
     })->add(Auth::class);
@@ -43,7 +44,7 @@ return function (App $app) {
             $event->put('', SaveAction::class)->add(OnlyAdmin::class);
             $event->delete('', DeleteAction::class)->add(OnlyAdmin::class);
             $event->group('/users/{user}', function (Group $users) {
-                $users->post('', SaveEventUserAction::class);
+                $users->post('', SaveEventUserAction::class)->add(Restricted::class);
             });
         });
     })->add(Auth::class);
