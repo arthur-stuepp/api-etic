@@ -16,7 +16,6 @@ use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\ServicePayload;
 use Firebase\JWT\JWT;
 
-
 class UserService extends AbstractDomainService implements CrudServiceInterface, AuthServiceInterface
 {
     private InputValidator $validation;
@@ -30,14 +29,12 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
     use TraitReadService;
     use TraitListService;
 
-    public function __construct
-    (
-        InputValidator             $validation,
-        UserRepositoryInterface    $repository,
-        SchoolRepositoryInterface  $schoolRepository,
+    public function __construct(
+        InputValidator $validation,
+        UserRepositoryInterface $repository,
+        SchoolRepositoryInterface $schoolRepository,
         AddressRepositoryInterface $addressRepository
-    )
-    {
+    ) {
         $this->validation = $validation;
         $this->repository = $repository;
         $this->schoolRepository = $schoolRepository;
@@ -49,7 +46,10 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
     {
         $data['type'] = $data['type'] ?? User::TYPE_USER;
         if (!$this->validation->isValid($data, new User())) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validation->getMessages()]
+            );
         }
         $user = new User($data);
 
@@ -73,7 +73,10 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
         }
 
         if (!$this->repository->save($user)) {
-            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_ERROR,
+                ['description' => $this->repository->getError()]
+            );
         }
 
         return $this->servicePayload(ServicePayload::STATUS_SAVED, $this->repository->getById($user->getId()));
@@ -88,7 +91,10 @@ class UserService extends AbstractDomainService implements CrudServiceInterface,
         }
         $data['id'] = $id;
         if (!$this->validation->isValid($data, new User())) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validation->getMessages()]
+            );
         }
         $user = new User($data);
 

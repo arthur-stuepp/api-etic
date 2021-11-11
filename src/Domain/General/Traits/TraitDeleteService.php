@@ -16,9 +16,15 @@ trait TraitDeleteService
                 return $this->servicePayload(ServicePayload::STATUS_DELETED, ['message' => 'Deletado com sucesso']);
             } else {
                 if (strpos($this->repository->getError(), '1451 Cannot delete or update a parent row') !== false) {
-                    return $this->servicePayload(ServicePayload::STATUS_NOT_DELETED, ['message' => 'Não é possivel deletar esse registro porque está associado a outros registros.', 'description' => $this->repository->getError()]);
+                    return $this->servicePayload(ServicePayload::STATUS_NOT_DELETED, [
+                        'message' => 'Não é possivel deletar esse registro porque está associado a outros registros.',
+                        'description' => $this->repository->getError()
+                    ]);
                 }
-                return $this->servicePayload(ServicePayload::STATUS_ERROR, ['message' => 'Não foi possivel deletar esse registro', 'description' => $this->repository->getError()]);
+                return $this->servicePayload(ServicePayload::STATUS_ERROR, [
+                    'message' => 'Não foi possivel deletar esse registro',
+                    'description' => $this->repository->getError()
+                ]);
             }
         } else {
             return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);

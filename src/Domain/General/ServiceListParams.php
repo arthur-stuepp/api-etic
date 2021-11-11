@@ -95,7 +95,7 @@ class ServiceListParams
     public function setClass(string $class): self
     {
         $this->class = $class;
-        
+
         return $this;
     }
 }

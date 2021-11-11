@@ -12,7 +12,7 @@ class School extends AbstractEntity
     protected int $id;
 
     protected string $name;
-    
+
     public function getName(): string
     {
         return $this->name;

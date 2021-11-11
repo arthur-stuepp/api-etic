@@ -10,9 +10,9 @@ class City extends AbstractEntity
 {
 
     protected int $id;
-    
+
     protected string $name;
-    
+
     protected State $state;
 
     public function getName(): string
@@ -24,6 +24,4 @@ class City extends AbstractEntity
     {
         return $this->state;
     }
-
-
 }

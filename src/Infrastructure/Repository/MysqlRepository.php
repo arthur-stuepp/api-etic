@@ -81,11 +81,11 @@ class MysqlRepository
         return $this->db->getError();
     }
 
-    public function isDuplicateEntity(AbstractEntity $entity,array $fields): ?string
+    public function isDuplicateEntity(AbstractEntity $entity, array $fields): ?string
     {
         foreach ($fields as $field) {
             $params = new ServiceListParams(get_class($entity));
-            $method='get'.ucfirst($field);
+            $method = 'get' . ucfirst($field);
             $params->setFilters($field, $entity->$method());
             $params->setFields('id');
             $payload = $this->list($params);

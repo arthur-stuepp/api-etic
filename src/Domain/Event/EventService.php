@@ -26,8 +26,11 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     use TraitListService;
 
 
-    public function __construct(InputValidator $validator, EventRepositoryInterface $repository, UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        InputValidator $validator,
+        EventRepositoryInterface $repository,
+        UserRepositoryInterface $userRepository
+    ) {
         $this->validator = $validator;
         $this->repository = $repository;
         $this->class = Event::class;
@@ -38,12 +41,18 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     {
         $data['type'] = $data['type'] ?? Event::TYPE_EVENT;
         if (!$this->validator->isValid($data, new Event())) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validator->getMessages()]
+            );
         }
         $event = new Event($data);
 
         if (!$this->repository->save($event)) {
-            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_ERROR,
+                ['description' => $this->repository->getError()]
+            );
         }
 
         return $this->servicePayload(ServicePayload::STATUS_SAVED, $event);
@@ -59,24 +68,28 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
         }
 
         if (!$this->validator->isValid($data, new Event())) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validator->getMessages()]
+            );
         }
         $data['id'] = $id;
         $event = new Event($data);
 
 
         if (!$this->repository->save($event)) {
-            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_ERROR,
+                ['description' => $this->repository->getError()]
+            );
         }
 
         return $this->servicePayload(ServicePayload::STATUS_SAVED, $event);
-
     }
 
     public function addUser(int $userId, array $data): ServicePayload
     {
         return $this->processUser($userId, $data, 'addUser');
-
     }
 
     private function processUser(int $userId, array $data, string $method): ServicePayload
@@ -105,7 +118,10 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
             return $this->servicePayload($e->getCode(), ['message' => $e->getMessage()]);
         }
         if (!$this->repository->save($event)) {
-            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_ERROR,
+                ['description' => $this->repository->getError()]
+            );
         }
         try {
             return $this->servicePayload(ServicePayload::STATUS_VALID, ['id' => $event->getUser($userId)]);
@@ -117,14 +133,10 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     public function removeUser(int $userId, array $data): ServicePayload
     {
         return $this->processUser($userId, $data, 'removeUser');
-
     }
 
     public function updateUser(int $userId, array $data): ServicePayload
     {
         return $this->processUser($userId, $data, 'updateUser');
-
     }
-
-
 }

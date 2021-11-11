@@ -16,7 +16,7 @@ class SaveAction extends CrudAction
             return $this->respondWithPayload($this->service->create($data));
         }
         [$id] = array_values($this->args);
-        
+
         return $this->respondWithPayload($this->service->update((int)$id, $data));
     }
 }

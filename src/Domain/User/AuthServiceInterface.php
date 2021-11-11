@@ -9,5 +9,4 @@ use App\Domain\ServicePayload;
 interface AuthServiceInterface
 {
     public function auth(array $data): ServicePayload;
-
 }

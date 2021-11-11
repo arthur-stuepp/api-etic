@@ -16,9 +16,9 @@ class ShutdownHandler
     /**
      * ShutdownHandler constructor.
      *
-     * @param Request       $request
+     * @param Request $request
      * @param $errorHandler $errorHandler
-     * @param bool          $displayErrorDetails
+     * @param bool $displayErrorDetails
      */
     public function __construct(
         Request $request,
@@ -31,7 +31,7 @@ class ShutdownHandler
     }
 
     public function __invoke()
-    {   
+    {
         $error = error_get_last();
         if ($error) {
             $errorFile = $error['file'];
@@ -61,9 +61,10 @@ class ShutdownHandler
                         break;
                 }
             }
-                
+
             $exception = new HttpInternalServerErrorException($this->request, $message);
-            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, true, true);
+            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, true,
+                true);
 
             $responseEmitter = new ResponseEmitter();
             $responseEmitter->emit($response);

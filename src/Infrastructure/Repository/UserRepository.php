@@ -18,11 +18,10 @@ class UserRepository implements UserRepositoryInterface
     private SchoolRepositoryInterface $schoolRepository;
 
     public function __construct(
-        MysqlRepository            $mysqlRepository,
+        MysqlRepository $mysqlRepository,
         AddressRepositoryInterface $addressRepository,
-        SchoolRepositoryInterface  $schoolRepository
-    )
-    {
+        SchoolRepositoryInterface $schoolRepository
+    ) {
         $this->repository = $mysqlRepository;
         $this->addressRepository = $addressRepository;
         $this->schoolRepository = $schoolRepository;

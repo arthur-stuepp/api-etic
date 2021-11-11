@@ -14,11 +14,12 @@ class EventUser extends AbstractEntity
     protected ?string $team;
     protected bool $waitlist;
     protected bool $cheking;
-    
+
     public function setCheking(bool $cheking): void
     {
         $this->cheking = $cheking;
-    }   
+    }
+
     public function setTeam(string $team): void
     {
         $this->team = $team;
@@ -28,6 +29,4 @@ class EventUser extends AbstractEntity
     {
         return $this->user;
     }
-
-
 }

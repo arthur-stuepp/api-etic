@@ -20,8 +20,8 @@ class Restricted extends AbstractMiddleware
     {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        
-        $userId =(int) $route->getArgument('user');
+
+        $userId = (int)$route->getArgument('user');
         if ((USER_TYPE !== User::TYPE_ADMIN) && ($userId !== USER_ID)) {
             return $this->response(['message' => 'Você não tem permissao para executar essa ação'], 403);
         }

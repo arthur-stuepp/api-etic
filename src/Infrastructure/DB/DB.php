@@ -98,7 +98,6 @@ class DB
     }
 
     public function fetchAllFields($table): array
-
     {
         $sql = 'SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_SCHEMA=(SELECT DATABASE()) AND TABLE_NAME =:table';
         $stmt = $this->db->prepare($sql);
@@ -174,7 +173,8 @@ class DB
         }
         $filters = $this->camel_to_snake($filters);
         try {
-            $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table . $this->getFilters($filters) . $this->getLimit($page, $limit);
+            $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table . $this->getFilters($filters) . $this->getLimit($page,
+                    $limit);
             $stmt = $this->db->prepare($sql);
             $sqlDebug = $sql;
             if ($filters !== []) {
@@ -238,11 +238,11 @@ class DB
 
     private function getLimit(int $page, int $limit): string
     {
-        if($limit===0){
+        if ($limit === 0) {
             return '';
         }
         $offset = ($page - 1) * $limit;
-     
+
         return ' LIMIT ' . $limit . ' OFFSET ' . $offset;
     }
 

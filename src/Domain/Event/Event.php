@@ -45,7 +45,12 @@ class Event extends AbstractEntity
         if ($this->users->count() >= $this->capacity) {
             $wailist = true;
         }
-        $eventUser = new EventUser(['user' => $userId, 'event' => $this->id, 'cheking' => false, 'waitlist' => $wailist]);
+        $eventUser = new EventUser([
+            'user' => $userId,
+            'event' => $this->id,
+            'cheking' => false,
+            'waitlist' => $wailist
+        ]);
         $this->users[$userId] = $eventUser;
     }
 
@@ -58,13 +63,11 @@ class Event extends AbstractEntity
             throw new DomainException('Usuário não encontrado', ServicePayload::STATUS_NOT_FOUND);
         }
         return $this->users->offsetGet($userId);
-
     }
 
     public function hasUser(int $userId): bool
     {
         return $this->users->offsetExists($userId);
-
     }
 
     /**
@@ -73,7 +76,6 @@ class Event extends AbstractEntity
     public function getUsers(): array
     {
         return $this->users->getArrayCopy();
-
     }
 
     /**
@@ -87,6 +89,4 @@ class Event extends AbstractEntity
         }
         $this->users->offsetUnset($userId);
     }
-
-
 }

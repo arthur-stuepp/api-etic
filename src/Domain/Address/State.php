@@ -14,17 +14,16 @@ class State extends AbstractEntity
     protected string $code;
 
     protected string $name;
-    
+
     public function getCode(): string
     {
         return $this->code;
     }
-    
+
     public function getName(): string
     {
         return $this->name;
     }
-    
-    
+
 
 }

@@ -34,9 +34,10 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
     {
         $school = new School($data);
         if (!$this->validation->isValid($data, $school)) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validation->getMessages()]);
         }
-        
+
         return $this->processAndSave($school);
     }
 
@@ -48,7 +49,8 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
         }
 
         if (!$this->repository->save($school)) {
-            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]);
+            return $this->servicePayload(ServicePayload::STATUS_ERROR,
+                ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]);
         }
 
         return $this->servicePayload(ServicePayload::STATUS_SAVED, $school);
@@ -64,12 +66,13 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
         }
 
         if (!$this->validation->isValid($data, $school)) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validation->getMessages()]);
+            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validation->getMessages()]);
         }
-        
-        $data['id']=$id;
+
+        $data['id'] = $id;
         $school = new School($data);
-    
+
 
         return $this->processAndSave($school);
 

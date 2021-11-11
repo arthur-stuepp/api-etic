@@ -13,7 +13,7 @@ class SaveEventUserAction extends AbstractEventUserAction
     {
         $data = $this->getFormData();
         $data['event'] = $this->args['event'];
-        
+
         return $this->respondWithPayload($this->service->addUser((int)$this->args['user'], $data));
     }
 }

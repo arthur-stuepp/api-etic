@@ -13,7 +13,6 @@ use App\Infrastructure\Repository\UserRepository;
 use DI\ContainerBuilder;
 use function DI\autowire;
 
-
 return function (ContainerBuilder $containerBuilder) {
 
     $containerBuilder->addDefinitions([

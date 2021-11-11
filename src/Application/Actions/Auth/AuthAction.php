@@ -10,7 +10,6 @@ use Psr\Log\LoggerInterface;
 
 abstract class AuthAction extends Action
 {
-
     protected AuthServiceInterface $service;
 
     public function __construct(AuthServiceInterface $service, LoggerInterface $logger)

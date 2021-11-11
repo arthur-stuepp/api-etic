@@ -11,11 +11,10 @@ use App\Domain\User\UserService;
 use DI\ContainerBuilder;
 use function DI\autowire;
 
-
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         AddressServiceInterface::class => autowire(AddressService::class),
         AuthServiceInterface::class => autowire(UserService::class),
-        EventUserServiceInterface::class =>autowire( EventService::class),
+        EventUserServiceInterface::class => autowire(EventService::class),
     ]);
 };

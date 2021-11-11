@@ -17,7 +17,7 @@ abstract class AbstractMiddleware implements Middleware
         $response = (new ResponseFactory)->createResponse($status);
         $json = json_encode($data, JSON_PRETTY_PRINT);
         $response->getBody()->write($json);
-        
+
         return $response->withHeader('Content-Type', 'application/json');
     }
 }
