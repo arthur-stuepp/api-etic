@@ -9,10 +9,9 @@ use App\Domain\ServicePayload;
 
 trait TraitListService
 {
-
     public function list(array $queryParams): ServicePayload
     {
         $params = new ServiceListParams($this->class, $queryParams);
-        return $this->ServicePayload(ServicePayload::STATUS_FOUND, $this->repository->list($params));
+        return $this->servicePayload(ServicePayload::STATUS_FOUND, $this->repository->list($params));
     }
 }

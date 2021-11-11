@@ -7,8 +7,6 @@ use App\Domain\General\ServiceListParams;
 interface EventRepositoryInterface
 {
     public function save(Event $event): bool;
-
-
     /**
      * @param int $id
      * @return Event|false

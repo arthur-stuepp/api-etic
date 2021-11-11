@@ -7,6 +7,7 @@ namespace App\Application\Actions;
 use App\Domain\ServicePayload;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 
 abstract class Action
@@ -14,6 +15,12 @@ abstract class Action
     protected Request $request;
     protected Response $response;
     protected array $args;
+    protected LoggerInterface $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
 
     /**
@@ -30,7 +37,6 @@ abstract class Action
         $this->args = $args;
 
         return $this->action();
-
     }
 
     /**

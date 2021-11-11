@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class GetAction extends CrudAction
 {
-
     protected function action(): Response
     {
         $queryParams = $this->request->getQueryParams();
@@ -17,8 +16,8 @@ class GetAction extends CrudAction
             return $this->respondWithPayload($this->service->list($queryParams));
         }
         [$id] = array_values($this->args);
+        $this->logger->info('Listagem foi executada');
 
         return $this->respondWithPayload($this->service->read((int)$id));
-
     }
 }

@@ -17,9 +17,9 @@ trait TraitReadService
         $params->setFilters('id', (string)($id))->setLimit(1);
         $entity = $this->repository->list($params)['result'] ?? false;
         if (!$entity) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
+            return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_FOUND, $entity);
+        return $this->servicePayload(ServicePayload::STATUS_FOUND, $entity);
     }
 }

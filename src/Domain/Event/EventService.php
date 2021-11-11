@@ -38,15 +38,15 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     {
         $data['type'] = $data['type'] ?? Event::TYPE_EVENT;
         if (!$this->validator->isValid($data, new Event())) {
-            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
+            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
         }
         $event = new Event($data);
 
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_SAVED, $event);
+        return $this->servicePayload(ServicePayload::STATUS_SAVED, $event);
     }
 
 
@@ -55,21 +55,21 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
 
         $event = $this->repository->getById($id);
         if (!$event) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND);
+            return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
 
         if (!$this->validator->isValid($data, new Event())) {
-            return $this->ServicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
+            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT, ['fields' => $this->validator->getMessages()]);
         }
         $data['id'] = $id;
         $event = new Event($data);
 
 
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
 
-        return $this->ServicePayload(ServicePayload::STATUS_SAVED, $event);
+        return $this->servicePayload(ServicePayload::STATUS_SAVED, $event);
 
     }
 
@@ -83,11 +83,11 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     {
         $event = $this->repository->getById((int)$data['event']);
         if (!$event) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => self::NOT_FOUND]);
+            return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND, ['message' => self::NOT_FOUND]);
         }
         $user = $this->userRepository->getById($userId);
         if (!$user) {
-            return $this->ServicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => self::NOT_FOUND]);
+            return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND, ['user' => self::NOT_FOUND]);
         }
         try {
             if (in_array($method, ['addUser', 'removeUser'])) {
@@ -102,15 +102,15 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
                 }
             }
         } catch (DomainException $e) {
-            return $this->ServicePayload($e->getCode(), ['message' => $e->getMessage()]);
+            return $this->servicePayload($e->getCode(), ['message' => $e->getMessage()]);
         }
         if (!$this->repository->save($event)) {
-            return $this->ServicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
+            return $this->servicePayload(ServicePayload::STATUS_ERROR, ['description' => $this->repository->getError()]);
         }
         try {
-            return $this->ServicePayload(ServicePayload::STATUS_VALID, ['id' => $event->getUser($userId)]);
+            return $this->servicePayload(ServicePayload::STATUS_VALID, ['id' => $event->getUser($userId)]);
         } catch (DomainException $e) {
-            return $this->ServicePayload($e->getCode(), ['message' => $e->getMessage()]);
+            return $this->servicePayload($e->getCode(), ['message' => $e->getMessage()]);
         }
     }
 

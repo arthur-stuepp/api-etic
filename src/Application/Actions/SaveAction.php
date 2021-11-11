@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class SaveAction extends CrudAction
 {
-
     protected function action(): Response
     {
         $this->setService();
@@ -19,6 +18,5 @@ class SaveAction extends CrudAction
         [$id] = array_values($this->args);
         
         return $this->respondWithPayload($this->service->update((int)$id, $data));
-
     }
 }

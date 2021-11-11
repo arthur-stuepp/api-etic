@@ -23,7 +23,7 @@ abstract class AbstractDomainService
         ServicePayload::STATUS_ERROR => self::SAVE_ERROR,
     ];
 
-    protected function ServicePayload(int $status, $result = []): ServicePayload
+    protected function servicePayload(int $status, $result = []): ServicePayload
     {
         if ((is_array($result)) && (!isset($result['message'])) && (isset($this->defaultMessages[$status]))) {
             $result = array_merge(['message' => $this->defaultMessages[$status]], $result);
@@ -35,5 +35,4 @@ abstract class AbstractDomainService
     {
         return new ServiceListParams($class);
     }
-
 }

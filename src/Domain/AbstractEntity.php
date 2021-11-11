@@ -18,7 +18,7 @@ abstract class AbstractEntity implements JsonSerializable
     public function __construct(array $properties = [])
     {
         $this->setData($properties);
-    } 
+    }
 
     protected function setData(array $properties)
     {
@@ -91,17 +91,7 @@ abstract class AbstractEntity implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $vars = get_object_vars($this);
-
-        foreach ($vars as $var => $value) {
-            if (is_object($value))
-                if ((count((array)$value)) == 1) {
-                    if (isset($value->id)) {
-                        $vars[$var] = $value->id;
-                    }
-                }
-        }
-        return $vars;
+        return get_object_vars($this);
     }
 
 }

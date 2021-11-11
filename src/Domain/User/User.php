@@ -55,8 +55,7 @@ class User extends AbstractEntity
     {
         return $this->type;
     }
-
-
+    
     public function getIndication(): ?int
     {
         return $this->indication;
