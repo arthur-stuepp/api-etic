@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\General\ServiceListParams;
 use App\Domain\School\School;
 use App\Domain\School\SchoolRepositoryInterface;
 
@@ -25,13 +24,13 @@ class SchoolRepository implements SchoolRepositoryInterface
 
     public function getById(int $id): ?School
     {
-        $params = new ServiceListParams(School::class);
+        $params = new EntityParams(School::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
         return $this->repository->list($params)['result'][0] ?? null;
     }
 
-    public function list(ServiceListParams $params): array
+    public function list(EntityParams $params): array
     {
         return $this->repository->list($params);
     }

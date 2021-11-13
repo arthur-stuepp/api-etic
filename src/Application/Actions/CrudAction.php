@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Domain\CrudServiceInterface;
+use App\Domain\Service\CrudServiceInterface;
 use App\Domain\Factory\ServiceFactory;
 use Psr\Log\LoggerInterface;
 

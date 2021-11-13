@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\General\Validator;
+namespace App\Domain\Validator;
 
 use App\Domain\AbstractEntity;
 use ReflectionClass;

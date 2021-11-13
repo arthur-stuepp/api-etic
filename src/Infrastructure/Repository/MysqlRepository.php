@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\AbstractEntity;
-use App\Domain\General\ServiceListParams;
 use App\Infrastructure\DB\DB;
 use ReflectionClass;
 use ReflectionProperty;
@@ -36,9 +35,7 @@ class MysqlRepository extends DB
             }
         } else {
             if ($this->insert($this->getTable($class), $data)) {
-                $rp = new ReflectionProperty($entity, 'id');
-                $rp->setAccessible(true);
-                $rp->setValue($entity, $this->getLastInsertId());
+                $entity->setId($this->getLastInsertId());
 
                 return true;
             }
@@ -69,9 +66,8 @@ class MysqlRepository extends DB
     public function isDuplicateEntity(AbstractEntity $entity, array $fields): ?string
     {
         foreach ($fields as $field) {
-            $params = new ServiceListParams(get_class($entity));
-            $method = 'get' . ucfirst($field);
-            $params->setFilters($field, $entity->$method());
+            $params = new EntityParams(get_class($entity));
+            $params->setFilters($field, $entity->__get($field));
             $params->setFields('id');
             $payload = $this->list($params);
             if ($payload['total'] > 0) {
@@ -87,7 +83,7 @@ class MysqlRepository extends DB
     }
 
 
-    public function list(ServiceListParams $params): array
+    public function list(EntityParams $params): array
     {
         $rows = $this->rows(
             $this->getTable($params->getClass()),

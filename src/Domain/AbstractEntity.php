@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Exception\DomainException;
+use App\Domain\Exception\DomainFieldException;
 use App\Domain\Factory\EntityFactory;
-use App\Domain\General\Model\DateTimeModel;
+use App\Domain\Model\DateTimeModel;
 use Exception;
 use JsonSerializable;
+use ReflectionException;
+use ReflectionNamedType;
 use ReflectionProperty;
 
 abstract class AbstractEntity implements JsonSerializable
@@ -15,11 +19,17 @@ abstract class AbstractEntity implements JsonSerializable
     protected int $id;
     protected ?DateTimeModel $createdAt;
 
+    /**
+     * @throws Exception
+     */
     public function __construct(array $properties = [])
     {
         $this->setData($properties);
     }
 
+    /**
+     * @throws Exception
+     */
     protected function setData(array $properties)
     {
         foreach ($properties as $key => $value) {
@@ -29,12 +39,18 @@ abstract class AbstractEntity implements JsonSerializable
         }
     }
 
-    /** @noinspection PhpUnhandledExceptionInspection */
+    /**
+     * @throws ReflectionException
+     * @throws Exception
+     */
     private function convertProperty(string $key, $value)
     {
-
         $rp = new ReflectionProperty($this, $key);
-        $type = $rp->getType()->getName();
+        $rn = $rp->getType();
+        if (!$rn instanceof ReflectionNamedType) {
+            throw new DomainException('Erro ao instanciar classe', 500);
+        }
+        $type = $rn->getName();
         $convertedValue = $value;
         switch ($type) {
             case 'string':
@@ -51,12 +67,8 @@ abstract class AbstractEntity implements JsonSerializable
                 break;
             case 'DateTime':
             case DateTimeModel::class:
-                try {
-                    $convertedValue = new DateTimeModel($value);
-                    break;
-                } catch (Exception $e) {
-                    break;
-                }
+                $convertedValue = new DateTimeModel($value);
+                break;
             default:
                 if (EntityFactory::entityExist($key)) {
                     if (is_int($value)) {
@@ -77,9 +89,42 @@ abstract class AbstractEntity implements JsonSerializable
         $this->$key = $convertedValue;
     }
 
+    public function __get(string $name)
+    {
+        return $this->$name;
+    }
+
+    public function __set(string $name, $value)
+    {
+        $method = 'set' . ucfirst($name);
+        if (method_exists($this, $method)) {
+            $this->$method($value);
+            return;
+        }
+        if (property_exists($this, $name)) {
+            $this->$name = $value;
+        }
+    }
+
     public function getId(): int
     {
         return $this->id ?? 0;
+    }
+
+    /**
+     * @param int $id
+     * @throws DomainFieldException
+     * @throws Exception
+     */
+    public function setId(int $id): void
+    {
+        if ($id < 0) {
+            throw new DomainFieldException('Id não pode ser menor que 0', 'id');
+        }
+        if (isset($this->id)) {
+            throw new DomainFieldException('Id não pode alterado', 'id');
+        }
+        $this->id = $id;
     }
 
     public function __toString(): string

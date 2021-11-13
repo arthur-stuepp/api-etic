@@ -2,7 +2,7 @@
 
 namespace App\Domain\Event;
 
-use App\Domain\ServicePayload;
+use App\Domain\Service\ServicePayload;
 
 interface EventUserServiceInterface
 {

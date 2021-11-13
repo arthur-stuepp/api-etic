@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Event;
 
 use App\Domain\AbstractEntity;
-use App\Domain\DomainException\DomainException;
-use App\Domain\General\Model\DateTimeModel;
-use App\Domain\ServicePayload;
+use App\Domain\Exception\DomainException;
+use App\Domain\Model\DateTimeModel;
+use App\Domain\Service\ServicePayload;
 use App\Domain\User\User;
 use ArrayObject;
 
@@ -78,7 +78,7 @@ class Event extends AbstractEntity
         return $this->users->getArrayCopy();
     }
 
-    /**
+    /**-
      * @throws DomainException
      */
     public function removeUser(User $user): void

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Address;
 
-use App\Domain\General\ServiceListParams;
+use App\Infrastructure\Repository\EntityParams;
 
 interface AddressRepositoryInterface
 {
@@ -10,5 +10,5 @@ interface AddressRepositoryInterface
 
     public function getCityById(int $id): ?City;
 
-    public function list(ServiceListParams $params);
+    public function list(EntityParams $params);
 }

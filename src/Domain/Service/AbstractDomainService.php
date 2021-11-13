@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Service;
 
-use App\Domain\General\ServiceListParams;
+use App\Infrastructure\Repository\EntityParams;
 
 abstract class AbstractDomainService
 {
@@ -31,8 +31,8 @@ abstract class AbstractDomainService
         return new ServicePayload($status, $result);
     }
 
-    protected function params(string $class): ServiceListParams
+    protected function params(string $class): EntityParams
     {
-        return new ServiceListParams($class);
+        return new EntityParams($class);
     }
 }

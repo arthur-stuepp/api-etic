@@ -4,87 +4,30 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use App\Domain\AbstractDomainService;
-use App\Domain\CrudServiceInterface;
-use App\Domain\DomainException\DomainException;
-use App\Domain\General\Traits\TraitDeleteService;
-use App\Domain\General\Traits\TraitListService;
-use App\Domain\General\Traits\TraitReadService;
-use App\Domain\General\Validator\InputValidator;
-use App\Domain\ServicePayload;
-use App\Domain\User\UserRepositoryInterface;
+use App\Domain\Service\AbstractCrudService;
+use App\Domain\AbstractEntity;
+use App\Domain\Exception\DomainException;
+use App\Domain\RepositoryInterface;
+use App\Domain\Service\ServicePayload;
+use App\Domain\User\UserRepositoryInterfaceInterface;
+use App\Domain\Validator\InputValidator;
 
-class EventService extends AbstractDomainService implements CrudServiceInterface, EventUserServiceInterface
+class EventService extends AbstractCrudService implements EventUserServiceInterface
 {
-    private InputValidator $validator;
+    protected string $class;
     private EventRepositoryInterface $repository;
-    private string $class;
-    private UserRepositoryInterface $userRepository;
-
-    use TraitDeleteService;
-    use TraitReadService;
-    use TraitListService;
+    private UserRepositoryInterfaceInterface $userRepository;
 
 
     public function __construct(
         InputValidator $validator,
         EventRepositoryInterface $repository,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterfaceInterface $userRepository
     ) {
-        $this->validator = $validator;
+        parent::__construct($validator);
         $this->repository = $repository;
         $this->class = Event::class;
         $this->userRepository = $userRepository;
-    }
-
-    public function create(array $data): ServicePayload
-    {
-        $data['type'] = $data['type'] ?? Event::TYPE_EVENT;
-        if (!$this->validator->isValid($data, new Event())) {
-            return $this->servicePayload(
-                ServicePayload::STATUS_INVALID_INPUT,
-                ['fields' => $this->validator->getMessages()]
-            );
-        }
-        $event = new Event($data);
-
-        if (!$this->repository->save($event)) {
-            return $this->servicePayload(
-                ServicePayload::STATUS_ERROR,
-                ['description' => $this->repository->getError()]
-            );
-        }
-
-        return $this->servicePayload(ServicePayload::STATUS_SAVED, $event);
-    }
-
-
-    public function update(int $id, array $data): ServicePayload
-    {
-
-        $event = $this->repository->getById($id);
-        if (!$event) {
-            return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);
-        }
-
-        if (!$this->validator->isValid($data, new Event())) {
-            return $this->servicePayload(
-                ServicePayload::STATUS_INVALID_INPUT,
-                ['fields' => $this->validator->getMessages()]
-            );
-        }
-        $data['id'] = $id;
-        $event = new Event($data);
-
-
-        if (!$this->repository->save($event)) {
-            return $this->servicePayload(
-                ServicePayload::STATUS_ERROR,
-                ['description' => $this->repository->getError()]
-            );
-        }
-
-        return $this->servicePayload(ServicePayload::STATUS_SAVED, $event);
     }
 
     public function addUser(int $userId, array $data): ServicePayload
@@ -138,5 +81,22 @@ class EventService extends AbstractDomainService implements CrudServiceInterface
     public function updateUser(int $userId, array $data): ServicePayload
     {
         return $this->processUser($userId, $data, 'updateUser');
+    }
+
+    /** @noinspection PhpParamsInspection */
+    protected function processEntity(AbstractEntity $entity): ServicePayload
+    {
+        if (!$this->repository->save($entity)) {
+            return $this->servicePayload(
+                ServicePayload::STATUS_ERROR,
+                ['description' => $this->repository->getError()]
+            );
+        }
+        return $this->servicePayload(ServicePayload::STATUS_VALID, $entity);
+    }
+
+    protected function getRepository(): RepositoryInterface
+    {
+        return $this->repository;
     }
 }

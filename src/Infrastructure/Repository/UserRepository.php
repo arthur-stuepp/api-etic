@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Address\AddressRepositoryInterface;
-use App\Domain\General\ServiceListParams;
 use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\User\User;
-use App\Domain\User\UserRepositoryInterface;
-use ReflectionProperty;
+use App\Domain\User\UserRepositoryInterfaceInterface;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository implements UserRepositoryInterfaceInterface
 {
     private MysqlRepository $repository;
     private AddressRepositoryInterface $addressRepository;
@@ -34,22 +32,13 @@ class UserRepository implements UserRepositoryInterface
 
     public function getById(int $id): ?User
     {
-        $params = new ServiceListParams(User::class);
+        $params = new EntityParams(User::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['result'][0] ?? null;
+        return $this->list($params)['result'][0] ?? null;
     }
 
-    public function getByEmail(string $email): ?User
-    {
-        $params = new ServiceListParams(User::class);
-        $params->setFilters('email', $email)
-            ->setLimit(1);
-        return $this->repository->list($params)['result'][0] ?? null;
-    }
-
-    /** @noinspection PhpUnhandledExceptionInspection */
-    public function list(ServiceListParams $params): array
+    public function list(EntityParams $params): array
     {
         $payload = $this->repository->list($params);
         $fields = $params->getFields();
@@ -57,20 +46,24 @@ class UserRepository implements UserRepositoryInterface
             function (User $user) use ($fields) {
 
                 if ($fields === [] || in_array('city', $fields)) {
-                    $rp = new ReflectionProperty($user, 'city');
-                    $rp->setAccessible(true);
-                    $rp->setValue($user, $this->addressRepository->getCityById($user->getCity()->getId()));
+                    $user->__set('city', $this->addressRepository->getCityById($user->__get('city')->getId()));
                 }
                 if ($fields === [] || in_array('school', $fields)) {
-                    $rp = new ReflectionProperty($user, 'school');
-                    $rp->setAccessible(true);
-                    $rp->setValue($user, $this->schoolRepository->getById(($user->getSchool()->getId())));
+                    $user->__set('school', $this->schoolRepository->getById($user->__get('school')->getId()));
                 }
                 return $user;
             },
             $payload['result']
         );
         return $payload;
+    }
+
+    public function getByEmail(string $email): ?User
+    {
+        $params = new EntityParams(User::class);
+        $params->setFilters('email', $email)
+            ->setLimit(1);
+        return $this->list($params)['result'][0] ?? null;
     }
 
     public function delete($id): bool

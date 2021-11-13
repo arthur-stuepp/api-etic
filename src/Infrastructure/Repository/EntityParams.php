@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\General;
+namespace App\Infrastructure\Repository;
 
-class ServiceListParams
+class EntityParams
 {
 
     private array $fields = [];

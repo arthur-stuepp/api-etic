@@ -12,8 +12,8 @@ return function (ContainerBuilder $containerBuilder) {
         SettingsInterface::class => function () {
             return new Settings([
                 'displayErrorDetails' => DEBUG,
-                'logError'            => false,
-                'logErrorDetails'     => false,
+                'logError' => true,
+                'logErrorDetails' => true,
                 'logger' => [
                     'name' => 'etic-app',
                     'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',

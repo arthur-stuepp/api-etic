@@ -7,7 +7,6 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\Address\City;
 use App\Domain\Address\State;
-use App\Domain\General\ServiceListParams;
 
 class AddressRepository implements AddressRepositoryInterface
 {
@@ -20,20 +19,20 @@ class AddressRepository implements AddressRepositoryInterface
 
     public function getStateById(int $id): ?State
     {
-        $params = new ServiceListParams(State::class);
+        $params = new EntityParams(State::class);
         $params->setFilters('id', (string)$id)->setLimit(1);
 
         return $this->list($params)['result'][0] ?? null;
     }
 
-    public function list(ServiceListParams $params): array
+    public function list(EntityParams $params): array
     {
         return $this->repository->list($params);
     }
 
     public function getCityById(int $id): ?City
     {
-        $params = new ServiceListParams(City::class);
+        $params = new EntityParams(City::class);
         $params->setFilters('id', (string)$id)->setLimit(1);
         return $this->list($params)['result'][0] ?? null;
     }

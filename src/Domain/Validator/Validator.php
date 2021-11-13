@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-namespace App\Domain\General\Validator;
+namespace App\Domain\Validator;
 
 abstract class Validator
 {

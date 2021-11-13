@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Factory;
 
-use App\Domain\CrudServiceInterface;
+use App\Domain\Service\CrudServiceInterface;
 use App\Domain\Event\EventService;
 use App\Domain\School\SchoolService;
 use App\Domain\User\UserService;

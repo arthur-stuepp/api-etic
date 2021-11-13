@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\General\Model;
+namespace App\Domain\Model;
 
 use DateTime;
 use JsonSerializable;

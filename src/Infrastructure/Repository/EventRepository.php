@@ -7,7 +7,6 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Event\Event;
 use App\Domain\Event\EventRepositoryInterface;
 use App\Domain\Event\EventUser;
-use App\Domain\General\ServiceListParams;
 use ArrayObject;
 use Exception;
 use ReflectionProperty;
@@ -26,7 +25,7 @@ class EventRepository implements EventRepositoryInterface
         try {
             $this->repository->beginTransaction();
             $result = $this->repository->saveEntity($event);
-            $params = new ServiceListParams(EventUser::class);
+            $params = new EntityParams(EventUser::class);
             $params->setFilters('event', ((string)$event->getId()))->setLimit(0);
             $userEvents = $this->list($params)['result'];
             $toDelete = array_filter($userEvents, function (EventUser $eventUser) use ($event) {
@@ -54,7 +53,7 @@ class EventRepository implements EventRepositoryInterface
         return false;
     }
 
-    public function list(ServiceListParams $params): array
+    public function list(EntityParams $params): array
     {
         return $this->repository->list($params);
     }
@@ -62,7 +61,7 @@ class EventRepository implements EventRepositoryInterface
     /** @noinspection PhpUnhandledExceptionInspection */
     public function getById(int $id): ?Event
     {
-        $params = new ServiceListParams(Event::class);
+        $params = new EntityParams(Event::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
         /** @var Event|null $event */
@@ -71,7 +70,7 @@ class EventRepository implements EventRepositoryInterface
         if ($event !== false) {
             $rp = new ReflectionProperty($event, 'users');
             $rp->setAccessible(true);
-            $params = new ServiceListParams(EventUser::class);
+            $params = new EntityParams(EventUser::class);
             $params->setFilters('event', (string)$event->getId())->setLimit(0);
             $eventUsers = $this->repository->list($params)['result'];
             $arrayObject = new ArrayObject();

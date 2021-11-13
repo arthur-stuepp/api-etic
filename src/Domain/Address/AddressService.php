@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Address;
 
-use App\Domain\AbstractDomainService;
-use App\Domain\General\ServiceListParams;
-use App\Domain\ServicePayload;
+use App\Domain\Service\AbstractDomainService;
+use App\Infrastructure\Repository\EntityParams;
+use App\Domain\Service\ServicePayload;
 
 class AddressService extends AbstractDomainService implements AddressServiceInterface
 {
@@ -38,14 +38,14 @@ class AddressService extends AbstractDomainService implements AddressServiceInte
 
     public function listState(array $queryParams): ServicePayload
     {
-        $params = new ServiceListParams(State::class, $queryParams);
+        $params = new EntityParams(State::class, $queryParams);
 
         return $this->servicePayload(ServicePayload::STATUS_FOUND, $this->repository->list($params));
     }
 
     public function listCity(array $queryParams): ServicePayload
     {
-        $params = new ServiceListParams(City::class, $queryParams);
+        $params = new EntityParams(City::class, $queryParams);
 
         return $this->servicePayload(ServicePayload::STATUS_FOUND, $this->repository->list($params));
     }

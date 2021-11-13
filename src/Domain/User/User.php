@@ -6,7 +6,7 @@ namespace App\Domain\User;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
-use App\Domain\General\Model\DateTimeModel;
+use App\Domain\Model\DateTimeModel;
 use App\Domain\School\School;
 
 class User extends AbstractEntity
@@ -28,42 +28,6 @@ class User extends AbstractEntity
     protected string $taxId;
     protected ?int $indication;
 
-
-    public function getCity(): City
-    {
-        return $this->city;
-    }
-
-    public function getSchool(): School
-    {
-        return $this->school;
-    }
-
-    public function getType(): int
-    {
-        return $this->type;
-    }
-
-    public function getIndication(): ?int
-    {
-        return $this->indication;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getTaxId(): string
-    {
-        return $this->taxId;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
     public function comparePassword(string $passoword): bool
     {
         return password_verify($passoword, $this->password);
@@ -79,11 +43,5 @@ class User extends AbstractEntity
                 substr($json['email'], strpos($json['email'], "@"));
         }
         return $json;
-    }
-
-    /** @noinspection PhpUnusedPrivateMethodInspection */
-    private function setPassword(string $password)
-    {
-        $this->password = password_hash($password, PASSWORD_ARGON2I);
     }
 }
