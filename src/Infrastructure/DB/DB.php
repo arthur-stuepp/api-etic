@@ -30,7 +30,6 @@ class DB
             $this->fetchAllTables();
         } catch (PDOException $e) {
             throw new DatabaseException('Erro ao conectar com o banco', $e->getMessage());
-
         }
     }
 
@@ -43,7 +42,6 @@ class DB
         $this->tables = array_map(function ($tables) {
             return array_values($tables)[0];
         }, $stmt->fetchAll(PDO::FETCH_ASSOC));
-
     }
 
     public function insert(string $table, array $data): bool
@@ -52,7 +50,7 @@ class DB
             $this->error = 'Tabela :' . $table . ' não encontrada';
             return false;
         }
-        $data = $this->camel_to_snake($data);
+        $data = $this->camelToSnake($data);
         $fields = array_flip($this->fetchAllFields($table));
 
         $data = (array_intersect_key($data, $fields));
@@ -85,7 +83,7 @@ class DB
         return in_array($table, $this->tables);
     }
 
-    private function camel_to_snake(array $array): array
+    private function camelToSnake(array $array): array
     {
         foreach ($array as $key => $value) {
             $newKey = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
@@ -99,14 +97,14 @@ class DB
 
     public function fetchAllFields($table): array
     {
-        $sql = 'SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_SCHEMA=(SELECT DATABASE()) AND TABLE_NAME =:table';
+        $sql = 'SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE  TABLE_SCHEMA=(SELECT DATABASE()) AND TABLE_NAME =:table';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['table' => $table]);
 
         return array_map(function ($row) {
             return $row['COLUMN_NAME'];
         }, $stmt->fetchAll(PDO::FETCH_ASSOC));
-
     }
 
     public function update(int $id, string $table, array $data): bool
@@ -115,7 +113,7 @@ class DB
             $this->error = 'Tabela :' . $table . ' não encontrada';
             return false;
         }
-        $data = $this->camel_to_snake($data);
+        $data = $this->camelToSnake($data);
         unset($data['id']);
         try {
             $fields = '';
@@ -149,7 +147,7 @@ class DB
         }
     }
 
-    public function delete(string $table, $id, string $field = 'id'): bool
+    public function deleteByField(string $table, string $value, string $field = 'id'): bool
     {
         if (!$this->validateTable($table)) {
             $this->error = 'Tabela :' . $table . ' não encontrada';
@@ -158,7 +156,7 @@ class DB
         try {
             $sql = 'DELETE FROM ' . $table . ' WHERE ' . $field . '= :id';
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([':id' => $id]);
+            $stmt->execute([':id' => $value]);
             return true;
         } catch (Exception $e) {
             $this->error = $e->getMessage();
@@ -166,15 +164,16 @@ class DB
         }
     }
 
-    public function list(string $table, array $fields = [], array $filters = [], int $page = 1, int $limit = 50): array
+    public function rows(string $table, array $fields = [], array $filters = [], int $page = 1, int $limit = 50): array
     {
         if (isset($filters['name']) && isset($filters['search'])) {
             unset($filters['name']);
         }
-        $filters = $this->camel_to_snake($filters);
+        $filters = $this->camelToSnake($filters);
         try {
-            $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) . ' FROM ' . $table . $this->getFilters($filters) . $this->getLimit($page,
-                    $limit);
+            $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . $this->getFields($fields) .
+                ' FROM ' . $table . $this->getFilters($filters) .
+                $this->getLimit($page, $limit);
             $stmt = $this->db->prepare($sql);
             $sqlDebug = $sql;
             if ($filters !== []) {
@@ -183,7 +182,6 @@ class DB
                         $stmt->bindValue(':name', '%' . $value . '%');
                         $sqlDebug = str_replace(':name', $value, $sqlDebug);
                     } else {
-
                         $stmt->bindValue(':' . $key, $value);
                         $sqlDebug = str_replace(':' . $key, $value, $sqlDebug);
                     }
@@ -216,7 +214,7 @@ class DB
             return '*';
         }
 
-        return implode(',', array_values($this->camel_to_snake($fields)));
+        return implode(',', array_values($this->camelToSnake($fields)));
     }
 
     private function getFilters(array $filters): string

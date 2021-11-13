@@ -18,24 +18,23 @@ class AddressRepository implements AddressRepositoryInterface
         $this->repository = $repository;
     }
 
-
-    public function getStateById(int $id)
+    public function getStateById(int $id): ?State
     {
         $params = new ServiceListParams(State::class);
         $params->setFilters('id', (string)$id)->setLimit(1);
-        return $this->list($params)['result'][0] ?? false;
+
+        return $this->list($params)['result'][0] ?? null;
     }
 
     public function list(ServiceListParams $params): array
     {
         return $this->repository->list($params);
-
     }
 
-    public function getCityById(int $id)
+    public function getCityById(int $id): ?City
     {
         $params = new ServiceListParams(City::class);
         $params->setFilters('id', (string)$id)->setLimit(1);
-        return $this->list($params)['result'][0] ?? false;
+        return $this->list($params)['result'][0] ?? null;
     }
 }

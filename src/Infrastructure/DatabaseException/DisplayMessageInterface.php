@@ -2,8 +2,7 @@
 
 namespace App\Infrastructure\DatabaseException;
 
-interface  DisplayMessageInterface
+interface DisplayMessageInterface
 {
     public function getDisplayMessage(): string;
-
 }

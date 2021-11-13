@@ -21,7 +21,6 @@ class EntityFactory
         'state' => State::class,
     ];
 
-
     public static function entityExist(string $field): bool
     {
         return isset(self::$entities[$field]);
@@ -31,5 +30,4 @@ class EntityFactory
     {
         return new self::$entities[$field]($value);
     }
-
 }

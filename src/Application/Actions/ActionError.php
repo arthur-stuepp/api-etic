@@ -61,6 +61,4 @@ class ActionError implements JsonSerializable
         }
         return $data;
     }
-
-
 }

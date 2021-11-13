@@ -31,7 +31,6 @@ class EventRepository implements EventRepositoryInterface
             $userEvents = $this->list($params)['result'];
             $toDelete = array_filter($userEvents, function (EventUser $eventUser) use ($event) {
                 return !$event->hasUser($eventUser->getUser()->getId());
-
             });
             foreach ($event->getUsers() as $eventUser) {
                 if (!$this->repository->saveEntity($eventUser)) {
@@ -61,13 +60,13 @@ class EventRepository implements EventRepositoryInterface
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
-    public function getById(int $id)
+    public function getById(int $id): ?Event
     {
         $params = new ServiceListParams(Event::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        /** @var Event|false $event */
-        $event = $this->repository->list($params)['result'][0] ?? false;
+        /** @var Event|null $event */
+        $event = $this->repository->list($params)['result'][0] ?? null;
 
         if ($event !== false) {
             $rp = new ReflectionProperty($event, 'users');
@@ -80,7 +79,6 @@ class EventRepository implements EventRepositoryInterface
                 $arrayObject[$eventUser->getUser()->getId()] = $eventUser;
             }
             $rp->setValue($event, $arrayObject);
-
         }
         return $event;
     }

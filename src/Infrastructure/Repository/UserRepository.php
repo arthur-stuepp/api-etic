@@ -32,20 +32,20 @@ class UserRepository implements UserRepositoryInterface
         return $this->repository->saveEntity($user);
     }
 
-    public function getById(int $id)
+    public function getById(int $id): ?User
     {
         $params = new ServiceListParams(User::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['result'][0] ?? false;
+        return $this->repository->list($params)['result'][0] ?? null;
     }
 
-    public function getByEmail(string $email)
+    public function getByEmail(string $email): ?User
     {
         $params = new ServiceListParams(User::class);
         $params->setFilters('email', $email)
             ->setLimit(1);
-        return $this->repository->list($params)['result'][0] ?? false;
+        return $this->repository->list($params)['result'][0] ?? null;
     }
 
     /** @noinspection PhpUnhandledExceptionInspection */
@@ -66,10 +66,10 @@ class UserRepository implements UserRepositoryInterface
                     $rp->setAccessible(true);
                     $rp->setValue($user, $this->schoolRepository->getById(($user->getSchool()->getId())));
                 }
-
                 return $user;
-
-            }, $payload['result']);
+            },
+            $payload['result']
+        );
         return $payload;
     }
 
@@ -77,7 +77,6 @@ class UserRepository implements UserRepositoryInterface
     {
         return $this->repository->delete($id, User::class);
     }
-
 
     public function getDuplicateField(User $user): ?string
     {
@@ -89,4 +88,3 @@ class UserRepository implements UserRepositoryInterface
         return $this->repository->getError();
     }
 }
-

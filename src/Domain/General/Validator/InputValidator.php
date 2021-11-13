@@ -41,7 +41,6 @@ class InputValidator extends Validator
                     $this->messages[$fieldName] = Validator::FIELD_REQUIRED;
                 }
             }
-
         }
     }
 
@@ -52,7 +51,6 @@ class InputValidator extends Validator
             $fields = [];
             foreach ($consts as $const => $value) {
                 $fields[explode('_', $const)[0]][] = $value;
-
             }
             foreach ($fields as $field => $constValues) {
                 $property = strtolower($field);
@@ -61,9 +59,7 @@ class InputValidator extends Validator
                         $this->messages[$property] = self::FIELD_INVALID;
                     }
                 }
-
             }
         }
     }
-
 }

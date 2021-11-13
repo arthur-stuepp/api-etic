@@ -52,7 +52,11 @@ class HttpErrorHandler extends SlimErrorHandler
             $error->setMessage($exception->getDisplayMessage());
         }
         if (!($exception instanceof HttpException) && ($exception instanceof Throwable) && $this->displayErrorDetails) {
-            $error->setDescription('Erro : ' . $exception->getMessage() . ' na linha ' . $exception->getLine() . ' no arquivo ' . $exception->getFile());
+            $error->setDescription(
+                'Erro : ' . $exception->getMessage() .
+                ' na linha ' . $exception->getLine() . ' no arquivo ' .
+                $exception->getFile()
+            );
         }
 
         $payload = new ActionPayload($statusCode, null, $error);

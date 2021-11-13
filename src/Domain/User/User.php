@@ -15,29 +15,17 @@ class User extends AbstractEntity
     public const TYPE_USER = 2;
 
     protected int $id;
-
     protected int $type;
-
     protected string $name;
-
     protected string $address;
-
     protected City $city;
-
     protected string $email;
-
     protected DateTimeModel $birthday;
-
     protected ?string $company;
-
     protected School $school;
-
     protected bool $disability = false;
-
     protected string $password;
-
     protected string $taxId;
-
     protected ?int $indication;
 
 
@@ -86,11 +74,16 @@ class User extends AbstractEntity
         $json = parent::jsonSerialize();
         unset($json['password']);
         if (isset($json['email'])) {
-            $json['email'] = substr($json['email'], 0, 3) . '****' . substr($json['email'],
-                    strpos($json['email'], "@"));
+            $json['email'] = substr($json['email'], 0, 3)
+                . '****' .
+                substr($json['email'], strpos($json['email'], "@"));
         }
         return $json;
     }
 
-
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function setPassword(string $password)
+    {
+        $this->password = password_hash($password, PASSWORD_ARGON2I);
+    }
 }

@@ -10,54 +10,39 @@ use App\Infrastructure\DB\DB;
 use ReflectionClass;
 use ReflectionProperty;
 
-class MysqlRepository
+class MysqlRepository extends DB
 {
-    private DB $db;
-
-    public function __construct(DB $db)
-    {
-        $this->db = $db;
-    }
-
     /**
      * @noinspection PhpSingleStatementWithBracesInspection
      * @noinspection PhpUnhandledExceptionInspection
      */
     public function saveEntity(AbstractEntity $entity): bool
     {
-
         $class = get_class($entity);
         $reflect = new ReflectionClass($entity);
         $props = $reflect->getProperties(ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PUBLIC);
-
-
         $data = [];
 
         foreach ($props as $prop) {
             $prop->setAccessible(true);
             if ($prop->isInitialized($entity)) {
                 $data[$prop->getName()] = $prop->getValue($entity);
-
             }
-
         }
 
         if ($entity->getId() !== 0) {
-            if ($this->db->update($entity->getId(), $this->getTable($class), $data)) {
-
+            if ($this->update($entity->getId(), $this->getTable($class), $data)) {
                 return true;
             }
         } else {
-            if ($this->db->insert($this->getTable($class), $data)) {
+            if ($this->insert($this->getTable($class), $data)) {
                 $rp = new ReflectionProperty($entity, 'id');
                 $rp->setAccessible(true);
-                $rp->setValue($entity, $this->db->getLastInsertId());
+                $rp->setValue($entity, $this->getLastInsertId());
 
                 return true;
             }
         }
-
-
         return false;
     }
 
@@ -70,7 +55,7 @@ class MysqlRepository
 
     public function delete(int $id, string $class): bool
     {
-        if (!($this->db->delete($this->getTable($class), $id))) {
+        if (!($this->deleteByField($this->getTable($class), (string)$id))) {
             return false;
         }
         return true;
@@ -78,7 +63,7 @@ class MysqlRepository
 
     public function getError(): string
     {
-        return $this->db->getError();
+        return $this->getError();
     }
 
     public function isDuplicateEntity(AbstractEntity $entity, array $fields): ?string
@@ -97,7 +82,6 @@ class MysqlRepository
                     return $field;
                 }
             }
-
         }
         return null;
     }
@@ -105,7 +89,7 @@ class MysqlRepository
 
     public function list(ServiceListParams $params): array
     {
-        $rows = $this->db->list(
+        $rows = $this->rows(
             $this->getTable($params->getClass()),
             $params->getFields(),
             $params->getFilters(),
@@ -119,21 +103,4 @@ class MysqlRepository
 
         return $rows;
     }
-
-    public function beginTransaction()
-    {
-        $this->db->beginTransaction();
-    }
-
-    public function commitTransaction()
-    {
-        $this->db->commitTransaction();
-    }
-
-    public function rollBackTransaction()
-    {
-        $this->db->rollBackTransaction();
-    }
-
-
 }

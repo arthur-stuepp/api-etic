@@ -22,7 +22,6 @@ abstract class Action
         $this->logger = $logger;
     }
 
-
     /**
      * @param Request $request
      * @param Response $response

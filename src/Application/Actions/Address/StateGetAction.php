@@ -17,6 +17,5 @@ class StateGetAction extends Address
         [$id] = array_values($this->args);
 
         return $this->respondWithPayload($this->service->readState((int)$id));
-
     }
 }

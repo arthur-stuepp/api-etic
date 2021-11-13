@@ -8,7 +8,6 @@ use App\Domain\General\ServiceListParams;
 use App\Domain\School\School;
 use App\Domain\School\SchoolRepositoryInterface;
 
-
 class SchoolRepository implements SchoolRepositoryInterface
 {
 
@@ -24,12 +23,12 @@ class SchoolRepository implements SchoolRepositoryInterface
         return $this->repository->saveEntity($school);
     }
 
-    public function getById(int $id)
+    public function getById(int $id): ?School
     {
         $params = new ServiceListParams(School::class);
         $params->setFilters('id', (string)$id)
             ->setLimit(1);
-        return $this->repository->list($params)['result'][0] ?? false;
+        return $this->repository->list($params)['result'][0] ?? null;
     }
 
     public function list(ServiceListParams $params): array
@@ -51,5 +50,4 @@ class SchoolRepository implements SchoolRepositoryInterface
     {
         return $this->repository->isDuplicateEntity($entity, ['name']);
     }
-
 }

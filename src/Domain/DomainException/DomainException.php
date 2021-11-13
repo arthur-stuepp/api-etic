@@ -10,7 +10,6 @@ use Throwable;
 
 class DomainException extends Exception
 {
-
     public function __construct(
         string $message,
         $code = ServicePayload::STATUS_INVALID_ENTITY,
@@ -18,5 +17,4 @@ class DomainException extends Exception
     ) {
         parent::__construct($message, $code, $previous);
     }
-
 }

@@ -17,7 +17,7 @@ class ShutdownHandler
      * ShutdownHandler constructor.
      *
      * @param Request $request
-     * @param $errorHandler $errorHandler
+     * @param HttpErrorHandler $errorHandler
      * @param bool $displayErrorDetails
      */
     public function __construct(
@@ -63,8 +63,13 @@ class ShutdownHandler
             }
 
             $exception = new HttpInternalServerErrorException($this->request, $message);
-            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, true,
-                true);
+            $response = $this->errorHandler->__invoke(
+                $this->request,
+                $exception,
+                $this->displayErrorDetails,
+                true,
+                true
+            );
 
             $responseEmitter = new ResponseEmitter();
             $responseEmitter->emit($response);

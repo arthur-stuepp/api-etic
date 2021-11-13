@@ -6,17 +6,9 @@ use App\Domain\General\ServiceListParams;
 
 interface AddressRepositoryInterface
 {
-    /**
-     * @param int $id
-     * @return false|State
-     */
-    public function getStateById(int $id);
+    public function getStateById(int $id): ?State;
 
-    /**
-     * @param int $id
-     * @return false|City
-     */
-    public function getCityById(int $id);
+    public function getCityById(int $id): ?City;
 
     public function list(ServiceListParams $params);
 }

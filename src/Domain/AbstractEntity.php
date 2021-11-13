@@ -55,7 +55,6 @@ abstract class AbstractEntity implements JsonSerializable
                     $convertedValue = new DateTimeModel($value);
                     break;
                 } catch (Exception $e) {
-
                     break;
                 }
             default:
@@ -76,7 +75,6 @@ abstract class AbstractEntity implements JsonSerializable
             return;
         }
         $this->$key = $convertedValue;
-
     }
 
     public function getId(): int
@@ -93,5 +91,4 @@ abstract class AbstractEntity implements JsonSerializable
     {
         return get_object_vars($this);
     }
-
 }

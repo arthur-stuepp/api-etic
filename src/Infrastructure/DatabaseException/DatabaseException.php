@@ -21,5 +21,4 @@ class DatabaseException extends Exception implements DisplayMessageInterface
     {
         return $this->displayMessage;
     }
-
 }

@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class SaveEventUserAction extends AbstractEventUserAction
 {
-
     protected function action(): Response
     {
         $data = $this->getFormData();

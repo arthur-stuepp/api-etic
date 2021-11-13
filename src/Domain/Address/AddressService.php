@@ -21,7 +21,7 @@ class AddressService extends AbstractDomainService implements AddressServiceInte
     public function readState(int $id): ServicePayload
     {
         $state = $this->repository->getStateById($id);
-        if ($state === false) {
+        if ($state === null) {
             return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
         return $this->servicePayload(ServicePayload::STATUS_FOUND, $state);
@@ -30,7 +30,7 @@ class AddressService extends AbstractDomainService implements AddressServiceInte
     public function readCity(int $id): ServicePayload
     {
         $state = $this->repository->getCityById($id);
-        if ($state === false) {
+        if ($state === null) {
             return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
         return $this->servicePayload(ServicePayload::STATUS_FOUND, $state);

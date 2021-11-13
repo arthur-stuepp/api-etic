@@ -29,5 +29,4 @@ class ServiceFactory
     {
         return $this->container->get($this->services[$pattern]);
     }
-
 }

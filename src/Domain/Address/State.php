@@ -24,6 +24,4 @@ class State extends AbstractEntity
     {
         return $this->name;
     }
-
-
 }

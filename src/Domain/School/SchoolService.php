@@ -12,7 +12,6 @@ use App\Domain\General\Traits\TraitReadService;
 use App\Domain\General\Validator\InputValidator;
 use App\Domain\ServicePayload;
 
-
 class SchoolService extends AbstractDomainService implements CrudServiceInterface
 {
     use TraitDeleteService;
@@ -34,8 +33,10 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
     {
         $school = new School($data);
         if (!$this->validation->isValid($data, $school)) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT,
-                ['fields' => $this->validation->getMessages()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validation->getMessages()]
+            );
         }
 
         return $this->processAndSave($school);
@@ -49,33 +50,32 @@ class SchoolService extends AbstractDomainService implements CrudServiceInterfac
         }
 
         if (!$this->repository->save($school)) {
-            return $this->servicePayload(ServicePayload::STATUS_ERROR,
-                ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_ERROR,
+                ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]
+            );
         }
 
         return $this->servicePayload(ServicePayload::STATUS_SAVED, $school);
-
     }
 
     public function update(int $id, array $data): ServicePayload
     {
         $school = $this->repository->getById($id);
-
         if (!$school) {
             return $this->servicePayload(ServicePayload::STATUS_NOT_FOUND);
         }
 
         if (!$this->validation->isValid($data, $school)) {
-            return $this->servicePayload(ServicePayload::STATUS_INVALID_INPUT,
-                ['fields' => $this->validation->getMessages()]);
+            return $this->servicePayload(
+                ServicePayload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validation->getMessages()]
+            );
         }
 
         $data['id'] = $id;
         $school = new School($data);
 
-
         return $this->processAndSave($school);
-
-
     }
 }

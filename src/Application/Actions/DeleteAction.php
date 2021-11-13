@@ -15,6 +15,5 @@ class DeleteAction extends CrudAction
         [$id] = array_values($this->args);
 
         return $this->respondWithPayload($this->service->delete((int)$id));
-
     }
 }

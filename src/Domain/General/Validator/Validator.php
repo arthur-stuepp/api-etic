@@ -50,6 +50,4 @@ abstract class Validator
     {
         return count($this->messages) == 0;
     }
-
-
 }
