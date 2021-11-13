@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Domain\Service\ServicePayload;
+use App\Domain\Service\Payload;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -80,7 +80,7 @@ abstract class Action
             ->withStatus($payload->getStatusCode());
     }
 
-    protected function respondWithPayload(ServicePayload $payload): Response
+    protected function respondWithPayload(Payload $payload): Response
     {
         $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
 

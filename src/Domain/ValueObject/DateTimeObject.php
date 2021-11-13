@@ -1,14 +1,13 @@
 <?php
 
-
 declare(strict_types=1);
 
-namespace App\Domain\Model;
+namespace App\Domain\ValueObject;
 
 use DateTime;
 use JsonSerializable;
 
-class DateTimeModel extends DateTime implements JsonSerializable
+class DateTimeObject extends DateTime implements JsonSerializable
 {
 
     public function jsonSerialize()

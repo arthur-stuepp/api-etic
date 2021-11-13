@@ -16,19 +16,18 @@ abstract class AbstractDomainService
 
 
     private array $defaultMessages = [
-        ServicePayload::STATUS_NOT_FOUND => self::NOT_FOUND,
-        ServicePayload::STATUS_INVALID_INPUT => self::BAD_REQUEST,
-        ServicePayload::STATUS_INVALID_ENTITY => self::INVALID,
-        ServicePayload::STATUS_DUPLICATE_ENTITY => self::DUPLICATE,
-        ServicePayload::STATUS_ERROR => self::SAVE_ERROR,
+        Payload::STATUS_NOT_FOUND => self::NOT_FOUND,
+        Payload::STATUS_INVALID_ENTITY => self::INVALID,
+        Payload::STATUS_DUPLICATE_ENTITY => self::DUPLICATE,
+        Payload::STATUS_ERROR => self::SAVE_ERROR,
     ];
 
-    protected function servicePayload(int $status, $result = []): ServicePayload
+    protected function servicePayload(int $status, $result = []): Payload
     {
         if ((is_array($result)) && (!isset($result['message'])) && (isset($this->defaultMessages[$status]))) {
             $result = array_merge(['message' => $this->defaultMessages[$status]], $result);
         }
-        return new ServicePayload($status, $result);
+        return new Payload($status, $result);
     }
 
     protected function params(string $class): EntityParams

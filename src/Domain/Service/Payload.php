@@ -6,13 +6,12 @@ namespace App\Domain\Service;
 
 use App\Domain\AbstractEntity;
 
-class ServicePayload
+class Payload
 {
     public const STATUS_VALID = 200;
     public const STATUS_FOUND = 200;
     public const STATUS_SAVED = 201;
     public const STATUS_DELETED = 202;
-    public const STATUS_INVALID_INPUT = 400;
     public const STATUS_FORBIDDEN = 403;
     public const STATUS_NOT_FOUND = 404;
     public const STATUS_NOT_DELETED = 409;

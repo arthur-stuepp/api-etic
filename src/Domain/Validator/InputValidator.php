@@ -6,6 +6,7 @@ namespace App\Domain\Validator;
 
 use App\Domain\AbstractEntity;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionProperty;
 
 class InputValidator extends Validator
@@ -14,8 +15,9 @@ class InputValidator extends Validator
     private ReflectionClass $reflectionClass;
     private string $className;
 
-
-    /** @noinspection PhpUnhandledExceptionInspection */
+    /**
+     * @throws ReflectionException
+     */
     public function isValid(array $data, AbstractEntity $entity): bool
     {
         $this->className = get_class($entity);
@@ -25,11 +27,12 @@ class InputValidator extends Validator
         $this->validateRequiredFields();
         $this->validateConsts();
 
-
         return $this->validate();
     }
 
-    /** @noinspection PhpUnhandledExceptionInspection */
+    /**
+     * @throws ReflectionException
+     */
     private function validateRequiredFields()
     {
         $fields = $this->reflectionClass->getProperties();

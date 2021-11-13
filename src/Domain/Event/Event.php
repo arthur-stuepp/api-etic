@@ -6,10 +6,11 @@ namespace App\Domain\Event;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Exception\DomainException;
-use App\Domain\Model\DateTimeModel;
-use App\Domain\Service\ServicePayload;
+use App\Domain\Service\Payload;
 use App\Domain\User\User;
+use App\Domain\ValueObject\DateTimeObject;
 use ArrayObject;
+use Exception;
 
 class Event extends AbstractEntity
 {
@@ -19,11 +20,11 @@ class Event extends AbstractEntity
 
     protected int $id;
     protected string $name;
-    protected int $type;
+    protected int $type = self::TYPE_EVENT;
     protected string $description;
     protected int $capacity;
-    protected DateTimeModel $startTime;
-    protected DateTimeModel $endTime;
+    protected DateTimeObject $startTime;
+    protected DateTimeObject $endTime;
     private ArrayObject $users;
 
     public function __construct(array $properties = [])
@@ -34,12 +35,13 @@ class Event extends AbstractEntity
 
     /**
      * @throws DomainException
+     * @throws Exception
      */
-    public function addUser(User $user): void
+    public function addUser(User $user, ?string $team = null): void
     {
         $userId = $user->getId();
         if ($this->users->offsetExists($userId)) {
-            throw new DomainException('Usuario já inscrito nesse evento', ServicePayload::STATUS_DUPLICATE_ENTITY);
+            throw new DomainException('Usuario já inscrito nesse evento', Payload::STATUS_DUPLICATE_ENTITY);
         }
         $wailist = false;
         if ($this->users->count() >= $this->capacity) {
@@ -48,19 +50,17 @@ class Event extends AbstractEntity
         $eventUser = new EventUser([
             'user' => $userId,
             'event' => $this->id,
+            'team' => $team,
             'cheking' => false,
             'waitlist' => $wailist
         ]);
-        $this->users[$userId] = $eventUser;
+        $this->users->offsetSet($userId, $eventUser);
     }
 
-    /**
-     * @throws DomainException
-     */
-    public function getUser(int $userId): EventUser
+    public function getUser(int $userId): ?EventUser
     {
         if (!$this->hasUser($userId)) {
-            throw new DomainException('Usuário não encontrado', ServicePayload::STATUS_NOT_FOUND);
+            return null;
         }
         return $this->users->offsetGet($userId);
     }
@@ -81,11 +81,10 @@ class Event extends AbstractEntity
     /**-
      * @throws DomainException
      */
-    public function removeUser(User $user): void
+    public function removeUser(int $userId): void
     {
-        $userId = $user->getId();
         if (!$this->users->offsetExists($userId)) {
-            throw new DomainException('Usuario Não encontrado nesse evento', ServicePayload::STATUS_NOT_FOUND);
+            throw new DomainException('Usuario Não encontrado nesse evento', Payload::STATUS_NOT_FOUND);
         }
         $this->users->offsetUnset($userId);
     }

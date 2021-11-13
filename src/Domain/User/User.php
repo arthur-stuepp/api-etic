@@ -6,21 +6,21 @@ namespace App\Domain\User;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
-use App\Domain\Model\DateTimeModel;
 use App\Domain\School\School;
+use App\Domain\ValueObject\DateTimeObject;
 
 class User extends AbstractEntity
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
 
-    protected int $id;
+    protected int $id = self::TYPE_USER;
     protected int $type;
     protected string $name;
     protected string $address;
     protected City $city;
     protected string $email;
-    protected DateTimeModel $birthday;
+    protected DateTimeObject $birthday;
     protected ?string $company;
     protected School $school;
     protected bool $disability = false;

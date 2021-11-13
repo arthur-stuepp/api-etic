@@ -8,7 +8,7 @@ use App\Domain\Service\AbstractCrudService;
 use App\Domain\AbstractEntity;
 use App\Domain\Service\CrudServiceInterface;
 use App\Domain\RepositoryInterface;
-use App\Domain\Service\ServicePayload;
+use App\Domain\Service\Payload;
 use App\Domain\Validator\InputValidator;
 
 class SchoolService extends AbstractCrudService implements CrudServiceInterface
@@ -25,20 +25,20 @@ class SchoolService extends AbstractCrudService implements CrudServiceInterface
     }
 
     /** @noinspection PhpParamsInspection */
-    protected function processEntity(AbstractEntity $entity): ServicePayload
+    protected function processEntity(AbstractEntity $entity): Payload
     {
         $field = $this->repository->getDuplicateField($entity);
         if ($field !== null) {
-            return $this->servicePayload(ServicePayload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
+            return $this->servicePayload(Payload::STATUS_DUPLICATE_ENTITY, ['field' => $field]);
         }
 
         if (!$this->repository->save($entity)) {
             return $this->servicePayload(
-                ServicePayload::STATUS_ERROR,
+                Payload::STATUS_ERROR,
                 ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]
             );
         }
-        return $this->servicePayload(ServicePayload::STATUS_SAVED, $entity);
+        return $this->servicePayload(Payload::STATUS_SAVED, $entity);
     }
 
     protected function getRepository(): RepositoryInterface

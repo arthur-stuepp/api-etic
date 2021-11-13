@@ -7,7 +7,7 @@ namespace App\Domain;
 use App\Domain\Exception\DomainException;
 use App\Domain\Exception\DomainFieldException;
 use App\Domain\Factory\EntityFactory;
-use App\Domain\Model\DateTimeModel;
+use App\Domain\ValueObject\DateTimeObject;
 use Exception;
 use JsonSerializable;
 use ReflectionException;
@@ -17,7 +17,7 @@ use ReflectionProperty;
 abstract class AbstractEntity implements JsonSerializable
 {
     protected int $id;
-    protected ?DateTimeModel $createdAt;
+    protected ?DateTimeObject $createdAt;
 
     /**
      * @throws Exception
@@ -66,8 +66,8 @@ abstract class AbstractEntity implements JsonSerializable
                 $convertedValue = (bool)$value;
                 break;
             case 'DateTime':
-            case DateTimeModel::class:
-                $convertedValue = new DateTimeModel($value);
+            case DateTimeObject::class:
+                $convertedValue = new DateTimeObject($value);
                 break;
             default:
                 if (EntityFactory::entityExist($key)) {
