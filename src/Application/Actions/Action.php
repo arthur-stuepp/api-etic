@@ -88,30 +88,29 @@ abstract class Action
     private function addLogger(ActionPayload $payload)
     {
         $path = $this->request->getUri()->getPath();
-        $data = ['method' => $this->request->getMethod()];
+        $method = $this->request->getMethod();
+        $name = $method . ' ' . $path;
+        $data = [
+            'loggedUser' => 'Nenhum usuario logado',
+            'result' => $payload->getData()
+        ];
         if (defined('USER_ID')) {
             $data['loggedUser'] = USER_ID;
         }
-        $result = $payload->getData();
-        if (!is_array($result)) {
-            $result = json_encode($result);
-        }
-        $data['result'] = $result;
         if ($payload->getStatusCode() < 400) {
             if ($this->request->getMethod() === 'GET') {
-                unset($data['result']);
+                $data['result'] = 'Listagem de registros';
             }
-            $this->logger->info($path, $data);
+            $this->logger->info($name, $data);
         } elseif ($payload->getStatusCode() < 500) {
-            $this->logger->error($path, $data);
+            $this->logger->error($name, $data);
         } else {
-            $this->logger->critical($path, $data);
+            $this->logger->critical($name, $data);
         }
     }
 
     protected function respondWithPayload(Payload $payload): Response
     {
-
         $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
 
         return $this->respond($payload);
