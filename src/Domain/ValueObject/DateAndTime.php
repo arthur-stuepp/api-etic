@@ -7,7 +7,7 @@ namespace App\Domain\ValueObject;
 use DateTime;
 use JsonSerializable;
 
-class DateTimeObject extends DateTime implements JsonSerializable
+class DateAndTime extends DateTime implements JsonSerializable
 {
 
     public function jsonSerialize()

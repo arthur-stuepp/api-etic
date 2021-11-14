@@ -45,12 +45,16 @@ abstract class Action
     abstract protected function action(): Response;
 
     /**
-     * @return array|object
+     * @return ?array
      * @throws HttpBadRequestException
      */
-    protected function getFormData()
+    protected function getFormData(): ?array
     {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $data = file_get_contents('php://input');
+        if (empty($data)) {
+            return [];
+        }
+        $input = json_decode($data, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new HttpBadRequestException($this->request, 'JSON Malformatado.');
@@ -72,6 +76,7 @@ abstract class Action
      */
     protected function respond(ActionPayload $payload): Response
     {
+        $this->addLogger($payload);
         $json = json_encode($payload, JSON_PRETTY_PRINT);
         $this->response->getBody()->write($json);
 
@@ -80,8 +85,33 @@ abstract class Action
             ->withStatus($payload->getStatusCode());
     }
 
+    private function addLogger(ActionPayload $payload)
+    {
+        $path = $this->request->getUri()->getPath();
+        $data = ['method' => $this->request->getMethod()];
+        if (defined('USER_ID')) {
+            $data['loggedUser'] = USER_ID;
+        }
+        $result = $payload->getData();
+        if (!is_array($result)) {
+            $result = json_encode($result);
+        }
+        $data['result'] = $result;
+        if ($payload->getStatusCode() < 400) {
+            if ($this->request->getMethod() === 'GET') {
+                unset($data['result']);
+            }
+            $this->logger->info($path, $data);
+        } elseif ($payload->getStatusCode() < 500) {
+            $this->logger->error($path, $data);
+        } else {
+            $this->logger->critical($path, $data);
+        }
+    }
+
     protected function respondWithPayload(Payload $payload): Response
     {
+
         $payload = new ActionPayload($payload->getStatus(), $payload->getResult());
 
         return $this->respond($payload);

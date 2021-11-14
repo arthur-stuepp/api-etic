@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Domain\Exception\DomainException;
-use App\Domain\Exception\DomainFieldException;
 use App\Domain\Factory\EntityFactory;
-use App\Domain\ValueObject\DateTimeObject;
+use App\Domain\ValueObject\DateAndTime;
 use Exception;
 use JsonSerializable;
 use ReflectionException;
@@ -17,7 +16,7 @@ use ReflectionProperty;
 abstract class AbstractEntity implements JsonSerializable
 {
     protected int $id;
-    protected ?DateTimeObject $createdAt;
+    protected ?DateAndTime $createdAt;
 
     /**
      * @throws Exception
@@ -66,8 +65,8 @@ abstract class AbstractEntity implements JsonSerializable
                 $convertedValue = (bool)$value;
                 break;
             case 'DateTime':
-            case DateTimeObject::class:
-                $convertedValue = new DateTimeObject($value);
+            case DateAndTime::class:
+                $convertedValue = new DateAndTime($value);
                 break;
             default:
                 if (EntityFactory::entityExist($key)) {
@@ -109,22 +108,6 @@ abstract class AbstractEntity implements JsonSerializable
     public function getId(): int
     {
         return $this->id ?? 0;
-    }
-
-    /**
-     * @param int $id
-     * @throws DomainFieldException
-     * @throws Exception
-     */
-    public function setId(int $id): void
-    {
-        if ($id < 0) {
-            throw new DomainFieldException('Id não pode ser menor que 0', 'id');
-        }
-        if (isset($this->id)) {
-            throw new DomainFieldException('Id não pode alterado', 'id');
-        }
-        $this->id = $id;
     }
 
     public function __toString(): string

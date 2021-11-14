@@ -8,7 +8,7 @@ use App\Domain\AbstractEntity;
 use App\Domain\Exception\DomainException;
 use App\Domain\Service\Payload;
 use App\Domain\User\User;
-use App\Domain\ValueObject\DateTimeObject;
+use App\Domain\ValueObject\DateAndTime;
 use ArrayObject;
 use Exception;
 
@@ -23,8 +23,8 @@ class Event extends AbstractEntity
     protected int $type = self::TYPE_EVENT;
     protected string $description;
     protected int $capacity;
-    protected DateTimeObject $startTime;
-    protected DateTimeObject $endTime;
+    protected DateAndTime $startTime;
+    protected DateAndTime $endTime;
     private ArrayObject $users;
 
     public function __construct(array $properties = [])

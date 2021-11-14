@@ -55,10 +55,10 @@ class EventService extends AbstractCrudService implements EventUserServiceInterf
         return $this->servicePayload(Payload::STATUS_VALID, $event->getUser($userId));
     }
 
-    public function removeUser(int $userId, array $data): Payload
+    public function removeUser(int $eventId, int $userId): Payload
     {
-        $event = $this->repository->getById((int)$data['event']);
-        if (!$event) {
+        $event = $this->repository->getById($eventId);
+        if ($event === null) {
             return $this->servicePayload(Payload::STATUS_NOT_FOUND, ['message' => self::NOT_FOUND]);
         }
         try {
@@ -94,6 +94,19 @@ class EventService extends AbstractCrudService implements EventUserServiceInterf
             );
         }
         return $this->servicePayload(Payload::STATUS_VALID, $event->getUser($userId));
+    }
+
+    public function readUser(int $eventId, int $userId): Payload
+    {
+        $event = $this->repository->getById($eventId);
+        if (!$event) {
+            return $this->servicePayload(Payload::STATUS_NOT_FOUND, ['message' => self::NOT_FOUND]);
+        }
+        $user = $event->getUser($userId);
+        if ($user === null) {
+            return $this->servicePayload(Payload::STATUS_NOT_FOUND);
+        }
+        return $this->servicePayload(Payload::STATUS_FOUND, $user);
     }
 
     protected function processEntity(AbstractEntity $entity): Payload

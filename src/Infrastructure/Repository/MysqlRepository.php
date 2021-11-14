@@ -35,7 +35,9 @@ class MysqlRepository extends DB
             }
         } else {
             if ($this->insert($this->getTable($class), $data)) {
-                $entity->setId($this->getLastInsertId());
+                $rp = new ReflectionProperty($entity, 'id');
+                $rp->setAccessible(true);
+                $rp->setValue($entity, $this->getLastInsertId());
 
                 return true;
             }

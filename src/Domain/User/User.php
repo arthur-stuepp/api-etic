@@ -7,7 +7,7 @@ namespace App\Domain\User;
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
 use App\Domain\School\School;
-use App\Domain\ValueObject\DateTimeObject;
+use App\Domain\ValueObject\DateAndTime;
 
 class User extends AbstractEntity
 {
@@ -20,7 +20,7 @@ class User extends AbstractEntity
     protected string $address;
     protected City $city;
     protected string $email;
-    protected DateTimeObject $birthday;
+    protected DateAndTime $birthday;
     protected ?string $company;
     protected School $school;
     protected bool $disability = false;

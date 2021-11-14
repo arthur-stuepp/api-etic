@@ -6,6 +6,8 @@ use App\Application\Actions\Address\CityGetAction;
 use App\Application\Actions\Address\StateGetAction;
 use App\Application\Actions\Auth\LoginAction;
 use App\Application\Actions\DeleteAction;
+use App\Application\Actions\EventUser\DeleteEventUserAction;
+use App\Application\Actions\EventUser\GetEventUser;
 use App\Application\Actions\EventUser\SaveEventUserAction;
 use App\Application\Actions\GetAction;
 use App\Application\Actions\SaveAction;
@@ -45,6 +47,9 @@ return function (App $app) {
             $event->delete('', DeleteAction::class)->add(OnlyAdmin::class);
             $event->group('/users/{user}', function (Group $users) {
                 $users->post('', SaveEventUserAction::class)->add(Restricted::class);
+                $users->put('', SaveEventUserAction::class)->add(Restricted::class);
+                $users->get('', GetEventUser::class)->add(Restricted::class);
+                $users->delete('', DeleteEventUserAction::class)->add(Restricted::class);
             });
         });
     })->add(Auth::class);
@@ -69,5 +74,4 @@ return function (App $app) {
             });
         });
     });
-
 };
