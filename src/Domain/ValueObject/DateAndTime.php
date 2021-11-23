@@ -5,10 +5,19 @@ declare(strict_types=1);
 namespace App\Domain\ValueObject;
 
 use DateTime;
-use JsonSerializable;
+use DateTimeZone;
+use Exception;
 
-class DateAndTime extends DateTime implements JsonSerializable
+class DateAndTime extends DateTime implements ValueObjectInterface
 {
+    public function __construct($datetime = 'now', DateTimeZone $timezone = null)
+    {
+        try {
+            parent::__construct($datetime, $timezone);
+        } catch (Exception $e) {
+            throw new Exception('Formatado de data invaliado. Precisa ser no formtado AAAA-MM-DD HH:MM:SS');
+        }
+    }
 
     public function jsonSerialize()
     {

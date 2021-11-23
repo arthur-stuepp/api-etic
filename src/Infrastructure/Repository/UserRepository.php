@@ -73,7 +73,7 @@ class UserRepository implements UserRepositoryInterfaceInterface
 
     public function getDuplicateField(User $user): ?string
     {
-        return $this->repository->isDuplicateEntity($user, ['email', 'taxId']);
+        return $this->repository->isDuplicateEntity($user, ['email', 'document']);
     }
 
     public function getError(): string

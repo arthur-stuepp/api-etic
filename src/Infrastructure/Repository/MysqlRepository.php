@@ -69,7 +69,7 @@ class MysqlRepository extends DB
     {
         foreach ($fields as $field) {
             $params = new EntityParams(get_class($entity));
-            $params->setFilters($field, $entity->__get($field));
+            $params->setFilters($field, (string)$entity->__get($field));
             $params->setFields('id');
             $payload = $this->list($params);
             if ($payload['total'] > 0) {

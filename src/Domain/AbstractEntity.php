@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Domain\Exception\DomainException;
+use App\Domain\Exception\DomainFieldException;
 use App\Domain\ValueObject\DateAndTime;
+use App\Domain\ValueObject\ValueObjectInterface;
 use Exception;
 use JsonSerializable;
 use ReflectionException;
@@ -63,15 +65,19 @@ abstract class AbstractEntity implements JsonSerializable
             case 'bool':
                 $convertedValue = (bool)$value;
                 break;
-            case 'DateTime':
-            case DateAndTime::class:
-                $convertedValue = new DateAndTime($value);
-                break;
             default:
                 if (class_exists($type)) {
                     if (in_array(AbstractEntity::class, class_parents($type))) {
                         $this->$key = new $type(['id' => $value]);
                         return;
+                    }
+                }
+                if (in_array(ValueObjectInterface::class, class_implements($type))) {
+                    try {
+                        $this->$key = new $type($value);
+                        return;
+                    } catch (Exception $e) {
+                        throw new DomainFieldException($e->getMessage(), $key);
                     }
                 }
                 if ($convertedValue === null && ($rp->getType()->allowsNull())) {

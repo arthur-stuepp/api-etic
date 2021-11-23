@@ -9,14 +9,15 @@ use App\Domain\Address\City;
 use App\Domain\Exception\DomainFieldException;
 use App\Domain\School\School;
 use App\Domain\ValueObject\DateAndTime;
+use App\Domain\ValueObject\Document;
 
 class User extends AbstractEntity
 {
     public const TYPE_ADMIN = 1;
     public const TYPE_USER = 2;
 
-    protected int $id = self::TYPE_USER;
-    protected int $type;
+    protected int $id;
+    protected int $type = self::TYPE_USER;
     protected string $name;
     protected string $address;
     protected City $city;
@@ -26,7 +27,7 @@ class User extends AbstractEntity
     protected School $school;
     protected bool $disability = false;
     protected string $password;
-    protected string $taxId;
+    protected Document $document;
     protected ?int $indication;
 
     public function comparePassword(string $passoword): bool

@@ -13,5 +13,4 @@ interface EventUserServiceInterface
     public function removeUser(int $eventId, int $userId): Payload;
 
     public function readUser(int $eventId, int $userId): Payload;
-
 }
