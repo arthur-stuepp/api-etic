@@ -10,7 +10,7 @@ use App\Domain\RepositoryInterface;
 use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\Service\AbstractCrudService;
 use App\Domain\Service\Payload;
-use App\Domain\Validator\InputValidator;
+use App\Domain\Service\Validator\InputValidator;
 use App\Infrastructure\Repository\EntityParams;
 use Firebase\JWT\JWT;
 

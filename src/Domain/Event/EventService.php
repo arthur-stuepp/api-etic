@@ -9,8 +9,8 @@ use App\Domain\Exception\DomainException;
 use App\Domain\RepositoryInterface;
 use App\Domain\Service\AbstractCrudService;
 use App\Domain\Service\Payload;
+use App\Domain\Service\Validator\InputValidator;
 use App\Domain\User\UserRepositoryInterfaceInterface;
-use App\Domain\Validator\InputValidator;
 use Exception;
 
 class EventService extends AbstractCrudService implements EventUserServiceInterface

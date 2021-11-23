@@ -12,6 +12,7 @@ class Payload
     public const STATUS_FOUND = 200;
     public const STATUS_SAVED = 201;
     public const STATUS_DELETED = 202;
+    public const STATUS_INVALID_INPUT = 400;
     public const STATUS_FORBIDDEN = 403;
     public const STATUS_NOT_FOUND = 404;
     public const STATUS_NOT_DELETED = 409;
@@ -39,7 +40,7 @@ class Payload
 
     public function getResult()
     {
-        if (DEBUG === false && isset($this->result['description'])) {
+        if (DEBUG === false && is_array($this->result) && isset($this->result['description'])) {
             unset($this->result['description']);
         }
         return $this->result;

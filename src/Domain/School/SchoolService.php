@@ -9,7 +9,7 @@ use App\Domain\AbstractEntity;
 use App\Domain\Service\CrudServiceInterface;
 use App\Domain\RepositoryInterface;
 use App\Domain\Service\Payload;
-use App\Domain\Validator\InputValidator;
+use App\Domain\Service\Validator\InputValidator;
 
 class SchoolService extends AbstractCrudService implements CrudServiceInterface
 {

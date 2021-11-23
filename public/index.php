@@ -7,20 +7,21 @@ use App\Application\Handlers\ShutdownHandler;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
+use Psr\Log\LoggerInterface;
+use Selective\BasePath\BasePathMiddleware;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
-use Selective\BasePath\BasePathMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 
-require  __DIR__ . '/../app/config.php';
+require __DIR__ . '/../app/config.php';
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
 if (!DEBUG) { // Should be set to true in production
-	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 // Set up settings
 $settings = require __DIR__ . '/../app/settings.php';
@@ -65,7 +66,11 @@ $request = $serverRequestCreator->createServerRequestFromGlobals();
 
 // Create Error Handler
 $responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+$errorHandler = new HttpErrorHandler(
+    $callableResolver,
+    $responseFactory,
+    $container->get(LoggerInterface::class)
+);
 
 // Create Shutdown Handler
 $shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);

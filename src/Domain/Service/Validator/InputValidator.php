@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Validator;
+namespace App\Domain\Service\Validator;
 
 use App\Domain\AbstractEntity;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionProperty;
 
 class InputValidator extends Validator
@@ -15,9 +14,7 @@ class InputValidator extends Validator
     private ReflectionClass $reflectionClass;
     private string $className;
 
-    /**
-     * @throws ReflectionException
-     */
+
     public function isValid(array $data, AbstractEntity $entity): bool
     {
         $this->className = get_class($entity);
@@ -25,14 +22,11 @@ class InputValidator extends Validator
         $this->reflectionClass = new ReflectionClass($entity);
         $this->messages = [];
         $this->validateRequiredFields();
-        $this->validateConsts();
-
         return $this->validate();
     }
 
-    /**
-     * @throws ReflectionException
-     */
+
+    /** @noinspection PhpUnhandledExceptionInspection */
     private function validateRequiredFields()
     {
         $fields = $this->reflectionClass->getProperties();
@@ -42,25 +36,6 @@ class InputValidator extends Validator
             if ($fieldName !== 'id') {
                 if (!isset($this->data[$fieldName]) && (!$rp->getType()->allowsNull()) && (!$rp->isPrivate())) {
                     $this->messages[$fieldName] = Validator::FIELD_REQUIRED;
-                }
-            }
-        }
-    }
-
-    private function validateConsts(): void
-    {
-        $consts = $this->reflectionClass->getConstants();
-        if ($consts !== []) {
-            $fields = [];
-            foreach ($consts as $const => $value) {
-                $fields[explode('_', $const)[0]][] = $value;
-            }
-            foreach ($fields as $field => $constValues) {
-                $property = strtolower($field);
-                if (isset($this->data[$property])) {
-                    if (!in_array($this->data[$property], $constValues)) {
-                        $this->messages[$property] = self::FIELD_INVALID;
-                    }
                 }
             }
         }

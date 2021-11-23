@@ -6,6 +6,7 @@ namespace App\Domain\Event;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Exception\DomainException;
+use App\Domain\Exception\DomainFieldException;
 use App\Domain\Service\Payload;
 use App\Domain\User\User;
 use App\Domain\ValueObject\DateAndTime;
@@ -87,5 +88,16 @@ class Event extends AbstractEntity
             throw new DomainException('Usuario Não encontrado nesse evento', Payload::STATUS_NOT_FOUND);
         }
         $this->users->offsetUnset($userId);
+    }
+
+    /**
+     * @throws DomainFieldException
+     */
+    private function setType(int $type)
+    {
+        if (!in_array($type, [self::TYPE_EVENT, self::TYPE_GAME, self::TYPE_HACKATHON])) {
+            throw new DomainFieldException('Tipo invalido', 'type');
+        }
+        $this->type = $type;
     }
 }

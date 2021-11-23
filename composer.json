@@ -1,30 +1,22 @@
 {
-    "name": "slim/slim-skeleton",
-    "description": "A Slim Framework skeleton application for rapid development",
-    "keywords": [
-        "microframework",
-        "rest",
-        "router",
-        "psr7"
-    ],
-    "homepage": "http://github.com/slimphp/Slim-Skeleton",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Josh Lockhart",
-            "email": "info@joshlockhart.com",
-            "homepage": "http://www.joshlockhart.com/"
-        },
-        {
-            "name": "Pierre Berube",
-            "email": "pierre@lgse.com",
-            "homepage": "http://www.lgse.com/"
-        }
+  "name": "etic/api-etic",
+  "description": "",
+  "keywords": [
+    "microframework",
+    "rest",
+    "router",
+    "psr7"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Arthur Stuepp Laurindo",
+      "email": "arthur.stuepp@gmail.com"
+    }
     ],
     "require": {
         "php": "^7.4",
         "ext-json": "*",
-        "faapz/pdo": "2.1",
         "firebase/php-jwt": "^5.2",
         "php-di/php-di": "^6.1",
         "selective/basepath": "^1.0",

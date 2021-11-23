@@ -6,6 +6,7 @@ namespace App\Domain\User;
 
 use App\Domain\AbstractEntity;
 use App\Domain\Address\City;
+use App\Domain\Exception\DomainFieldException;
 use App\Domain\School\School;
 use App\Domain\ValueObject\DateAndTime;
 
@@ -43,5 +44,29 @@ class User extends AbstractEntity
                 substr($json['email'], strpos($json['email'], "@"));
         }
         return $json;
+    }
+
+    /**
+     * @throws DomainFieldException
+     */
+    private function setIndication(int $indication)
+    {
+        if ($indication >= 0) {
+            throw new DomainFieldException('Indicação precisa ser Maior que 0 ', 'indication');
+        }
+        if ($this->getId() === $indication) {
+            throw new DomainFieldException('Indicação não pode ser você mesmo', 'indication');
+        }
+    }
+
+    /**
+     * @throws DomainFieldException
+     */
+    private function setType(int $type)
+    {
+        if (!in_array($type, [self::TYPE_ADMIN, self::TYPE_USER])) {
+            throw new DomainFieldException('Tipo invalido', 'type');
+        }
+        $this->type = $type;
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Domain\Exception\DomainException;
-use App\Domain\Factory\EntityFactory;
 use App\Domain\ValueObject\DateAndTime;
 use Exception;
 use JsonSerializable;
@@ -69,21 +68,21 @@ abstract class AbstractEntity implements JsonSerializable
                 $convertedValue = new DateAndTime($value);
                 break;
             default:
-                if (EntityFactory::entityExist($key)) {
-                    if (is_int($value)) {
-                        $convertedValue = EntityFactory::getEntity($key, ['id' => $value]);
+                if (class_exists($type)) {
+                    if (in_array(AbstractEntity::class, class_parents($type))) {
+                        $this->$key = new $type(['id' => $value]);
+                        return;
                     }
                 }
-        }
-
-        if ($convertedValue === null && ($rp->getType()->allowsNull())) {
-            $this->$key = null;
-            return;
-        }
-        if (method_exists($this, 'set' . ucfirst($key))) {
-            $method = 'set' . ucfirst($key);
-            $this->$method($convertedValue);
-            return;
+                if ($convertedValue === null && ($rp->getType()->allowsNull())) {
+                    $this->$key = null;
+                    return;
+                }
+                if (method_exists($this, 'set' . ucfirst($key))) {
+                    $method = 'set' . ucfirst($key);
+                    $this->$method($convertedValue);
+                    return;
+                }
         }
         $this->$key = $convertedValue;
     }

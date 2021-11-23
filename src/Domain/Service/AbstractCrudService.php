@@ -8,10 +8,9 @@ use App\Domain\AbstractEntity;
 use App\Domain\Exception\DomainException;
 use App\Domain\Exception\DomainFieldException;
 use App\Domain\RepositoryInterface;
-use App\Domain\Validator\InputValidator;
+use App\Domain\Service\Validator\InputValidator;
 use App\Infrastructure\Repository\EntityParams;
 use Exception;
-use ReflectionException;
 
 abstract class AbstractCrudService extends AbstractDomainService implements CrudServiceInterface
 {
@@ -31,16 +30,14 @@ abstract class AbstractCrudService extends AbstractDomainService implements Crud
     /** @noinspection PhpRedundantCatchClauseInspection */
     private function validateInput(array $data): Payload
     {
-        try {
-            if (!$this->validator->isValid($data, new $this->class())) {
-                return $this->servicePayload(
-                    Payload::STATUS_INVALID_ENTITY,
-                    ['fields' => $this->validator->getMessages()]
-                );
-            }
-        } catch (ReflectionException $e) {
-            return $this->servicePayload(Payload::STATUS_ERROR, ['message' => 'Houve um erro ao validar a classe']);
+
+        if (!$this->validator->isValid($data, new $this->class())) {
+            return $this->servicePayload(
+                Payload::STATUS_INVALID_INPUT,
+                ['fields' => $this->validator->getMessages()]
+            );
         }
+
         try {
             $entity = new $this->class($data);
         } catch (DomainFieldException $e) {
