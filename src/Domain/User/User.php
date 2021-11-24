@@ -10,6 +10,7 @@ use App\Domain\Exception\DomainFieldException;
 use App\Domain\School\School;
 use App\Domain\ValueObject\DateAndTime;
 use App\Domain\ValueObject\Document;
+use App\Domain\ValueObject\Email;
 
 class User extends AbstractEntity
 {
@@ -21,7 +22,7 @@ class User extends AbstractEntity
     protected string $name;
     protected string $address;
     protected City $city;
-    protected string $email;
+    protected Email $email;
     protected DateAndTime $birthday;
     protected ?string $company;
     protected School $school;
@@ -35,24 +36,12 @@ class User extends AbstractEntity
         return password_verify($passoword, $this->password);
     }
 
-    public function jsonSerialize(): array
-    {
-        $json = parent::jsonSerialize();
-        unset($json['password']);
-        if (isset($json['email'])) {
-            $json['email'] = substr($json['email'], 0, 3)
-                . '****' .
-                substr($json['email'], strpos($json['email'], "@"));
-        }
-        return $json;
-    }
-
     /**
      * @throws DomainFieldException
      */
     private function setIndication(int $indication)
     {
-        if ($indication >= 0) {
+        if ($indication <= 0) {
             throw new DomainFieldException('Indicação precisa ser Maior que 0 ', 'indication');
         }
         if ($this->getId() === $indication) {
@@ -69,5 +58,17 @@ class User extends AbstractEntity
             throw new DomainFieldException('Tipo invalido', 'type');
         }
         $this->type = $type;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $json = parent::jsonSerialize();
+        unset($json['password']);
+        if (isset($json['email'])) {
+            $json['email'] = substr($json['email'], 0, 3)
+                . '****' .
+                substr($json['email'], strpos($json['email'], "@"));
+        }
+        return $json;
     }
 }

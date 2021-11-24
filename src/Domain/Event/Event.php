@@ -79,7 +79,7 @@ class Event extends AbstractEntity
         return $this->users->getArrayCopy();
     }
 
-    /**-
+    /**
      * @throws DomainException
      */
     public function removeUser(int $userId): void

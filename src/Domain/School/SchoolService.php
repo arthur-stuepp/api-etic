@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\School;
 
-use App\Domain\Service\AbstractCrudService;
 use App\Domain\AbstractEntity;
-use App\Domain\Service\CrudServiceInterface;
 use App\Domain\RepositoryInterface;
+use App\Domain\Service\AbstractCrudService;
+use App\Domain\Service\CrudServiceInterface;
 use App\Domain\Service\Payload;
 use App\Domain\Service\Validator\InputValidator;
 
@@ -35,7 +35,10 @@ class SchoolService extends AbstractCrudService implements CrudServiceInterface
         if (!$this->repository->save($entity)) {
             return $this->servicePayload(
                 Payload::STATUS_ERROR,
-                ['message' => self::SAVE_ERROR, 'description' => $this->repository->getError()]
+                [
+                    'message' => self::SAVE_ERROR,
+                    'description' => $this->repository->getError()
+                ]
             );
         }
         return $this->servicePayload(Payload::STATUS_SAVED, $entity);
