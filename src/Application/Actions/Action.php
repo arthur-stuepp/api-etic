@@ -78,6 +78,9 @@ abstract class Action
     {
         $this->addLogger($payload);
         $json = json_encode($payload, JSON_PRETTY_PRINT);
+        if (DEBUG === false && is_array($json) && isset($json['description'])) {
+            unset($json['description']);
+        }
         $this->response->getBody()->write($json);
 
         return $this->response
@@ -85,7 +88,7 @@ abstract class Action
             ->withStatus($payload->getStatusCode());
     }
 
-    private function addLogger(ActionPayload $payload)
+    private function addLogger(ActionPayload $payload): void
     {
         $path = $this->request->getUri()->getPath();
         $method = $this->request->getMethod();

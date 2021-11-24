@@ -40,9 +40,6 @@ class Payload
 
     public function getResult()
     {
-        if (DEBUG === false && is_array($this->result) && isset($this->result['description'])) {
-            unset($this->result['description']);
-        }
         return $this->result;
     }
 }
