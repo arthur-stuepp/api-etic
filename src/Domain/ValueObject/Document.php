@@ -50,7 +50,7 @@ class Document implements ValueObjectInterface
     {
         return substr($this->document, 0, 3) . '.' .
             substr($this->document, 3, 3) . '.' .
-            substr($this->document, 6, 3) . '.' .
+            substr($this->document, 6, 3) . '-' .
             substr($this->document, 9, 2);
     }
 }
