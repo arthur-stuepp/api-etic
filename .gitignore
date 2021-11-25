@@ -5,4 +5,4 @@
 /logs/*
 !/logs/README.md
 .phpunit.result.cache
-/tests/
+/tests-coverage/
