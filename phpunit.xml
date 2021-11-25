@@ -15,7 +15,7 @@
             <directory suffix=".php">./src</directory>
         </include>
         <report>
-            <html outputDirectory="Files/tests-coverage" lowUpperBound="50" highLowerBound="90"/>
+            <html outputDirectory="Files/tests-coverage"/>
         </report>
     </coverage>
 </phpunit>
