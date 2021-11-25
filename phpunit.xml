@@ -12,11 +12,10 @@
 
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./app</directory>
             <directory suffix=".php">./src</directory>
         </include>
         <report>
-            <html outputDirectory="tests-coverage" lowUpperBound="50" highLowerBound="90"/>
+            <html outputDirectory="Files/tests-coverage" lowUpperBound="50" highLowerBound="90"/>
         </report>
     </coverage>
 </phpunit>
