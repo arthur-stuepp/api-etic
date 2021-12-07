@@ -17,13 +17,14 @@
   "require": {
     "php": "^7.4",
     "ext-json": "*",
+    "ext-pdo": "*",
     "firebase/php-jwt": "^5.2",
     "php-di/php-di": "^6.1",
-    "selective/basepath": "^1.0",
+    "robmorgan/phinx": "0.*",
     "slim/psr7": "^1.2.0",
     "slim/slim": "^4.5",
-    "monolog/monolog": "^2.3",
-    "ext-pdo": "*"
+    "selective/basepath": "^1.0",
+    "monolog/monolog": "^2.3"
   },
   "require-dev": {
     "pestphp/pest": "^1.21",

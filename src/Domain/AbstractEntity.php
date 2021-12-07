@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\Exception\DomainException;
 use App\Domain\Exception\DomainFieldException;
 use App\Domain\ValueObject\DateAndTime;
 use App\Domain\ValueObject\ValueObjectInterface;
 use Exception;
 use JsonSerializable;
-use ReflectionException;
-use ReflectionNamedType;
 use ReflectionProperty;
 
 abstract class AbstractEntity implements JsonSerializable
@@ -40,16 +37,12 @@ abstract class AbstractEntity implements JsonSerializable
     }
 
     /**
-     * @throws ReflectionException
      * @throws Exception
      */
     private function convertProperty(string $key, $value)
     {
         $rp = new ReflectionProperty($this, $key);
         $rn = $rp->getType();
-        if (!$rn instanceof ReflectionNamedType) {
-            throw new DomainException('Erro ao instanciar classe', 500);
-        }
         $type = $rn->getName();
         $convertedValue = $value;
         switch ($type) {

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\AbstractEntity;
-use App\Infrastructure\DB\DB;
+use App\Infrastructure\Database;
 use ReflectionClass;
 use ReflectionProperty;
 
-class MysqlRepository extends DB
+class MysqlRepository extends Database
 {
     /**
      * @noinspection PhpSingleStatementWithBracesInspection

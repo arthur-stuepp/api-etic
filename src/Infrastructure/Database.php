@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\DB;
+namespace App\Infrastructure;
 
 use App\Infrastructure\DatabaseException\DatabaseException;
 use Exception;
 use PDO;
 use PDOException;
 
-class DB
+class Database
 {
     private PDO $db;
     private string $error;
