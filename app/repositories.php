@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\Event\EventRepositoryInterface;
 use App\Domain\School\SchoolRepositoryInterface;
-use App\Domain\User\UserRepositoryInterfaceInterface;
+use App\Domain\User\UserRepositoryInterface;
 use App\Infrastructure\Repository\AddressRepository;
 use App\Infrastructure\Repository\EventRepository;
 use App\Infrastructure\Repository\SchoolRepository;
@@ -18,7 +18,7 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         SchoolRepositoryInterface::class => autowire(SchoolRepository::class),
         EventRepositoryInterface::class => autowire(EventRepository::class),
-        UserRepositoryInterfaceInterface::class => autowire(UserRepository::class),
+        UserRepositoryInterface::class => autowire(UserRepository::class),
         AddressRepositoryInterface::class => autowire(AddressRepository::class),
     ]);
 };

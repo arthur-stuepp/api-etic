@@ -4,7 +4,7 @@ namespace App\Domain\User;
 
 use App\Domain\RepositoryInterface;
 
-interface UserRepositoryInterfaceInterface extends RepositoryInterface
+interface UserRepositoryInterface extends RepositoryInterface
 {
     public function save(User $user): bool;
 

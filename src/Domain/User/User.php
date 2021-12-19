@@ -64,11 +64,7 @@ class User extends AbstractEntity
     {
         $json = parent::jsonSerialize();
         unset($json['password']);
-        if (isset($json['email'])) {
-            $json['email'] = substr($json['email'], 0, 3)
-                . '****' .
-                substr($json['email'], strpos($json['email'], "@"));
-        }
+        
         return $json;
     }
 }

@@ -6,7 +6,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Event\Event;
 use App\Domain\Event\EventRepositoryInterface;
-use App\Domain\Event\EventUser;
+use App\Domain\Event\User\EventUser;
 use ArrayObject;
 use Exception;
 use ReflectionProperty;
@@ -90,5 +90,11 @@ class EventRepository implements EventRepositoryInterface
     public function getError(): string
     {
         return $this->repository->getError();
+    }
+
+    public function listEventUser(int $event, EntityParams $params): array
+    {
+        $params->setFilters('event', (string)$event);
+        return $this->repository->list($params);
     }
 }

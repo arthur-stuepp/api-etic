@@ -7,9 +7,9 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Address\AddressRepositoryInterface;
 use App\Domain\School\SchoolRepositoryInterface;
 use App\Domain\User\User;
-use App\Domain\User\UserRepositoryInterfaceInterface;
+use App\Domain\User\UserRepositoryInterface;
 
-class UserRepository implements UserRepositoryInterfaceInterface
+class UserRepository implements UserRepositoryInterface
 {
     private MysqlRepository $repository;
     private AddressRepositoryInterface $addressRepository;

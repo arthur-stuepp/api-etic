@@ -16,7 +16,7 @@ use Firebase\JWT\JWT;
 
 class UserService extends AbstractCrudService implements AuthServiceInterface
 {
-    protected UserRepositoryInterfaceInterface $repository;
+    protected UserRepositoryInterface $repository;
     protected EntityParams $params;
     protected string $class;
     private SchoolRepositoryInterface $schoolRepository;
@@ -24,7 +24,7 @@ class UserService extends AbstractCrudService implements AuthServiceInterface
 
     public function __construct(
         InputValidator $validation,
-        UserRepositoryInterfaceInterface $repository,
+        UserRepositoryInterface $repository,
         SchoolRepositoryInterface $schoolRepository,
         AddressRepositoryInterface $addressRepository
     ) {

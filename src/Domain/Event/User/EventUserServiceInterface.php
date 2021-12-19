@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Event;
+namespace App\Domain\Event\User;
 
 use App\Domain\Service\Payload;
 
@@ -13,4 +13,6 @@ interface EventUserServiceInterface
     public function removeUser(int $eventId, int $userId): Payload;
 
     public function readUser(int $eventId, int $userId): Payload;
+
+    public function list(int $eventId, array $params): Payload;
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Event;
+namespace App\Domain\Event\User;
 
 use App\Domain\AbstractEntity;
 use App\Domain\User\User;
